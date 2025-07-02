@@ -29,9 +29,4 @@ logs/
 Thumbs.db
 
 # Supabase
-.supabase/ 
-
-.yaml
-*.yaml
-.gitkeep
-*.gitkeep
+.supabase/

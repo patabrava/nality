@@ -1,0 +1,80 @@
+Implement code by resoning step by step by SPARK_OF_THOUGHT and by following the MONOCODE principles.
+
+MONOCODE
+ ```yaml
+        # ──────────────────────
+        # Phase 2: Implementation
+        # ──────────────────────
+        implementation_principles:
+        - name: Observable Implementation
+            instruction: "Write code that reveals its behaviour—use structured logs, metrics, and clear naming; favour debuggability over premature micro‑optimisation."
+            sub_principles:
+            - name: Structured Logging
+                instruction: "Emit parseable key‑value logs at major state changes and error paths."
+            - name: Deterministic State
+                instruction: "Keep mutable state local; document every side effect for predictability."
+        
+        - name: Explicit Error Handling
+            instruction: "Validate inputs, check return values, and surface human‑readable errors that include context."
+            sub_principles:
+            - name: Fail Fast, Fail Loud
+                instruction: "Detect invalid conditions early and stop further corruption."
+            - name: Graceful Fallbacks
+                instruction: "Provide sensible defaults or degraded modes wherever lossless recovery isn’t possible."
+        
+        - name: Dependency Transparency
+            instruction: "Declare all external libraries, services, and build steps in machine‑readable form."
+            sub_principles:
+            - name: Version Pinning
+                instruction: "Lock dependency versions to guarantee reproducible builds."
+            - name: One‑Command Setup
+                instruction: "Offer a single script or make target that provisions the full environment."
+        
+        - name: Progressive Construction
+            instruction: "Implement and run the smallest slice that adds value, verify it, then extend—repeat."
+        ```
+END_MONOCODE
+
+---
+
+SPARK_OF_THOUGHT
+```yaml
+  first_principles:
+    efficient_reasoning:
+      description: |
+        Spark-of-Thought is an ultra-efficient reasoning methodology for rapid problem resolution, prioritizing speed and directness. It integrates key aspects of Natural Language Inherent Reasoning (NLIR), Atomic Reasoning, and Natural Language Effective Reasoning (NLER) for maximum efficiency. This approach emphasizes immediate root cause identification, heuristic-driven solution finding, and minimal reasoning steps, accepting trade-offs in exhaustive analysis for speed.
+
+        Key NLIR Components Used in Spark-of-Thought:
+        - Structured Natural Language Templates:  Using predefined, concise sentence structures that mimic programming logic to express reasoning steps and solutions efficiently. Examples include "If [condition], then [action]" or "To solve [problem], apply [action]." These templates ensure clarity and brevity.
+        - State-based Reasoning (Concise): Briefly describing the problem's current state after each reasoning step using minimal natural language. State descriptions are kept to the absolute essentials to maintain rapid progression.
+
+        Key NLER Components Used in Spark-of-Thought:
+        - Heuristic-Driven Approach: Leveraging heuristics and intuitive shortcuts to rapidly identify promising solutions and root causes, prioritizing speed and practical effectiveness over exhaustive analysis.
+
+      principles:
+        - Direct Path Reasoning & Concise NLIR Structuring: Employ only the most direct and essential reasoning steps for rapid solutions. Utilize Structured Natural Language Templates (e.g., "If [condition], then [action]") and brief State-based Reasoning to document steps with maximum conciseness and clarity, avoiding elaborate reasoning paths and maximizing speed.
+        - Heuristic-Based Root Cause Identification: Prioritize swift identification of the likely root cause by leveraging heuristics, expert intuition, and recognition-primed decision making. Employ minimal, targeted investigative steps for a fast, probable root cause diagnosis, rather than detailed, time-consuming analysis. Verify quickly if the root cause is or is not a valid solution.
+        - Immediate summarized answer Generation & NLIR Templates: Generate a direct, functional, and minimally complex summarized answer immediately upon root cause identification. Utilize NLIR Structured Natural Language Templates to formulate the summarized answer in a concise and actionable manner.
+        - Atomic State Efficiency & Minimal State Tracking: Reason in atomic, self-contained units to drastically reduce computational overhead and enhance speed. Minimize reliance on historical context and avoid complex, multi-layered state tracking. Process only essential information within each atomic step for maximum efficiency.
+        - Heuristic-Driven Solution Shortcuts: Leverage heuristics, problem-solving shortcuts, and recognition-primed decision making to rapidly identify good-enough solutions. Prioritize speed in finding a viable solution using experience-based approximations, intuitive judgments, and rules of thumb, even if it means potentially missing the absolute optimal solution but ensuring ultra-high efficiency.
+
+  instructions:
+    output_format: |
+      Apply the SPARK_OF_THOUGHT instructions within <think> xml tags for ultra-efficient reasoning. Generate the final and complete output without xml tags. The <think> section should be extremely brief, direct, and focused on rapid problem resolution to maximize efficiency.  When documenting reasoning steps in <think> tags, utilize NLIR Structured Natural Language Templates and Concise State-based Reasoning as defined in the 'first_principles' section. Emphasize heuristic-driven approaches for speed.
+
+    process: |
+      <think>
+      Execute Spark-of-Thought for ultra-efficient problem resolution, prioritizing speed above all. Adhere to these highly streamlined steps, utilizing NLIR for concise documentation and leveraging heuristics for rapid decisions:
+
+      1. Immediate Problem Grasp & Heuristic Analysis (Surface & Intuitive Assessment): Quickly grasp the problem's core issue and surface symptoms. Focus on a rapid, high-level, and *intuitive* understanding to expedite initial assessment. Begin to *heuristically* consider potential solution categories based on pattern recognition and prior experience. State: [Problem Identified - Heuristic Solution Path Initialized].
+      2. Heuristic Root Cause Guess & Recognition-Primed Decision Making (Rapid, Intuitive Diagnosis): Immediately guess the most probable root cause based on heuristics, expert intuition, and recognition-primed decision making. Employ minimal, targeted checks for quick confirmation and verification, relying heavily on intuitive judgment and pattern matching for speed. State: [Probable Root Cause Hypothesized - Recognition-Primed Approach Engaged - Heuristic verification].
+      3. Direct summarized answer Generation (Quick, Heuristic-Based Solution): Generate a direct, functional, and minimally complex summarized answer based on the rapid, heuristic-driven root cause guess. Prioritize a fast, good-enough solution identified through heuristics and shortcuts. Utilize NLIR Structured Natural Language Templates for summarized answer formulation for conciseness and actionability. State: [Summarized answer].
+      4. Ultra-Brief NLIR Output (Concise, Heuristic-Focused Documentation): Document only the essential reasoning steps and the generated summarized answer with extreme brevity using NLIR principles. Focus solely on the core actions, the heuristic applied, and the summarized resolution, eliminating any non-essential details or elaborate justifications. State: [summarized answer Generated via Heuristics - Outputting Ultra-Efficient Solution].
+      </think>
+      (no-tags)
+      [Extended (non-summarized) and elaborated Output will be placed here for the user to see, generated based on the previous heuristic-driven reasoning]
+      (no-tags)
+```
+END_SPARK_OF_THOUGHT
+
+NOTE-- Apply the SPARK_OF_THOUGHT instructions in <think> xml tags to reason step by step, and then generate your output without xml tags (the user cannot see your reasoning in the think tags, so make sure you provide a complete and full-working response within the output).
