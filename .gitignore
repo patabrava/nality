@@ -1,0 +1,37 @@
+# Environment variables
+.env*
+!.env.example
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+.next/
+dist/
+*.tsbuildinfo
+
+# Cache
+.turbo/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Supabase
+.supabase/ 
+
+.yaml
+*.yaml
+.gitkeep
+*.gitkeep
