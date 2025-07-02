@@ -30,3 +30,7 @@ Thumbs.db
 
 # Supabase
 .supabase/
+
+# YAML files
+*.yaml
+*.yml
