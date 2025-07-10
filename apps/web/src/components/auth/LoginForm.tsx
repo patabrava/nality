@@ -43,7 +43,7 @@ export function LoginForm() {
               setIsSubmitted(false)
               setEmail('')
             }}
-            className="w-full h-11 px-6 border border-white text-white bg-transparent rounded-xl font-bold text-xl transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/10 active:scale-[0.98]"
+            className="w-full h-11 px-6 border border-white text-white bg-transparent rounded-xl font-bold text-xl transition-all duration-150 ease-out hover:bg-white/10 active:scale-98"
           >
             Try Different Email
           </button>
@@ -73,7 +73,7 @@ export function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full h-11 px-4 bg-gray-100 text-black rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-all duration-150"
+              className="w-full h-11 px-4 bg-gray-100 text-black rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-150"
               required
               disabled={loading}
             />
@@ -90,7 +90,7 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={loading || !email.trim() || !isValidEmail(email)}
-            className="w-full h-11 px-6 bg-gray-600 text-white rounded-xl font-bold text-xl transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-gray-500 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full h-11 px-6 bg-gray-600 text-white rounded-xl font-bold text-xl transition-all duration-150 ease-out hover:bg-gray-500 active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? 'Sending Magic Link...' : 'Continue with Email'}
           </button>

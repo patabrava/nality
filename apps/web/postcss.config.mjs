@@ -1,7 +1,6 @@
 const config = {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
+    // No PostCSS plugins - Pure CSS approach to avoid circular dependencies
   },
 };
 

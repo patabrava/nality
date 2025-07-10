@@ -103,7 +103,7 @@ export function LifeEventCard({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-tl-surface-80 rounded-[10px] flex items-center justify-center">
+              <div className="w-full h-full bg-tl-surface-80 rounded-lg flex items-center justify-center">
                 <div className="play-icon">
                   <PlayIcon />
                 </div>
@@ -164,7 +164,7 @@ export function LifeEventCard({
         </button>
         
         {showMenu && (
-          <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+          <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-120">
             {onEdit && (
               <button
                 className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-lg"
@@ -201,79 +201,94 @@ export function LifeEventCard({
   ].filter(Boolean).join(' ')
 
   return (
-    <div className={cardClasses} role="article" aria-label={`Life event: ${event.title}`}>
-      {/* Ghost cards for featured variant */}
-      {variant === 'featured' && (
-        <>
-          <div className="ghost-card-1"></div>
-          <div className="ghost-card-2"></div>
-        </>
-      )}
-
-      {/* Dismiss button for dismissible cards */}
-      {onDismiss && (
-        <button 
-          className="card-dismiss-button"
-          onClick={handleDismiss}
-          aria-label="Dismiss story"
-        >
-          <CloseIcon />
-        </button>
-      )}
-
-      {/* Overflow menu */}
-      {renderOverflowMenu()}
-
-      {/* Source badge */}
+    <div className={cardClasses}>
+      {/* Source Badge */}
       {renderSourceBadge()}
 
-      {/* Media for featured-media variant (floated right) */}
-      {variant === 'featured-media' && renderMedia()}
+      {/* Media Content */}
+      {renderMedia()}
 
-      {/* Event title */}
-      <h4 className="card-title-text">
-        {event.title}
-      </h4>
+      {/* Card Header */}
+      <div className="card-header">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="card-title-text">
+              {event.title}
+            </h3>
+            
+            {/* Date Range */}
+            <div className="card-date-range">
+              {event.start_date && (
+                <span className="card-date-text">
+                  {new Date(event.start_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                  {event.end_date && !event.is_ongoing && (
+                    <span>
+                      {' - '}
+                      {new Date(event.end_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  )}
+                  {event.is_ongoing && (
+                    <span className="text-tl-accent-primary"> - Present</span>
+                  )}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* Overflow Menu */}
+          {renderOverflowMenu()}
+        </div>
+      </div>
 
-      {/* Date range */}
-      <span className="card-date-range">
-        {event.formatted_date_range}
-      </span>
-
-      {/* Description/body */}
+      {/* Description */}
       {event.description && (
-        <p className="card-body-snippet">
-          {event.description}
-        </p>
-      )}
-
-      {/* Media for standard variants (below content) */}
-      {variant !== 'featured-media' && renderMedia()}
-
-      {/* Location */}
-      {event.location && (
-        <div className="text-sm text-tl-ink-60 mt-2 flex items-center gap-1">
-          <LocationIcon />
-          <span>{event.location}</span>
+        <div className="card-description">
+          <p className="card-description-text">
+            {event.description}
+          </p>
         </div>
       )}
 
-      {/* Importance indicator */}
-      {event.importance && event.importance > 7 && (
-        <div className="text-xs text-tl-accent-warning mt-2 flex items-center gap-1">
+      {/* Location */}
+      {event.location && (
+        <div className="card-location">
+          <LocationIcon />
+          <span className="card-location-text">
+            {event.location}
+          </span>
+        </div>
+      )}
+
+      {/* Importance Indicator */}
+      {event.importance && event.importance >= 8 && (
+        <div className="card-importance">
           <StarIcon />
-          <span>High importance</span>
+          <span className="card-importance-text">
+            High Importance
+          </span>
         </div>
       )}
 
       {/* Tags */}
       {renderTags()}
 
-      {/* Media count indicator */}
-      {event.media_count && event.media_count > 1 && (
-        <div className="text-xs text-tl-ink-40 mt-2">
-          +{event.media_count - 1} more media files
-        </div>
+      {/* Dismiss Button (if applicable) */}
+      {onDismiss && (
+        <button
+          className="card-dismiss-button"
+          onClick={handleDismiss}
+          aria-label="Dismiss event"
+        >
+          <CloseIcon />
+        </button>
       )}
     </div>
   )

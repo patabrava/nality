@@ -201,7 +201,7 @@ export default function TimelinePage() {
   const renderTimelineNode = (item: typeof timelineData[0], index: number) => {
     if (item.type === 'decade') {
       return (
-        <div key={`decade-${item.decade}`} className="timeline-decade-chip" style={{ top: '30px' }}>
+        <div key={`decade-${item.decade}`} className="timeline-decade-chip">
           {item.decade}s
         </div>
       )
@@ -213,13 +213,8 @@ export default function TimelinePage() {
     const nodeType = event.is_duration ? 'duration-start' : 'moment'
 
     return (
-      <div key={`node-${event.id}-${index}`} className="timeline-node-container" style={{ top: '30px' }}>
+      <div key={`node-${event.id}-${index}`} className="timeline-node-container">
         <div className={`timeline-event-node ${nodeType}`} />
-        {item.type === 'year' && item.year && (
-          <div className="timeline-year-floater" style={{ top: '50%', transform: 'translateY(-50%)' }}>
-            {item.year}
-          </div>
-        )}
       </div>
     )
   }
@@ -235,13 +230,23 @@ export default function TimelinePage() {
     }
 
     return (
-      <LifeEventCard
-        key={`card-${event.id}-${index}`}
-        event={event}
-        variant={variant}
-        onEdit={handleEditEvent}
-        onDelete={handleDeleteEvent}
-      />
+      <div className="timeline-card-container">
+        <LifeEventCard
+          key={`card-${event.id}-${index}`}
+          event={event}
+          variant={variant}
+          onEdit={handleEditEvent}
+          onDelete={handleDeleteEvent}
+        />
+      </div>
+    )
+  }
+
+  const renderYearMarker = (year: number) => {
+    return (
+      <div className="timeline-year-marker">
+        {year}
+      </div>
     )
   }
 
@@ -251,7 +256,7 @@ export default function TimelinePage() {
         <span>📖</span>
       </div>
       <h4>Your story starts here</h4>
-      <p className="text-tl-ink-40 max-w-sm mx-auto">
+      <p className="max-w-sm mx-auto">
         Begin documenting your life's journey. Add your first memory, achievement, or milestone.
       </p>
     </div>
@@ -261,15 +266,17 @@ export default function TimelinePage() {
     <div className="space-y-6">
       {[1, 2, 3].map(i => (
         <div key={i} className="timeline-item">
-          <div className="timeline-node-container" style={{ top: '75px' }}>
-            <div className="timeline-event-node moment bg-tl-surface-80" />
+          <div className="timeline-node-container">
+            <div className="timeline-event-node moment" />
           </div>
-          <div className="skeleton-card">
-            <div className="skeleton-line short" />
-            <div className="skeleton-line medium" />
-            <div className="skeleton-line" />
-            <div className="skeleton-line medium" />
-            <div className="skeleton-line short" />
+          <div className="timeline-card-container">
+            <div className="skeleton-card">
+              <div className="skeleton-line short" />
+              <div className="skeleton-line medium" />
+              <div className="skeleton-line" />
+              <div className="skeleton-line medium" />
+              <div className="skeleton-line short" />
+            </div>
           </div>
         </div>
       ))}
@@ -278,9 +285,9 @@ export default function TimelinePage() {
 
   const renderErrorState = () => (
     <div className="text-center py-12">
-      <div className="text-tl-accent-warning text-4xl mb-4">⚠️</div>
-      <h3 className="text-xl font-semibold text-tl-ink-100 mb-2">Something went wrong</h3>
-      <p className="text-tl-ink-60 mb-4">{error}</p>
+      <div className="text-4xl mb-4">⚠️</div>
+      <h3 className="text-xl font-semibold mb-2">Something went wrong</h3>
+      <p className="text-gray-400 mb-4">{error}</p>
       <button
         onClick={handleRefresh}
         className="btn btn-primary"
@@ -311,20 +318,20 @@ export default function TimelinePage() {
   }
 
   return (
-    <div className="full-timeline-viewport" style={{ minHeight: '100vh', maxWidth: '100%' }}>
+    <div className="full-timeline-viewport">
       {/* Timeline Header */}
-      <div className="p-4 border-b border-tl-stroke-hairline">
-        <div className="flex items-center justify-between max-w-md mx-auto">
+      <div className="timeline-header">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div>
-            <h1 className="text-xl font-bold text-tl-ink-100">My Timeline</h1>
-            <p className="text-sm text-tl-ink-60">
+            <h1>My Timeline</h1>
+            <p>
               {events.length} {events.length === 1 ? 'event' : 'events'}
             </p>
           </div>
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className="text-tl-ink-60 hover:text-tl-ink-100 p-2"
+            className="text-tl-ink-60 hover:text-tl-ink-100 p-2 rounded-full transition-colors"
             aria-label="Refresh timeline"
           >
             <RefreshIcon className={loading ? 'animate-spin' : ''} />
@@ -353,8 +360,11 @@ export default function TimelinePage() {
 
               if (!item.event) return null
 
+              const showYearMarker = item.type === 'year' && item.year
+
               return (
                 <div key={`timeline-item-${item.event.id}-${index}`} className="timeline-item">
+                  {showYearMarker && renderYearMarker(item.year!)}
                   {renderTimelineNode(item, index)}
                   {renderTimelineCard(item.event, index)}
                 </div>
