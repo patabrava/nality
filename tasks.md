@@ -161,86 +161,89 @@ Based on the technical architecture, here's a granular, dependency-ordered plan 
 **Focus:** Timeline display  
 **Files:** `apps/web/app/(protected)/timeline/page.tsx`
 
-## Phase 6: Onboarding Chat System
+Phase 6: Onboarding Chat System
+Task 6.1: Setup Gemini Configuration
+Start: Environment configured
+End: Gemini API key stored in Supabase Vault under GEMINI_API_KEY
+Test: Can access Gemini key from Edge Function environment
+Focus: AI service configuration
+Files: Supabase Vault configuration
 
-### Task 6.1: Setup OpenAI Configuration
-**Start:** Environment configured  
-**End:** OpenAI API key stored in Supabase Vault  
-**Test:** Can access OpenAI key from Edge Function environment  
-**Focus:** AI service configuration  
-**Files:** Supabase Vault configuration
+Task 6.2 (New): Define Onboarding Chat System Prompt
+Start: Gemini API configured.
+End: A version-controlled system prompt defining the AI's persona, goals, and conversational rules is created.
+Test: Prompt is manually tested in an AI playground (e.g., Google AI Studio) to ensure it elicits the desired conversational tone and user guidance.
+Focus: AI Behavior & Persona.
+Files: packages/ai/prompts/onboarding-chat.ts (exporting the prompt as a constant)
+Task 6.3 (Renumbered from 6.2): Create Onboarding Chat Edge Function
+Start: Gemini configured and system prompt defined.
+End: Basic Edge Function that calls Gemini API, injecting the system prompt and user messages.
+Test: Function responds to requests, calls Gemini successfully using the defined prompt.
+Focus: AI backend processing.
+Files: supabase/functions/onboarding-chat/index.ts
+Task 6.4 (Renumbered from 6.3): Create Chat Message Types
+Start: Edge Function exists
+End: TypeScript types for chat messages and responses
+Test: Types compile, support expected message structure
+Focus: Chat data structure
+Files: packages/schema/chat.ts
+Task 6.5 (Renumbered from 6.4): Create Chat Interface Component
+Start: Message types exist
+End: Simple chat UI with message bubbles
+Test: Can display chat messages with proper styling
+Focus: Chat UI display
+Files: apps/web/components/onboarding/ChatInterface.tsx
+Task 6.6 (Renumbered from 6.5): Create Chat Hook for API Communication
+Start: Chat interface and Edge Function exist
+End: Hook that sends messages to Edge Function
+Test: Can send/receive messages through the API
+Focus: Chat functionality
+Files: apps/web/hooks/useChat.ts
+Task 6.7 (Renumbered from 6.6): Create Onboarding Page
+Start: Chat hook and interface exist
+End: Onboarding page with working chat
+Test: Can have conversation, messages persist in UI
+Focus: Onboarding user experience
+Files: apps/web/app/(protected)/onboarding/page.tsx
 
-### Task 6.2: Create Onboarding Chat Edge Function
-**Start:** OpenAI configured  
-**End:** Basic Edge Function that calls OpenAI API  
-**Test:** Function responds to requests, calls OpenAI successfully  
-**Focus:** AI backend processing  
-**Files:** `supabase/functions/onboarding-chat/index.ts`
 
-### Task 6.3: Create Chat Message Types
-**Start:** Edge Function exists  
-**End:** TypeScript types for chat messages and responses  
-**Test:** Types compile, support expected message structure  
-**Focus:** Chat data structure  
-**Files:** `packages/schema/chat.ts`
-
-### Task 6.4: Create Chat Interface Component
-**Start:** Message types exist  
-**End:** Simple chat UI with message bubbles  
-**Test:** Can display chat messages with proper styling  
-**Focus:** Chat UI display  
-**Files:** `apps/web/components/onboarding/ChatInterface.tsx`
-
-### Task 6.5: Create Chat Hook for API Communication
-**Start:** Chat interface and Edge Function exist  
-**End:** Hook that sends messages to Edge Function  
-**Test:** Can send/receive messages through the API  
-**Focus:** Chat functionality  
-**Files:** `apps/web/hooks/useChat.ts`
-
-### Task 6.6: Create Onboarding Page
-**Start:** Chat hook and interface exist  
-**End:** Onboarding page with working chat  
-**Test:** Can have conversation, messages persist in UI  
-**Focus:** Onboarding user experience  
-**Files:** `apps/web/app/(protected)/onboarding/page.tsx`
-
-## Phase 7: Media Upload System
-
-### Task 7.1: Configure Supabase Storage
-**Start:** Supabase project exists  
-**End:** Storage bucket configured with proper policies  
-**Test:** Can upload files through Supabase dashboard  
-**Focus:** File storage backend  
-**Files:** Supabase Storage bucket configuration
-
-### Task 7.2: Create Media Upload Hook
-**Start:** Storage configured  
-**End:** Hook for uploading files with progress tracking  
-**Test:** Can upload images/videos, track progress  
-**Focus:** File upload functionality  
-**Files:** `apps/web/hooks/useMediaUpload.ts`
-
-### Task 7.3: Create File Upload Component
-**Start:** Upload hook exists  
-**End:** Drag-and-drop file upload component  
-**Test:** Can select and upload files with visual feedback  
-**Focus:** Upload user interface  
-**Files:** `apps/web/components/media/FileUploader.tsx`
-
-### Task 7.4: Create Media Gallery Component
-**Start:** Upload component exists  
-**End:** Component to display uploaded media  
-**Test:** Shows thumbnails of uploaded images/videos  
-**Focus:** Media display  
-**Files:** `apps/web/components/media/MediaGallery.tsx`
-
-### Task 7.5: Integrate Media with Life Events
-**Start:** Media components and life events exist  
-**End:** Can attach media to life events  
-**Test:** Life events can display associated media  
-**Focus:** Media-timeline integration  
-**Files:** Updated `LifeEventForm.tsx` and `LifeEventCard.tsx`
+Phase 7: Media Upload System
+Task 7.1: Configure Supabase Storage
+Start: Supabase project exists
+End: Storage bucket configured with proper policies
+Test: Can upload files through Supabase dashboard
+Focus: File storage backend
+Files: Supabase Storage bucket configuration
+Task 7.2: Create Media Upload Hook
+Start: Storage configured
+End: Hook for uploading files with progress tracking
+Test: Can upload images/videos, track progress
+Focus: File upload functionality
+Files: apps/web/hooks/useMediaUpload.ts
+Task 7.3: Create File Upload Component
+Start: Upload hook exists
+End: Drag-and-drop file upload component
+Test: Can select and upload files with visual feedback
+Focus: Upload user interface
+Files: apps/web/components/media/FileUploader.tsx
+Task 7.4: Create Media Gallery Component
+Start: Upload component exists
+End: Component to display uploaded media
+Test: Shows thumbnails of uploaded images/videos
+Focus: Media display
+Files: apps/web/components/media/MediaGallery.tsx
+Task 7.5: Integrate Media with Life Events
+Start: Media components and life events exist
+End: Can attach media to life events
+Test: Life events can display associated media
+Focus: Media-timeline integration
+Files: Updated LifeEventForm.tsx and LifeEventCard.tsx
+Task 7.6 (New): Define Media Analysis System Prompt
+Start: Media upload is functional. Life Event schema is defined.
+End: A version-controlled system prompt is created to instruct the AI to analyze a media transcript and extract structured life event data (e.g., title, date, description, emotions) in a specific JSON format.
+Test: Prompt is manually tested in an AI playground with sample transcripts to ensure it reliably outputs the correct JSON structure.
+Focus: Structured Data Extraction from Unstructured Text.
+Files: packages/ai/prompts/media-analysis.ts (exporting the prompt as a constant)
 
 ## Phase 8: PDF Export System
 

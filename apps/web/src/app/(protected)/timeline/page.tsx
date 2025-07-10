@@ -263,7 +263,8 @@ export default function TimelinePage() {
   )
 
   const renderLoadingState = () => (
-    <div className="space-y-6">
+    <div className="timeline-list">
+      <div className="timeline-spine" />
       {[1, 2, 3].map(i => (
         <div key={i} className="timeline-item">
           <div className="timeline-node-container">
@@ -331,7 +332,7 @@ export default function TimelinePage() {
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className="text-tl-ink-60 hover:text-tl-ink-100 p-2 rounded-full transition-colors"
+            className="timeline-refresh-button text-tl-ink-60 hover:text-tl-ink-100"
             aria-label="Refresh timeline"
           >
             <RefreshIcon className={loading ? 'animate-spin' : ''} />
@@ -341,21 +342,25 @@ export default function TimelinePage() {
 
       {/* Timeline Content */}
       <div className="timeline-scroll-zone">
-        <div className="timeline-list">
-          {/* Timeline spine */}
-          <div className="timeline-spine" />
+        {error ? (
+          renderErrorState()
+        ) : loading ? (
+          renderLoadingState()
+        ) : events.length === 0 ? (
+          renderEmptyState()
+        ) : (
+          <div className="timeline-list">
+            {/* Timeline spine */}
+            <div className="timeline-spine" />
 
-          {/* Content based on state */}
-          {error ? (
-            renderErrorState()
-          ) : loading ? (
-            renderLoadingState()
-          ) : events.length === 0 ? (
-            renderEmptyState()
-          ) : (
-            timelineData.map((item, index) => {
+            {/* Timeline items */}
+            {timelineData.map((item, index) => {
               if (item.type === 'decade') {
-                return renderTimelineNode(item, index)
+                return (
+                  <div key={`decade-wrapper-${item.decade}`} className="timeline-item">
+                    {renderTimelineNode(item, index)}
+                  </div>
+                )
               }
 
               if (!item.event) return null
@@ -369,9 +374,9 @@ export default function TimelinePage() {
                   {renderTimelineCard(item.event, index)}
                 </div>
               )
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </div>
 
       {/* Floating Action Button */}

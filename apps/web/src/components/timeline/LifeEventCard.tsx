@@ -164,10 +164,10 @@ export function LifeEventCard({
         </button>
         
         {showMenu && (
-          <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-120">
+          <div className="card-overflow-menu-dropdown">
             {onEdit && (
               <button
-                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-lg"
+                className="card-overflow-menu-item"
                 onClick={handleEdit}
               >
                 Edit
@@ -175,7 +175,7 @@ export function LifeEventCard({
             )}
             {onDelete && (
               <button
-                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 last:rounded-b-lg"
+                className="card-overflow-menu-item destructive"
                 onClick={handleDelete}
               >
                 Delete
@@ -300,36 +300,61 @@ export function LifeEventCard({
 
 function CloseIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-3 h-3">
-      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2.5" />
-      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2.5" />
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-4 h-4" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <path d="M18 6L6 18M6 6l12 12" />
     </svg>
   )
 }
 
 function PlayIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-7 h-7 fill-tl-accent-primary stroke-tl-ink-100 stroke-1">
-      <path d="M5 3l14 9-14 9V3z" />
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-5 h-5" 
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M8 5v14l11-7z" />
     </svg>
   )
 }
 
 function DocumentIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-5 h-5" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
+      <polyline points="14,2 14,8 20,8" />
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
+      <polyline points="10,9 9,9 8,9" />
     </svg>
   )
 }
 
 function LocationIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-3 h-3" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -338,8 +363,13 @@ function LocationIcon() {
 
 function StarIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" stroke="currentColor" strokeWidth="1">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-3 h-3" 
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
   )
 } 
