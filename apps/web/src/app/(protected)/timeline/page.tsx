@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useLifeEvents } from '@/hooks/useLifeEvents'
 import { LifeEventCard } from '@/components/timeline/LifeEventCard'
 import { LifeEventForm } from '@/components/timeline/LifeEventForm'
 import type { TimelineEvent, LifeEventFormData } from '@nality/schema'
+import { fetchUserProfile } from '@/lib/supabase/client'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 
 // Force dynamic rendering to avoid build-time Supabase errors
 export const dynamic = 'force-dynamic'
@@ -20,7 +23,7 @@ export const dynamic = 'force-dynamic'
 export default function TimelinePage() {
   const {
     events,
-    loading,
+    loading: eventsLoading,
     error,
     creating,
     updating,
@@ -33,6 +36,20 @@ export default function TimelinePage() {
 
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
+
+  const { user, isAuthenticated, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && isAuthenticated && user?.id) {
+      fetchUserProfile(user.id).then(profile => {
+        if (profile && profile.onboarding_complete === false) {
+          console.log('🔒 User not onboarded, redirecting to /onboarding')
+          router.replace('/onboarding')
+        }
+      })
+    }
+  }, [loading, isAuthenticated, user, router])
 
   // ──────────────────────
   // Timeline Data Processing
@@ -320,6 +337,21 @@ export default function TimelinePage() {
 
   return (
     <div className="full-timeline-viewport">
+      {/* Chat Launcher Button */}
+      <button
+        className="chat-launcher"
+        aria-label="Open onboarding chat"
+        style={{ position: 'absolute', top: 24, right: 24, zIndex: 100 }}
+        onClick={() => router.push('/onboarding')}
+      >
+        <span className="chat-launcher-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16.83 13.97A6.002 6.002 0 0 1 12 17a6 6 0 0 1-6-6V5h12v2.5M9 17h6"></path>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <polygon points="12 5.5 13.18 8.06 15.5 8.5 13.75 10.04 14.25 12.5 12 11.12 9.75 12.5 10.25 10.04 8.5 8.5 10.82 8.06 12 5.5" strokeWidth="1"/>
+          </svg>
+        </span>
+      </button>
       {/* Timeline Header */}
       <div className="timeline-header">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
@@ -331,11 +363,11 @@ export default function TimelinePage() {
           </div>
           <button
             onClick={handleRefresh}
-            disabled={loading}
+            disabled={eventsLoading}
             className="timeline-refresh-button text-tl-ink-60 hover:text-tl-ink-100"
             aria-label="Refresh timeline"
           >
-            <RefreshIcon className={loading ? 'animate-spin' : ''} />
+            <RefreshIcon className={eventsLoading ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>
@@ -344,7 +376,7 @@ export default function TimelinePage() {
       <div className="timeline-scroll-zone">
         {error ? (
           renderErrorState()
-        ) : loading ? (
+        ) : eventsLoading ? (
           renderLoadingState()
         ) : events.length === 0 ? (
           renderEmptyState()

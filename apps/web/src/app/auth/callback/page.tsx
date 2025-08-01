@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
+import { fetchUserProfile } from '@/lib/supabase/client'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -22,8 +23,14 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          // User is authenticated, redirect to timeline
-          router.push('/timeline')
+          // User is authenticated, check onboarding state
+          const userId = data.session.user.id
+          const profile = await fetchUserProfile(userId)
+          if (profile && profile.onboarding_complete) {
+            router.push('/timeline')
+          } else {
+            router.push('/onboarding')
+          }
         } else {
           // No session, redirect to login
           router.push('/login')
