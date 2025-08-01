@@ -21,4 +21,18 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Type helper for database operations
-export type Database = Record<string, unknown> // Will be replaced with generated types later 
+export type Database = Record<string, unknown> // Will be replaced with generated types later
+
+// Utility: Fetch current user's profile (including onboarding_complete)
+export async function fetchUserProfile(userId: string) {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, email, onboarding_complete')
+    .eq('id', userId)
+    .single()
+  if (error) {
+    console.error('❌ Error fetching user profile:', error)
+    return null
+  }
+  return data
+} 

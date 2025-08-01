@@ -162,49 +162,54 @@ Based on the technical architecture, here's a granular, dependency-ordered plan 
 **Files:** `apps/web/app/(protected)/timeline/page.tsx`
 
 Phase 6: Onboarding Chat System
-Task 6.1: Setup Gemini Configuration
-Start: Environment configured
-End: Gemini API key stored in Supabase Vault under GEMINI_API_KEY
-Test: Can access Gemini key from Edge Function environment
-Focus: AI service configuration
-Files: Supabase Vault configuration
+Task 6.1: Setup AI SDK Dependencies and Environment
+Start: Next.js application configured
+End: AI SDK packages installed and Gemini API key configured in environment
+Test: `pnpm install` succeeds, environment variables loaded correctly
+Focus: AI service foundation
+Files: `apps/web/package.json`, `.env.local` (GEMINI_API_KEY)
 
-Task 6.2 (New): Define Onboarding Chat System Prompt
-Start: Gemini API configured.
-End: A version-controlled system prompt defining the AI's persona, goals, and conversational rules is created.
-Test: Prompt is manually tested in an AI playground (e.g., Google AI Studio) to ensure it elicits the desired conversational tone and user guidance.
-Focus: AI Behavior & Persona.
-Files: packages/ai/prompts/onboarding-chat.ts (exporting the prompt as a constant)
-Task 6.3 (Renumbered from 6.2): Create Onboarding Chat Edge Function
-Start: Gemini configured and system prompt defined.
-End: Basic Edge Function that calls Gemini API, injecting the system prompt and user messages.
-Test: Function responds to requests, calls Gemini successfully using the defined prompt.
-Focus: AI backend processing.
-Files: supabase/functions/onboarding-chat/index.ts
-Task 6.4 (Renumbered from 6.3): Create Chat Message Types
-Start: Edge Function exists
-End: TypeScript types for chat messages and responses
-Test: Types compile, support expected message structure
-Focus: Chat data structure
-Files: packages/schema/chat.ts
-Task 6.5 (Renumbered from 6.4): Create Chat Interface Component
-Start: Message types exist
-End: Simple chat UI with message bubbles
-Test: Can display chat messages with proper styling
-Focus: Chat UI display
-Files: apps/web/components/onboarding/ChatInterface.tsx
-Task 6.6 (Renumbered from 6.5): Create Chat Hook for API Communication
-Start: Chat interface and Edge Function exist
-End: Hook that sends messages to Edge Function
-Test: Can send/receive messages through the API
-Focus: Chat functionality
-Files: apps/web/hooks/useChat.ts
-Task 6.7 (Renumbered from 6.6): Create Onboarding Page
-Start: Chat hook and interface exist
-End: Onboarding page with working chat
-Test: Can have conversation, messages persist in UI
+Task 6.2: Define Onboarding System Prompt
+Start: Environment configured
+End: System prompt constant defining AI persona for onboarding conversations
+Test: Prompt exports correctly and follows onboarding guidance patterns
+Focus: AI behavior specification
+Files: `apps/web/lib/prompts/onboarding.ts`
+
+Task 6.3: Create Chat API Route
+Start: AI SDK installed and system prompt defined
+End: Next.js API route at `/api/chat/route.ts` using streamText with Gemini
+Test: API route accepts POST requests, streams responses correctly, handles errors gracefully
+Focus: Chat backend processing
+Files: `apps/web/app/api/chat/route.ts`
+
+Task 6.4: Create Chat Message Types
+Start: API route functional
+End: TypeScript types for chat messages compatible with AI SDK
+Test: Types compile and match AI SDK message structure
+Focus: Type safety for chat data
+Files: `packages/schema/chat.ts`
+
+Task 6.5: Create Basic Chat Interface Component
+Start: Types defined and API route working
+End: Simple chat component using useChat hook from AI SDK
+Test: Can send messages, display conversation, handle loading states
+Focus: Chat UI implementation
+Files: `apps/web/components/onboarding/ChatInterface.tsx`
+
+Task 6.6: Enhance Chat Interface with Onboarding UX
+Start: Basic chat interface working
+End: Enhanced chat with onboarding-specific styling and user guidance
+Test: Chat guides users through onboarding flow with clear prompts
 Focus: Onboarding user experience
-Files: apps/web/app/(protected)/onboarding/page.tsx
+Files: Updated `apps/web/components/onboarding/ChatInterface.tsx`
+
+Task 6.7: Create Onboarding Page with Chat Integration
+Start: Enhanced chat interface complete
+End: Onboarding page integrating chat with proper layout and context
+Test: Users can access onboarding chat, conversation flows naturally
+Focus: Complete onboarding experience
+Files: `apps/web/app/(protected)/onboarding/page.tsx`
 
 
 Phase 7: Media Upload System
