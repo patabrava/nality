@@ -12,7 +12,7 @@ export default function Home() {
 
   const handleStartStory = () => {
     if (isAuthenticated) {
-      router.push('/timeline')
+      router.push('/dash')
     } else {
       router.push('/login')
     }

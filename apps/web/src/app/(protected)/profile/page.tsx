@@ -83,10 +83,10 @@ export default function ProfilePage() {
 
         <div className="mt-8 text-center">
           <button
-            onClick={() => router.push('/timeline')}
+            onClick={() => router.push('/dash')}
             className="text-blue-400 hover:text-blue-300 transition-colors"
           >
-            ← Back to Timeline
+            ← Back to Dashboard
           </button>
         </div>
       </div>

@@ -129,6 +129,7 @@ export function useLifeEvents(): UseLifeEventsReturn {
     try {
       console.log('🔍 Fetching life events for user:', user.id)
       
+      // Direct query to life_event table - table existence check not needed since this will fail gracefully
       const { data, error } = await supabase
         .from('life_event')
         .select(`
@@ -140,10 +141,16 @@ export function useLifeEvents(): UseLifeEventsReturn {
 
       if (error) {
         console.error('❌ Error fetching life events:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
         setState(prev => ({ 
           ...prev, 
           loading: false, 
-          error: `Failed to load events: ${error.message}` 
+          error: `Failed to load events: ${error.message}${error.hint ? ` (${error.hint})` : ''}` 
         }))
         return
       }
