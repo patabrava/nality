@@ -1,13 +1,13 @@
 'use client'
 
-import { ChatPlaceholder } from '@/modules/chat/ChatPlaceholder'
+import { ChatModule } from '@/modules/chat/ChatModule'
 
 /**
  * Chat Page - Module entry point for dashboard shell
- * Loads chat placeholder module
+ * Loads functional chat module
  */
 export default function ChatPage() {
   console.log('[ChatPage] Module page mounted')
   
-  return <ChatPlaceholder />
+  return <ChatModule />
 }

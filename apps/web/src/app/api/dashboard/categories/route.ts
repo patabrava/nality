@@ -13,7 +13,7 @@ export async function GET() {
   console.log('🏷️ Dashboard API: Fetching category breakdown')
 
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user - fail fast if unauthorized
     const { data: { user }, error: authError } = await supabase.auth.getUser()

@@ -267,6 +267,215 @@ END
 $$;
 
 -- =====================================================
+-- CHAT MODULE TABLES (Task 1.1 from chat_tasks.md)
+-- =====================================================
+
+-- Chat sessions to group related conversations
+CREATE TABLE IF NOT EXISTS chat_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT,
+  type TEXT NOT NULL DEFAULT 'onboarding' CHECK (type IN ('onboarding', 'general')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  -- Metadata for session context
+  metadata JSONB DEFAULT '{}'::jsonb
+);
+
+-- Chat messages compatible with AI SDK CoreMessage structure
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+  
+  -- Core message fields compatible with AI SDK
+  role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system', 'tool')),
+  content TEXT NOT NULL,
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  -- Additional metadata for enhanced features
+  metadata JSONB DEFAULT '{}'::jsonb
+);
+
+-- Life events extracted from chat conversations
+CREATE TABLE IF NOT EXISTS chat_extracted_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+  message_id UUID REFERENCES chat_messages(id) ON DELETE SET NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  
+  -- Extracted event data (will be used to create life_events)
+  suggested_title TEXT NOT NULL,
+  suggested_description TEXT,
+  suggested_date DATE,
+  suggested_category TEXT,
+  confidence_score FLOAT DEFAULT 0.0 CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
+  
+  -- Status tracking
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
+  created_life_event_id UUID REFERENCES life_event(id) ON DELETE SET NULL,
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  processed_at TIMESTAMPTZ
+);
+
+-- Chat indexes for performance
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON chat_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_type ON chat_sessions(type);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_updated_at ON chat_sessions(updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON chat_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_role ON chat_messages(role);
+
+CREATE INDEX IF NOT EXISTS idx_chat_extracted_events_session_id ON chat_extracted_events(session_id);
+CREATE INDEX IF NOT EXISTS idx_chat_extracted_events_user_id ON chat_extracted_events(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_extracted_events_status ON chat_extracted_events(status);
+
+-- Enable RLS for chat tables
+ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_extracted_events ENABLE ROW LEVEL SECURITY;
+
+-- Chat sessions: users can only see their own sessions
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_sessions' AND policyname = 'Users can view their own chat sessions') THEN
+    CREATE POLICY "Users can view their own chat sessions"
+      ON chat_sessions FOR SELECT
+      USING (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_sessions' AND policyname = 'Users can create their own chat sessions') THEN
+    CREATE POLICY "Users can create their own chat sessions"
+      ON chat_sessions FOR INSERT
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_sessions' AND policyname = 'Users can update their own chat sessions') THEN
+    CREATE POLICY "Users can update their own chat sessions"
+      ON chat_sessions FOR UPDATE
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_sessions' AND policyname = 'Users can delete their own chat sessions') THEN
+    CREATE POLICY "Users can delete their own chat sessions"
+      ON chat_sessions FOR DELETE
+      USING (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+-- Chat messages: users can only see messages from their sessions
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_messages' AND policyname = 'Users can view messages from their sessions') THEN
+    CREATE POLICY "Users can view messages from their sessions"
+      ON chat_messages FOR SELECT
+      USING (EXISTS (
+        SELECT 1 FROM chat_sessions 
+        WHERE chat_sessions.id = chat_messages.session_id 
+        AND chat_sessions.user_id = auth.uid()
+      ));
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_messages' AND policyname = 'Users can create messages in their sessions') THEN
+    CREATE POLICY "Users can create messages in their sessions"
+      ON chat_messages FOR INSERT
+      WITH CHECK (EXISTS (
+        SELECT 1 FROM chat_sessions 
+        WHERE chat_sessions.id = chat_messages.session_id 
+        AND chat_sessions.user_id = auth.uid()
+      ));
+  END IF;
+END
+$$;
+
+-- Chat extracted events: users can only see their own extracted events
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_extracted_events' AND policyname = 'Users can view their own extracted events') THEN
+    CREATE POLICY "Users can view their own extracted events"
+      ON chat_extracted_events FOR SELECT
+      USING (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_extracted_events' AND policyname = 'Users can create their own extracted events') THEN
+    CREATE POLICY "Users can create their own extracted events"
+      ON chat_extracted_events FOR INSERT
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'chat_extracted_events' AND policyname = 'Users can update their own extracted events') THEN
+    CREATE POLICY "Users can update their own extracted events"
+      ON chat_extracted_events FOR UPDATE
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END
+$$;
+
+-- Updated_at trigger for chat_sessions
+CREATE OR REPLACE FUNCTION update_chat_sessions_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_update_chat_sessions_updated_at ON chat_sessions;
+CREATE TRIGGER trigger_update_chat_sessions_updated_at
+  BEFORE UPDATE ON chat_sessions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_chat_sessions_updated_at();
+
+-- Function to automatically update session timestamp when messages are added
+CREATE OR REPLACE FUNCTION update_session_on_message()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE chat_sessions 
+  SET updated_at = NOW() 
+  WHERE id = NEW.session_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_update_session_on_message ON chat_messages;
+CREATE TRIGGER trigger_update_session_on_message
+  AFTER INSERT ON chat_messages
+  FOR EACH ROW
+  EXECUTE FUNCTION update_session_on_message();
+
+-- =====================================================
 -- VERIFICATION
 -- =====================================================
 
@@ -274,11 +483,14 @@ $$;
 SELECT 'SUCCESS: All tables created!' as message
 WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users')
   AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'life_event')
-  AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'media_object');
+  AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'media_object')
+  AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chat_sessions')
+  AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chat_messages')
+  AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chat_extracted_events');
 
 -- Show created tables
 SELECT table_name, table_type 
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
-  AND table_name IN ('users', 'life_event', 'media_object')
+  AND table_name IN ('users', 'life_event', 'media_object', 'chat_sessions', 'chat_messages', 'chat_extracted_events')
 ORDER BY table_name;
