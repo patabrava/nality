@@ -5,7 +5,6 @@ import { MessageInput } from './MessageInput';
 import { useChat } from '@/hooks/useChat';
 
 interface ChatInterfaceProps {
-  className?: string;
   sessionId?: string | undefined;
   autoCreateSession?: boolean;
 }
@@ -15,7 +14,6 @@ interface ChatInterfaceProps {
  * Manages chat state and orchestrates message flow
  */
 export function ChatInterface({ 
-  className = '',
   sessionId,
   autoCreateSession = false
 }: ChatInterfaceProps) {
@@ -32,55 +30,19 @@ export function ChatInterface({
   });
 
   return (
-    <div 
-      className={`flex flex-col h-full chat-interface ${className}`}
-      style={{
-        background: 'var(--c-primary-invert)',
-        color: 'var(--c-primary-100)',
-        fontFamily: 'var(--font-primary)',
-      }}
-      data-testid="chat-interface"
-    >
-      {/* Header */}
-      <div
-        style={{
-          padding: 'calc(var(--base-unit, 4px) * 4)',
-          borderBottom: '1px solid var(--c-neutral-medium)',
-          background: 'var(--c-primary-invert)',
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: '1.25rem',
-            fontWeight: 600,
-            color: 'var(--c-primary-100)',
-          }}
-        >
-          Chat Assistant
-        </h2>
-        {currentSessionId && (
-          <p
-            style={{
-              margin: '4px 0 0 0',
-              fontSize: '0.875rem',
-              color: 'var(--c-neutral-dark)',
-            }}
-          >
-            Session: {currentSessionId.slice(0, 8)}...
-          </p>
-        )}
-      </div>
-
+    <>
       {/* Error display */}
       {error && (
         <div
           style={{
-            padding: 'calc(var(--base-unit, 4px) * 3)',
-            background: 'rgba(211, 47, 47, 0.1)',
-            borderLeft: '4px solid var(--c-accent-100)',
-            color: 'var(--c-accent-100)',
-            fontSize: '0.875rem',
+            padding: '16px 20px',
+            background: 'var(--md-sys-color-error-container)',
+            border: '1px solid var(--md-sys-color-outline)',
+            borderRadius: '12px',
+            marginBottom: '16px',
+            color: 'var(--md-sys-color-on-error-container)',
+            fontSize: '14px',
+            lineHeight: 1.4,
           }}
           role="alert"
         >
@@ -92,7 +54,6 @@ export function ChatInterface({
       <MessageList 
         messages={messages} 
         isLoading={isLoading}
-        className="flex-1"
       />
 
       {/* Input */}
@@ -106,6 +67,6 @@ export function ChatInterface({
             : "No active session"
         }
       />
-    </div>
+    </>
   );
 }

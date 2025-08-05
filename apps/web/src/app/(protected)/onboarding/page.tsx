@@ -37,16 +37,49 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
+    <div 
+      style={{
+        minHeight: '100vh',
+        background: 'var(--md-sys-color-background)',
+        fontFamily: 'Roboto, system-ui, sans-serif'
+      }}
+    >
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto p-4">
-        <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+      <main 
+        style={{
+          maxWidth: '1024px',
+          margin: '0 auto',
+          padding: '16px'
+        }}
+      >
+        <div 
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(1, 1fr)',
+            gap: '24px',
+            height: 'calc(100vh - 200px)'
+          }}
+          className="lg:grid-cols-3"
+        >
           
           {/* Chat Interface - Main Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-lg h-full overflow-hidden border border-red-100">
+          <div 
+            style={{
+              gridColumn: 'span 2'
+            }}
+            className="lg:col-span-2"
+          >
+            <div 
+              style={{
+                background: 'var(--md-sys-color-surface)',
+                borderRadius: '16px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                height: '100%',
+                overflow: 'hidden',
+                border: '1px solid var(--md-sys-color-outline-variant)'
+              }}
+            >
               <ChatInterface 
-                className="h-full"
                 placeholder="Share a memory, tell me about your childhood, or ask me anything..."
                 initialMessage="Hello! I&apos;m here to help you create a wonderful timeline of your life. We can start wherever you&apos;d like - your childhood, your family, your career, or any special moments you&apos;d like to preserve. What would you like to share first?"
               />
@@ -54,7 +87,13 @@ export default function OnboardingPage() {
           </div>
 
           {/* Sidebar - Progress & Tips */}
-          <div className="space-y-6">
+          <div 
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px'
+            }}
+          >
             {/* Progress Card removed as requested */}
           </div>
         </div>

@@ -1,538 +1,538 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useChat } from '@ai-sdk/react';
+import { Bot, User, Send, Sparkles } from 'lucide-react';
 
 interface ChatInterfaceProps {
-  className?: string;
   placeholder?: string;
   initialMessage?: string;
 }
 
-// Onboarding guidance prompts for seniors
-const GUIDANCE_PROMPTS = [
-  "💡 Try starting with: 'I was born in...' or 'I grew up in...'",
-  "🏠 Tell me about your childhood home or neighborhood",
-  "👥 Share a memory about your family or friends",
-  "💼 What was your first job or career like?",
-  "💕 Tell me about meeting someone special in your life",
-  "🎓 Do you have any achievements you're proud of?",
-  "🌍 Have you traveled anywhere memorable?",
-  "📸 Do you have any photos or documents to add?",
-];
+interface ChatMessage {
+  id: string;
+  type: 'bot' | 'user';
+  content: string;
+  timestamp: Date;
+  isTyping?: boolean;
+}
 
 export default function ChatInterface({
-  className = '',
-  placeholder = "Tell me about your life story...",
-  initialMessage = "Hello! I'm your personal timeline assistant. I'm here to help you create a beautiful timeline of your life story. What would you like to share with me today?"
+  placeholder = "Share your life story...",
+  initialMessage = "Hi! I'm here to help you create your timeline. What would you like to share today?"
 }: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [showTyping, setShowTyping] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [currentGuidance, setCurrentGuidance] = useState(0);
-  const [showGuidance, setShowGuidance] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    onFinish: () => {
-      console.log('🎉 Message exchange completed');
-      // Cycle through guidance prompts after each exchange
-      setCurrentGuidance(prev => (prev + 1) % GUIDANCE_PROMPTS.length);
+    onFinish: (message) => {
+      console.log('Message exchange completed');
+      // Add AI response to our messages
+      const aiMessage: ChatMessage = {
+        id: `ai-${Date.now()}`,
+        type: 'bot',
+        content: message.content,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsSubmitting(false);
     },
     onError: (error) => {
-      console.error('💔 Chat error:', error);
+      console.error('Chat error:', error);
+      setIsSubmitting(false);
     }
   });
 
   const router = useRouter();
 
-  // Auto-cycle guidance prompts for engagement
+  // Initialize chat with welcome message
   useEffect(() => {
-    if (showGuidance && messages.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentGuidance(prev => (prev + 1) % GUIDANCE_PROMPTS.length);
-      }, 8000); // Change prompt every 8 seconds
+    console.log('🤖 Initializing chat with welcome message');
+    
+    const initializeChat = () => {
+      setShowTyping(true);
+      setIsSubmitting(false); // Ensure we're not stuck in submitting state
       
-      return () => clearInterval(interval);
-    }
-  }, [showGuidance, messages.length]);
+      // Simulate typing delay
+      setTimeout(() => {
+        setShowTyping(false);
+        
+        const botMessage: ChatMessage = {
+          id: `bot-welcome`,
+          type: 'bot',
+          content: initialMessage,
+          timestamp: new Date()
+        };
+        
+        setMessages([botMessage]);
+        setIsInitialized(true);
+        console.log('💬 Welcome message added');
+      }, 1500);
+    };
 
-  // Initialize with welcome message if no messages exist
-  const displayMessages = messages.length === 0 && !isInitialized 
-    ? [{ id: 'welcome', role: 'assistant' as const, content: initialMessage }]
-    : messages;
-
-  // Handle form submission
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
     if (!isInitialized) {
-      setIsInitialized(true);
+      initializeChat();
     }
-    handleSubmit(e);
+  }, [initialMessage, isInitialized]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, showTyping]);
+
+  // Handle form submission with safety timeout
+  const handleSubmitResponse = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() || isSubmitting) return;
+    
+    setIsSubmitting(true);
+
+    // Safety timeout to reset submitting state if something goes wrong
+    const safetyTimeout = setTimeout(() => {
+      console.warn('Response submission timed out, resetting state');
+      setIsSubmitting(false);
+    }, 10000); // 10 second timeout
+    
+    // Add user message to our messages
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      type: 'user',
+      content: input,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Submit to AI
+    try {
+      await handleSubmit(e);
+      clearTimeout(safetyTimeout);
+    } catch (error) {
+      clearTimeout(safetyTimeout);
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div 
-      className={`flex flex-col h-full onboarding-chat ${className}`}
-      style={{ background: 'var(--tl-bg)', color: 'var(--tl-ink-100)' }}
-      data-testid="chat-interface"
-    >
-      {/* Onboarding Header with Guidance */}
-      {showGuidance && (
-        <div
-          className="timeline-event-card standard-text-card mb-4"
+    <>
+      {/* Chat Header */}
+      <div 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 24px',
+          paddingBottom: '16px',
+          borderBottom: '1px solid var(--md-sys-color-outline-variant)',
+          background: 'var(--md-sys-color-surface-container)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div 
+            style={{
+              width: '40px',
+              height: '40px',
+              background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Sparkles style={{ width: '20px', height: '20px', color: 'var(--md-sys-color-on-primary)' }} />
+          </div>
+          <div>
+            <h3 
+              style={{
+                margin: 0,
+                fontSize: '1.125rem',
+                fontWeight: 600,
+                color: 'var(--md-sys-color-on-surface)',
+                lineHeight: 1.2
+              }}
+            >
+              Timeline Assistant 💕
+            </h3>
+            <p 
+              style={{
+                margin: 0,
+                fontSize: '0.875rem',
+                color: 'var(--md-sys-color-on-surface-variant)',
+                lineHeight: 1.2
+              }}
+            >
+              Just like chatting with a friend!
+            </p>
+          </div>
+        </div>
+      </div>
+
+        {/* Error display */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              margin: '16px 24px',
+              marginTop: '16px',
+              padding: '16px',
+              background: 'var(--md-sys-color-error-container)',
+              border: '1px solid var(--md-sys-color-error)',
+              borderRadius: '12px',
+              borderLeft: '4px solid var(--md-sys-color-error)'
+            }}
+            role="alert"
+          >
+            <p style={{ 
+              color: 'var(--md-sys-color-on-error-container)', 
+              fontSize: '0.875rem',
+              margin: 0
+            }}>
+              {error.message}
+            </p>
+          </motion.div>
+        )}
+
+        {/* Messages Area */}
+        <div 
           style={{
-            background: 'var(--tl-surface-80)',
-            color: 'var(--tl-ink-100)',
-            border: '1px solid var(--tl-stroke-hairline)',
-            borderRadius: 'var(--tl-card-radius, 14px)',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            padding: 'var(--tl-card-padding-internal, 18px)',
-            marginBottom: 'var(--base-unit, 16px)'
+            height: '400px',
+            overflowY: 'auto',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            scrollBehavior: 'smooth',
+            background: 'var(--md-sys-color-surface)'
           }}
         >
-          <div className="flex items-center justify-between" style={{ marginBottom: 'calc(var(--base-unit, 4px) * 2)' }}>
-            <h1
-              tabIndex={0}
-              className="type-h2 text-tl-accent-primary font-bold mb-0"
-              style={{ outline: 'none', transition: 'box-shadow 0.2s' }}
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = 'none'}
+          <AnimatePresence>
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{
+                  duration: 0.25,
+                  ease: [0.2, 0, 0, 1]
+                }}
+                style={{
+                  display: 'flex',
+                  gap: '12px',
+                  justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start'
+                }}
+              >
+                {message.type === 'bot' && (
+                  <div 
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
+                  </div>
+                )}
+                
+                <div
+                  style={{
+                    maxWidth: '80%',
+                    background: message.type === 'user' 
+                      ? 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))' 
+                      : 'var(--md-sys-color-surface-container-high)',
+                    color: message.type === 'user'
+                      ? 'var(--md-sys-color-on-primary)'
+                      : 'var(--md-sys-color-on-surface)',
+                    padding: '12px 16px',
+                    borderRadius: message.type === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                    fontSize: '0.875rem',
+                    lineHeight: 1.5,
+                    fontFamily: 'Roboto, system-ui, sans-serif',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    wordWrap: 'break-word'
+                  }}
+                >
+                  {message.content}
+                  <div 
+                    style={{
+                      fontSize: '0.75rem',
+                      marginTop: '4px',
+                      opacity: 0.7,
+                      color: 'inherit'
+                    }}
+                  >
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+
+                {message.type === 'user' && (
+                  <div 
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      background: 'var(--md-sys-color-surface-container-highest)',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <User style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-surface-variant)' }} />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Typing Indicator */}
+          {showTyping && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+              style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-start'
+              }}
             >
-              <span className="mr-2">📖</span> Creating Your Life Story
-            </h1>
-            <button
-              onClick={() => setShowGuidance(false)}
-              className="text-tl-accent-primary font-normal text-base rounded-lg outline-none border-none bg-none cursor-pointer transition-shadow"
-              tabIndex={0}
-              aria-label="Hide guidance"
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = 'none'}
-              onMouseOver={e => e.currentTarget.style.background = 'rgba(0,122,255,0.08)'}
-              onMouseOut={e => e.currentTarget.style.background = 'none'}
-            >
-              ✕ Hide tips
-            </button>
-          </div>
-          <div
+              <div 
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
+              </div>
+              <div 
+                style={{
+                  background: 'var(--md-sys-color-surface-container-high)',
+                  borderRadius: '20px 20px 20px 4px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+                }}
+              >
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        background: 'var(--md-sys-color-on-surface-variant)',
+                        borderRadius: '50%'
+                      }}
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                        ease: [0.2, 0, 0, 1]
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Response Input Area */}
+        {!showTyping && messages.length > 0 && !isSubmitting && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
             style={{
-              color: 'var(--tl-ink-60)',
-              fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-              fontSize: '0.875rem',
-              transition: 'all 0.5s cubic-bezier(.4,0,.2,1)'
+              borderTop: '1px solid var(--md-sys-color-outline-variant)',
+              background: 'var(--md-sys-color-surface-container)',
+              padding: '16px 24px'
             }}
-            data-testid="guidance"
-            key={currentGuidance}
           >
-            {GUIDANCE_PROMPTS[currentGuidance]}
-          </div>
-          <div className="flex" style={{ gap: 'var(--base-unit, 4px)', marginTop: 'calc(var(--base-unit, 4px) * 2)' }}>
-            {GUIDANCE_PROMPTS.map((_, index) => (
-              <div
-                key={index}
+            <form onSubmit={handleSubmitResponse}>
+              <div style={{ marginBottom: '12px' }}>
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder={placeholder}
+                  disabled={isSubmitting}
+                  style={{
+                    width: '100%',
+                    minHeight: '80px',
+                    padding: '12px 16px',
+                    border: '2px solid var(--md-sys-color-outline-variant)',
+                    borderRadius: '12px',
+                    color: 'var(--md-sys-color-on-surface)',
+                    fontFamily: 'Roboto, system-ui, sans-serif',
+                    fontSize: '1rem',
+                    transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
+                    outline: 'none',
+                    background: 'var(--md-sys-color-surface-container-highest)',
+                    lineHeight: 1.4,
+                    resize: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
+                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--md-sys-color-outline-variant)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmitResponse(e as any);
+                    }
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <p style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--md-sys-color-on-surface-variant)',
+                  margin: 0
+                }}>
+                  💬 Press Enter to send • Shift+Enter for new line
+                </p>
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isSubmitting}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 20px',
+                    borderRadius: '20px',
+                    background: !input.trim() || isSubmitting
+                      ? 'var(--md-sys-color-surface-container)'
+                      : 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                    color: !input.trim() || isSubmitting
+                      ? 'var(--md-sys-color-on-surface-variant)'
+                      : 'var(--md-sys-color-on-primary)',
+                    border: 'none',
+                    cursor: !input.trim() || isSubmitting ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    boxShadow: !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)'
+                  }}
+                  onMouseOver={(e) => {
+                    if (!isSubmitting && input.trim()) {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)';
+                  }}
+                >
+                  <Send style={{ width: '16px', height: '16px' }} />
+                  Send
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+
+        {/* Submitting State */}
+        {isSubmitting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+            style={{
+              borderTop: '1px solid var(--md-sys-color-outline-variant)',
+              background: 'var(--md-sys-color-surface-container)',
+              padding: '24px',
+              textAlign: 'center',
+              color: 'var(--md-sys-color-on-surface-variant)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <motion.div
                 style={{
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  transition: 'background 0.3s',
-                  background: index === currentGuidance
-                    ? 'var(--tl-accent-primary)'
-                    : 'var(--tl-surface-80)'
+                  background: 'var(--md-sys-color-primary)'
                 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1, repeat: Infinity, ease: [0.2, 0, 0, 1] }}
               />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Messages Container */}
-      <div
-        className="flex-1 overflow-y-auto"
-        style={{
-          padding: 'calc(var(--base-unit, 4px) * 4)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'calc(var(--base-unit, 4px) * 4)'
-        }}
-        data-testid="messages"
-        role="log"
-        aria-label="Conversation messages"
-        aria-live="polite"
-      >
-        {displayMessages.map((message) => (
-          <div
-            key={message.id}
-            style={{ display: 'flex', justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start' }}
-          >
-            <div
-              tabIndex={0}
-              aria-label={message.role === 'user' ? 'Your message' : 'AI message'}
-              style={{
-                position: 'relative',
-                maxWidth: '75%',
-                padding: 'var(--tl-card-padding-internal, 18px)',
-                borderRadius: 'var(--tl-card-radius, 14px)',
-                borderBottomRightRadius: message.role === 'user' ? '8px' : undefined,
-                borderBottomLeftRadius: message.role !== 'user' ? '8px' : undefined,
-                background: message.role === 'user'
-                  ? 'var(--tl-accent-primary)'
-                  : 'var(--tl-surface-100)',
-                color: message.role === 'user'
-                  ? '#fff'
-                  : 'var(--tl-ink-100)',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '0.9375rem',
-                lineHeight: '1.6',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                marginBottom: 0,
-                outline: 'none',
-                transition: 'box-shadow 0.2s',
-              }}
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'}
-            >
-              {/* Speech bubble arrow */}
-              {message.role === 'user' ? (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    right: '-10px',
-                    bottom: '8px',
-                    width: 0,
-                    height: 0,
-                    borderTop: '8px solid transparent',
-                    borderBottom: '8px solid transparent',
-                    borderLeft: '10px solid var(--tl-accent-primary)'
-                  }}
-                />
-              ) : (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    left: '-10px',
-                    bottom: '8px',
-                    width: 0,
-                    height: 0,
-                    borderTop: '8px solid transparent',
-                    borderBottom: '8px solid transparent',
-                    borderRight: '10px solid var(--tl-surface-100)'
-                  }}
-                />
-              )}
-              <p style={{ margin: 0 }}>{message.content}</p>
-              {'createdAt' in message && message.createdAt && (
-                <div
-                  style={{
-                    fontSize: '0.75rem',
-                    marginTop: 'calc(var(--base-unit, 4px) * 2)',
-                    opacity: 0.7,
-                    color: message.role === 'user'
-                      ? 'rgba(255,255,255,0.7)'
-                      : 'var(--tl-ink-60)',
-                    fontFamily: 'var(--font-timeline, Inter, sans-serif)'
-                  }}
-                >
-                  {new Date(message.createdAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              )}
+              <span style={{ fontSize: '0.875rem' }}>Processing your response...</span>
             </div>
-          </div>
-        ))}
-        
-        {/* Loading indicator */}
-        {isLoading && (
-          <div style={{ display: 'flex', justifyContent: 'flex-start' }} data-testid="loading" aria-live="polite">
-            <div
-              style={{
-                borderRadius: 'var(--tl-card-radius, 14px)',
-                borderBottomLeftRadius: '8px',
-                padding: 'var(--tl-card-padding-internal, 18px)',
-                maxWidth: '75%',
-                background: 'var(--tl-surface-100)',
-                color: 'var(--tl-ink-100)',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '0.9375rem',
-                lineHeight: '1.6',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                position: 'relative',
-                outline: 'none',
-                transition: 'box-shadow 0.2s',
-              }}
-              tabIndex={0}
-              aria-label="AI is typing"
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'}
-            >
-              <span
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  left: '-10px',
-                  bottom: '8px',
-                  width: 0,
-                  height: 0,
-                  borderTop: '8px solid transparent',
-                  borderBottom: '8px solid transparent',
-                  borderRight: '10px solid var(--tl-surface-100)'
-                }}
-              />
-              <div style={{ display: 'flex', gap: 'var(--base-unit, 4px)' }}>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: 'var(--tl-ink-60)',
-                    animation: 'bounce 1.5s infinite',
-                    animationDelay: '0ms'
-                  }}
-                  className="animate-bounce"
-                ></div>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: 'var(--tl-ink-60)',
-                    animation: 'bounce 1.5s infinite',
-                    animationDelay: '150ms'
-                  }}
-                  className="animate-bounce"
-                ></div>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: 'var(--tl-ink-60)',
-                    animation: 'bounce 1.5s infinite',
-                    animationDelay: '300ms'
-                  }}
-                  className="animate-bounce"
-                ></div>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* Error display */}
-        {error && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div
-              style={{
-                background: 'rgba(211,47,47,0.12)',
-                borderColor: 'var(--tl-accent-primary)',
-                color: 'var(--tl-accent-primary)',
-                borderRadius: 'var(--tl-card-radius, 14px)',
-                padding: 'var(--tl-card-padding-internal, 18px)',
-                maxWidth: '28rem',
-                textAlign: 'center',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '0.9375rem',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                outline: 'none',
-                transition: 'box-shadow 0.2s',
-              }}
-              role="alert"
-              aria-live="assertive"
-              tabIndex={0}
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'}
-            >
-              <p style={{ margin: 0 }}>
-                I&apos;m having trouble connecting right now. Please try again in a moment.
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                style={{
-                  marginTop: 'calc(var(--base-unit, 4px) * 2)',
-                  fontSize: '0.75rem',
-                  textDecoration: 'underline',
-                  fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--tl-accent-primary)'
-                }}
-              >
-                Refresh page
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Input Form */}
-      <form
-        onSubmit={onSubmit}
-        style={{
-          borderTop: '1px solid var(--tl-stroke-hairline)',
-          background: 'var(--tl-surface-80)',
-          padding: 'var(--tl-card-padding-internal, 18px)'
-        }}
-      >
-        {/* Quick Reply Suggestions */}
-        {messages.length === 0 && !isInitialized && (
-          <div style={{ marginBottom: 'calc(var(--base-unit, 4px) * 4)' }}>
-            <p
-              style={{
-                color: 'var(--tl-ink-60)',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '0.875rem',
-                marginBottom: 'calc(var(--base-unit, 4px) * 2)'
-              }}
-            >
-              💬 Quick starts:
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'calc(var(--base-unit, 4px) * 2)' }}>
-              {[
-                "I was born in...",
-                "I grew up in...",
-                "My first job was...",
-                "I met my spouse..."
-              ].map((suggestion, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => handleInputChange({ target: { value: suggestion } } as React.ChangeEvent<HTMLInputElement>)}
-                  style={{
-                    background: 'var(--tl-surface-80)',
-                    color: 'var(--tl-ink-100)',
-                    borderRadius: '9999px',
-                    fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                    fontSize: '0.875rem',
-                    padding: '4px 12px',
-                    marginBottom: '4px',
-                    transition: 'background 0.2s, box-shadow 0.2s',
-                    border: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-                  }}
-                  tabIndex={0}
-                  aria-label={`Quick start: ${suggestion}`}
-                  onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-                  onBlur={e => e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.03)'}
-                  onMouseOver={e => e.currentTarget.style.background = 'var(--tl-surface-100)'}
-                  onMouseOut={e => e.currentTarget.style.background = 'var(--tl-surface-80)'}
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        <div style={{ display: 'flex', gap: 'calc(var(--base-unit, 4px) * 3)', alignItems: 'flex-end' }}>
-          <div style={{ flex: 1 }}>
-            <label htmlFor="chat-input" className="sr-only">
-              Type your life story message
-            </label>
-            <input
-              id="chat-input"
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              placeholder={placeholder}
-              disabled={isLoading}
-              style={{
-                width: '100%',
-                padding: '16px',
-                border: '2px solid var(--tl-stroke-hairline)',
-                borderRadius: 'var(--tl-card-radius, 14px)',
-                color: 'var(--tl-ink-100)',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '1.125rem',
-                transition: 'all 0.2s',
-                outline: 'none',
-                boxShadow: '0 0 0 3px var(--tl-accent-primary, transparent)',
-                background: 'var(--tl-surface-80)',
-                marginBottom: 0
-              }}
-              autoComplete="off"
-              aria-describedby="input-help"
-              aria-label="Type your life story message"
-              tabIndex={0}
-              onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-              onBlur={e => e.currentTarget.style.boxShadow = '0 0 0 3px var(--tl-accent-primary, transparent)'}
-            />
-            <div id="input-help" className="sr-only">
-              Type your message and press Enter or click Send to share your story
-            </div>
-          </div>
+        {/* Continue Later Button */}
+        <div style={{ 
+          padding: '16px 24px', 
+          borderTop: !showTyping && messages.length > 0 && !isSubmitting ? 'none' : '1px solid var(--md-sys-color-outline-variant)',
+          borderBottomLeftRadius: !showTyping && messages.length > 0 && !isSubmitting ? '0px' : '16px',
+          borderBottomRightRadius: !showTyping && messages.length > 0 && !isSubmitting ? '0px' : '16px',
+          background: 'var(--md-sys-color-surface-container)'
+        }}>
           <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
+            type="button"
+            onClick={() => router.push('/timeline')}
             style={{
-              padding: '16px 32px',
-              background: isLoading || !input.trim()
-                ? 'var(--tl-surface-80)'
-                : 'var(--tl-accent-primary)',
-              color: '#fff',
-              borderRadius: 'var(--tl-card-radius, 14px)',
-              fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-              fontWeight: 600,
-              fontSize: '1.125rem',
-              minWidth: '100px',
-              transition: 'all 0.2s, box-shadow 0.2s',
-              outline: 'none',
-              cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer',
-              border: 'none',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+              width: '100%',
+              padding: '12px 24px',
+              background: 'transparent',
+              border: '1px solid var(--md-sys-color-outline)',
+              borderRadius: '20px',
+              color: 'var(--md-sys-color-on-surface-variant)',
+              fontFamily: 'Roboto, system-ui, sans-serif',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s var(--md-sys-motion-easing-standard)'
             }}
-            aria-label={isLoading ? 'Sending message' : 'Send message'}
-            tabIndex={0}
-            onFocus={e => e.currentTarget.style.boxShadow = '0 0 0 2px var(--tl-accent-primary)'}
-            onBlur={e => e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.03)'}
-            onMouseOver={e => e.currentTarget.style.background = isLoading || !input.trim() ? 'var(--tl-surface-80)' : 'var(--tl-accent-primary)'}
-            onMouseOut={e => e.currentTarget.style.background = isLoading || !input.trim() ? 'var(--tl-surface-80)' : 'var(--tl-accent-primary)'}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'var(--md-sys-color-surface-container-high)';
+              e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'var(--md-sys-color-outline)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
-            {isLoading ? '⏳' : '📤 Send'}
+            Continue Later
           </button>
         </div>
-        
-        {/* Progress indicator */}
-        {messages.length > 0 && (
-          <div style={{ marginTop: 'calc(var(--base-unit, 4px) * 3)', textAlign: 'center' }}>
-            <div
-              style={{
-                color: 'var(--tl-ink-60)',
-                fontFamily: 'var(--font-timeline, Inter, sans-serif)',
-                fontSize: '0.75rem'
-              }}
-            >
-              💫 {messages.filter(m => m.role === 'user').length} memories shared so far
-            </div>
-          </div>
-        )}
-      </form>
-      {/* Continue Later Button */}
-      <button
-        type="button"
-        className="btn btn-secondary mt-6 w-full"
-        style={{ marginTop: '24px', height: '44px', fontSize: '1.125rem', borderRadius: 'var(--radius-base)' }}
-        onClick={() => router.push('/timeline')}
-      >
-        Continue Later
-      </button>
-    </div>
+    </>
   );
-} 
-
-// Add prefers-reduced-motion support for animated elements
-if (typeof window !== 'undefined') {
-  const style = document.createElement('style');
-  style.innerHTML = `
-    @media (prefers-reduced-motion: reduce) {
-      .animate-bounce {
-        animation: none !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-} 
+  }
