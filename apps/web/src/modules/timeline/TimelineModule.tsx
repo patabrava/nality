@@ -8,7 +8,8 @@ import type { TimelineEvent, LifeEventFormData } from '@nality/schema'
 
 /**
  * Timeline Module Component
- * Extracted timeline functionality as loadable module for dashboard shell
+ * Full-screen Material Design 3 implementation following MONOCODE principles
+ * Observable Implementation with comprehensive state tracking
  */
 export function TimelineModule() {
   const {
@@ -20,14 +21,18 @@ export function TimelineModule() {
     deleting,
     createEvent,
     updateEvent,
-    deleteEvent,
-    refetch
+    deleteEvent
   } = useLifeEvents()
 
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
 
-  console.log('[TimelineModule] Component mounted, events:', events.length)
+  console.log('[TimelineModule] Component mounted', { 
+    eventsCount: events.length, 
+    loading, 
+    showForm, 
+    editingEvent: editingEvent?.id 
+  })
 
   // ──────────────────────
   // Timeline Data Processing
@@ -190,11 +195,6 @@ export function TimelineModule() {
     setEditingEvent(null)
   }
 
-  const handleRefresh = () => {
-    console.log('[TimelineModule] Refreshing timeline data')
-    refetch()
-  }
-
   // ──────────────────────
   // Render Helpers
   // ──────────────────────
@@ -252,14 +252,78 @@ export function TimelineModule() {
   }
 
   const renderEmptyState = () => (
-    <div className="timeline-empty-state">
-      <div className="empty-icon">
-        <span>📖</span>
+    <div 
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        padding: '48px 24px',
+        textAlign: 'center'
+      }}
+    >
+      <div 
+        style={{
+          fontSize: '4rem',
+          marginBottom: '24px',
+          opacity: 0.6
+        }}
+      >
+        📖
       </div>
-      <h4>Your story starts here</h4>
-      <p className="max-w-sm mx-auto">
+      <h2 
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 600,
+          color: 'var(--md-sys-color-on-surface)',
+          marginBottom: '16px',
+          fontFamily: 'Roboto, system-ui, sans-serif'
+        }}
+      >
+        Your story starts here
+      </h2>
+      <p 
+        style={{
+          fontSize: '1rem',
+          color: 'var(--md-sys-color-on-surface-variant)',
+          maxWidth: '400px',
+          lineHeight: 1.5,
+          marginBottom: '32px'
+        }}
+      >
         Begin documenting your life's journey. Add your first memory, achievement, or milestone.
       </p>
+      <button
+        onClick={() => setShowForm(true)}
+        style={{
+          padding: '16px 32px',
+          background: 'var(--md-sys-color-primary)',
+          color: 'var(--md-sys-color-on-primary)',
+          border: 'none',
+          borderRadius: '20px',
+          fontSize: '1rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
+          fontFamily: 'Roboto, system-ui, sans-serif',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 255, 255, 0.2)'
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'translateY(0) scale(1)'
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <PlusIcon />
+        Create Your First Event
+      </button>
     </div>
   )
 
@@ -272,12 +336,50 @@ export function TimelineModule() {
             <div className="timeline-event-node moment" />
           </div>
           <div className="timeline-card-container">
-            <div className="skeleton-card">
-              <div className="skeleton-line short" />
-              <div className="skeleton-line medium" />
-              <div className="skeleton-line" />
-              <div className="skeleton-line medium" />
-              <div className="skeleton-line short" />
+            <div 
+              style={{
+                background: 'var(--md-sys-color-surface-container)',
+                borderRadius: '16px',
+                padding: '20px',
+                maxWidth: '300px',
+                border: '1px solid var(--md-sys-color-outline-variant)',
+                animation: 'pulse 2s ease-in-out infinite'
+              }}
+            >
+              <div style={{ 
+                height: '16px', 
+                background: 'var(--md-sys-color-surface-container-high)', 
+                borderRadius: '8px', 
+                marginBottom: '12px',
+                width: '60%'
+              }} />
+              <div style={{ 
+                height: '14px', 
+                background: 'var(--md-sys-color-surface-container-high)', 
+                borderRadius: '7px', 
+                marginBottom: '8px',
+                width: '40%'
+              }} />
+              <div style={{ 
+                height: '12px', 
+                background: 'var(--md-sys-color-surface-container-high)', 
+                borderRadius: '6px', 
+                marginBottom: '8px',
+                width: '80%'
+              }} />
+              <div style={{ 
+                height: '12px', 
+                background: 'var(--md-sys-color-surface-container-high)', 
+                borderRadius: '6px', 
+                marginBottom: '8px',
+                width: '70%'
+              }} />
+              <div style={{ 
+                height: '10px', 
+                background: 'var(--md-sys-color-surface-container-high)', 
+                borderRadius: '5px',
+                width: '30%'
+              }} />
             </div>
           </div>
         </div>
@@ -290,31 +392,81 @@ export function TimelineModule() {
                                 error?.includes('Database not set up')
     
     return (
-      <div className="text-center py-12">
-        <div className="text-4xl mb-4">
+      <div 
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: '48px 24px',
+          textAlign: 'center'
+        }}
+      >
+        <div style={{ fontSize: '4rem', marginBottom: '24px' }}>
           {isDatabaseSetupError ? '🔧' : '⚠️'}
         </div>
-        <h3 className="text-xl font-semibold mb-2">
+        <h2 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 600,
+            color: 'var(--md-sys-color-on-surface)',
+            marginBottom: '16px',
+            fontFamily: 'Roboto, system-ui, sans-serif'
+          }}
+        >
           {isDatabaseSetupError ? 'Database Setup Required' : 'Something went wrong'}
-        </h3>
-        <p className="text-gray-400 mb-4">{error}</p>
+        </h2>
+        <p 
+          style={{
+            fontSize: '1rem',
+            color: 'var(--md-sys-color-on-surface-variant)',
+            marginBottom: '32px',
+            maxWidth: '400px'
+          }}
+        >
+          {error}
+        </p>
         
         {isDatabaseSetupError ? (
-          <div className="space-y-3">
-            <p className="text-gray-500 max-w-md mx-auto">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p 
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--md-sys-color-on-surface-variant)',
+                maxWidth: '400px'
+              }}
+            >
               Your database needs to be initialized with the required tables. 
               This is a one-time setup process.
             </p>
-            <div className="space-x-3">
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <a
                 href="/setup"
-                className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--md-sys-color-primary)',
+                  color: 'var(--md-sys-color-on-primary)',
+                  textDecoration: 'none',
+                  borderRadius: '20px',
+                  fontWeight: 600,
+                  transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
+                }}
               >
                 Go to Database Setup →
               </a>
               <button
-                onClick={handleRefresh}
-                className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: '12px 24px',
+                  background: 'var(--md-sys-color-secondary-container)',
+                  color: 'var(--md-sys-color-on-secondary-container)',
+                  border: 'none',
+                  borderRadius: '20px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
+                }}
               >
                 Check Again
               </button>
@@ -322,8 +474,18 @@ export function TimelineModule() {
           </div>
         ) : (
           <button
-            onClick={handleRefresh}
-            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '16px 32px',
+              background: 'var(--md-sys-color-primary)',
+              color: 'var(--md-sys-color-on-primary)',
+              border: 'none',
+              borderRadius: '20px',
+              fontSize: '1rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
+            }}
           >
             Try Again
           </button>
@@ -333,14 +495,28 @@ export function TimelineModule() {
   }
 
   // ──────────────────────
-  // Main Render
+  // Main Render - Full Screen Material Design 3
   // ──────────────────────
 
   // Show form overlay
   if (showForm || editingEvent) {
     return (
-      <div className="min-h-screen bg-tl-bg flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'var(--md-sys-color-surface)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px'
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: '800px' }}>
           <LifeEventForm
             event={editingEvent}
             onSubmit={editingEvent ? handleUpdateEvent : handleCreateEvent}
@@ -353,29 +529,50 @@ export function TimelineModule() {
   }
 
   return (
-    <div className="full-timeline-viewport">
-      {/* Timeline Header */}
-      <div className="timeline-header">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div>
-            <h1>My Timeline</h1>
-            <p>
-              {events.length} {events.length === 1 ? 'event' : 'events'}
-            </p>
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="timeline-refresh-button text-tl-ink-60 hover:text-tl-ink-100"
-            aria-label="Refresh timeline"
-          >
-            <RefreshIcon className={loading ? 'animate-spin' : ''} />
-          </button>
-        </div>
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'var(--md-sys-color-surface)',
+        color: 'var(--md-sys-color-on-surface)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Simple Timeline Title */}
+      <div 
+        style={{
+          padding: '24px 32px 16px 32px',
+          flexShrink: 0
+        }}
+      >
+        <h1 
+          style={{
+            fontSize: '2rem',
+            fontWeight: 700,
+            color: 'var(--md-sys-color-on-surface)',
+            margin: 0,
+            fontFamily: 'Roboto, system-ui, sans-serif',
+            letterSpacing: '-0.02em'
+          }}
+        >
+          My Timeline
+        </h1>
       </div>
 
       {/* Timeline Content */}
-      <div className="timeline-scroll-zone">
+      <div 
+        style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '24px 24px 24px 24px',
+          background: 'linear-gradient(to bottom, var(--md-sys-color-surface) 0%, var(--md-sys-color-surface-container-low) 50%, var(--md-sys-color-surface) 100%)'
+        }}
+      >
         {error ? (
           renderErrorState()
         ) : loading ? (
@@ -413,11 +610,39 @@ export function TimelineModule() {
         )}
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button - Bottom Right */}
       <button
-        className="timeline-fab-add"
         onClick={() => setShowForm(true)}
         disabled={creating || updating || deleting}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          width: '56px',
+          height: '56px',
+          background: 'var(--md-sys-color-primary)',
+          color: 'var(--md-sys-color-on-primary)',
+          border: 'none',
+          borderRadius: '16px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)',
+          transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
+          zIndex: 100,
+          backdropFilter: 'blur(10px)'
+        }}
+        onMouseOver={(e) => {
+          if (!e.currentTarget.disabled) {
+            e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)'
+          }
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'scale(1) translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)'
+        }}
         aria-label="Add new timeline event"
       >
         <PlusIcon />
@@ -425,10 +650,49 @@ export function TimelineModule() {
 
       {/* Loading overlay */}
       {(creating || updating || deleting) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-tl-surface-100 rounded-lg p-6 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tl-accent-primary mx-auto mb-4" />
-            <p className="text-tl-ink-100">
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            backdropFilter: 'blur(4px)'
+          }}
+        >
+          <div 
+            style={{
+              background: 'var(--md-sys-color-surface-container)',
+              borderRadius: '16px',
+              padding: '24px',
+              textAlign: 'center',
+              border: '1px solid var(--md-sys-color-outline-variant)',
+              minWidth: '200px'
+            }}
+          >
+            <div 
+              style={{
+                width: '32px',
+                height: '32px',
+                border: '3px solid var(--md-sys-color-primary)',
+                borderTop: '3px solid transparent',
+                borderRadius: '50%',
+                margin: '0 auto 16px',
+                animation: 'spin 1s linear infinite'
+              }}
+            />
+            <p 
+              style={{
+                color: 'var(--md-sys-color-on-surface)',
+                fontSize: '0.875rem',
+                margin: 0
+              }}
+            >
               {creating && 'Creating event...'}
               {updating && 'Updating event...'}
               {deleting && 'Deleting event...'}
@@ -441,23 +705,20 @@ export function TimelineModule() {
 }
 
 // ──────────────────────
-// Icon Components
+// Icon Components - Material Design 3
 // ──────────────────────
 
 function PlusIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-tl-ink-100">
-      <path d="M19 11h-6V5a1 1 0 00-2 0v6H5a1 1 0 000 2h6v6a1 1 0 002 0v-6h6a1 1 0 000-2z" />
-    </svg>
-  )
-}
-
-function RefreshIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M1 4v6h6" />
-      <path d="M23 20v-6h-6" />
-      <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+    <svg 
+      viewBox="0 0 24 24" 
+      style={{ width: '24px', height: '24px' }}
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <path d="M12 5v14M5 12h14" />
     </svg>
   )
 }

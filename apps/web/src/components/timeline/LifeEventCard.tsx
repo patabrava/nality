@@ -22,7 +22,8 @@ interface LifeEventCardProps {
 
 /**
  * Life Event Card Component
- * Displays a life event in timeline format following section 21 Full Timeline Component styles
+ * Material Design 3 Timeline Card following style2.html patterns
+ * Observable Implementation: Clear component structure with structured event handlers
  */
 export function LifeEventCard({
   event,
@@ -35,15 +36,17 @@ export function LifeEventCard({
   const [showMenu, setShowMenu] = useState(false)
 
   // ──────────────────────
-  // Event Handlers
+  // Event Handlers - Observable Implementation
   // ──────────────────────
 
   const handleEdit = () => {
+    console.log('[LifeEventCard] Edit action triggered', { eventId: event.id })
     setShowMenu(false)
     onEdit?.(event)
   }
 
   const handleDelete = () => {
+    console.log('[LifeEventCard] Delete action triggered', { eventId: event.id })
     setShowMenu(false)
     if (window.confirm('Are you sure you want to delete this event?')) {
       onDelete?.(event.id!)
@@ -51,6 +54,7 @@ export function LifeEventCard({
   }
 
   const handleDismiss = () => {
+    console.log('[LifeEventCard] Dismiss action triggered', { eventId: event.id })
     onDismiss?.(event.id!)
   }
 
@@ -59,7 +63,7 @@ export function LifeEventCard({
   }
 
   // ──────────────────────
-  // Render Helpers
+  // Render Helpers - Progressive Construction
   // ──────────────────────
 
   const renderSourceBadge = () => {
@@ -103,7 +107,7 @@ export function LifeEventCard({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-tl-surface-80 rounded-lg flex items-center justify-center">
+              <div className="w-full h-full bg-md-sys-color-surface-container rounded-lg flex items-center justify-center">
                 <div className="play-icon">
                   <PlayIcon />
                 </div>
@@ -188,7 +192,7 @@ export function LifeEventCard({
   }
 
   // ──────────────────────
-  // Main Render
+  // Main Render - Material Design 3
   // ──────────────────────
 
   const cardClasses = [
@@ -236,7 +240,7 @@ export function LifeEventCard({
                     </span>
                   )}
                   {event.is_ongoing && (
-                    <span className="text-tl-accent-primary"> - Present</span>
+                    <span style={{ color: 'var(--tl-accent-primary)' }}> - Present</span>
                   )}
                 </span>
               )}
@@ -295,7 +299,7 @@ export function LifeEventCard({
 }
 
 // ──────────────────────
-// Icon Components
+// Icon Components - Material Design 3 Style
 // ──────────────────────
 
 function CloseIcon() {

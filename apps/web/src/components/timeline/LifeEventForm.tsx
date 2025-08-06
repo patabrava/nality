@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { LifeEventFormData, LifeEventCategoryType, TimelineEvent } from '@nality/schema'
+import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType } from '@nality/schema'
 
 // ──────────────────────
 // Component Props
@@ -61,7 +61,8 @@ const CATEGORY_OPTIONS = [
 
 /**
  * Life Event Form Component
- * Handles creating and editing life events with comprehensive validation
+ * Material Design 3 Form following progressive construction principles
+ * Observable Implementation: Comprehensive validation and state tracking
  */
 export function LifeEventForm({
   event,
@@ -88,12 +89,15 @@ export function LifeEventForm({
 
   const isEditing = !!event
 
+  console.log('[LifeEventForm] Component rendered', { isEditing, eventId: event?.id })
+
   // ──────────────────────
-  // Initialize Form Data
+  // Initialize Form Data - Deterministic State
   // ──────────────────────
 
   useEffect(() => {
     if (event) {
+      console.log('[LifeEventForm] Initializing form with event data', event)
       setFormState({
         title: event.title || '',
         description: event.description || '',
@@ -110,10 +114,11 @@ export function LifeEventForm({
   }, [event])
 
   // ──────────────────────
-  // Form Validation
+  // Form Validation - Explicit Error Handling
   // ──────────────────────
 
   const validateForm = (): boolean => {
+    console.log('[LifeEventForm] Validating form', formState)
     const newErrors: FormErrors = {}
 
     // Title validation
@@ -139,14 +144,17 @@ export function LifeEventForm({
     }
 
     setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    const isValid = Object.keys(newErrors).length === 0
+    console.log('[LifeEventForm] Validation result', { isValid, errors: newErrors })
+    return isValid
   }
 
   // ──────────────────────
-  // Event Handlers
+  // Event Handlers - Observable Implementation
   // ──────────────────────
 
   const handleInputChange = (field: keyof FormState, value: any) => {
+    console.log('[LifeEventForm] Input changed', { field, value })
     setFormState(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)
     
@@ -164,6 +172,7 @@ export function LifeEventForm({
   const handleTagAdd = () => {
     const tagToAdd = formState.tagInput.trim().toLowerCase()
     if (tagToAdd && !formState.tags.includes(tagToAdd)) {
+      console.log('[LifeEventForm] Adding tag', tagToAdd)
       setFormState(prev => ({
         ...prev,
         tags: [...prev.tags, tagToAdd],
@@ -174,6 +183,7 @@ export function LifeEventForm({
   }
 
   const handleTagRemove = (tagToRemove: string) => {
+    console.log('[LifeEventForm] Removing tag', tagToRemove)
     setFormState(prev => ({
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
@@ -190,32 +200,36 @@ export function LifeEventForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('[LifeEventForm] Form submission started')
     
     if (!validateForm()) {
+      console.log('[LifeEventForm] Form validation failed')
       return
     }
 
     try {
       const formData: LifeEventFormData = {
         title: formState.title.trim(),
-        description: formState.description.trim() || undefined,
+        description: formState.description.trim() || '',
         start_date: formState.start_date,
-        end_date: formState.is_ongoing ? undefined : formState.end_date || undefined,
+        end_date: formState.is_ongoing ? '' : formState.end_date || '',
         is_ongoing: formState.is_ongoing,
         category: formState.category as LifeEventCategoryType,
-        location: formState.location.trim() || undefined,
+        location: formState.location.trim() || '',
         importance: formState.importance,
-        tags: formState.tags.length > 0 ? formState.tags : undefined
+        tags: formState.tags
       }
 
+      console.log('[LifeEventForm] Submitting form data', formData)
       await onSubmit(formData)
     } catch (error) {
-      console.error('Form submission error:', error)
+      console.error('[LifeEventForm] Form submission error:', error)
       setErrors({ general: 'Failed to save event. Please try again.' })
     }
   }
 
   const handleCancel = () => {
+    console.log('[LifeEventForm] Cancel requested', { isDirty })
     if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to cancel?')) {
       return
     }
@@ -223,48 +237,53 @@ export function LifeEventForm({
   }
 
   // ──────────────────────
-  // Render Helpers
+  // Render Helpers - Progressive Construction
   // ──────────────────────
 
   const renderFormField = (
     label: string,
+    children: React.ReactNode,
     error?: string,
-    required = false,
-    children: React.ReactNode
+    required = false
   ) => (
-    <div className="mb-6">
-      <label className="block text-sm font-semibold text-white mb-2">
+    <div className="form-group">
+      <label className={`form-label ${required ? 'required' : ''}`}>
         {label}
-        {required && <span className="text-red-400 ml-1">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-red-400 text-sm mt-1" role="alert">
+        <span className="form-error" role="alert">
           {error}
-        </p>
+        </span>
       )}
     </div>
   )
 
   const renderTagInput = () => (
-    <div className="mb-6">
-      <label className="block text-sm font-semibold text-white mb-2">
+    <div className="form-group">
+      <label className="form-label">
         Tags
       </label>
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex flex-wrap gap-2 mb-4">
         {formState.tags.map((tag: string, index: number) => (
           <span
             key={index}
-            className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-dark text-white text-sm rounded-md"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full"
+            style={{
+              backgroundColor: 'var(--md-sys-color-surface-container-high)',
+              color: 'var(--md-sys-color-on-surface-variant)',
+              fontSize: '0.875rem'
+            }}
           >
             #{tag}
             <button
               type="button"
               onClick={() => handleTagRemove(tag)}
-              className="text-neutral-medium hover:text-white ml-1"
+              className="ml-1 hover:opacity-70"
+              style={{ color: 'var(--md-sys-color-on-surface-variant)' }}
               aria-label={`Remove tag ${tag}`}
             >
-              ×
+              <CloseIcon />
             </button>
           </span>
         ))}
@@ -275,7 +294,7 @@ export function LifeEventForm({
           value={formState.tagInput}
           onChange={(e) => handleInputChange('tagInput', e.target.value)}
           onKeyDown={handleTagInputKeyDown}
-          className="form-element flex-1"
+          className="form-input flex-1"
           placeholder="Enter a tag"
           maxLength={20}
         />
@@ -283,7 +302,7 @@ export function LifeEventForm({
           type="button"
           onClick={handleTagAdd}
           disabled={!formState.tagInput.trim()}
-          className="btn btn-secondary px-4"
+          className="form-button secondary"
         >
           Add
         </button>
@@ -292,41 +311,52 @@ export function LifeEventForm({
   )
 
   // ──────────────────────
-  // Main Render
+  // Main Render - Material Design 3
   // ──────────────────────
 
   return (
-    <div className={`bg-black text-white p-6 rounded-lg max-w-2xl mx-auto ${className}`}>
-      <h2 className="text-2xl font-bold mb-6">
+    <div className={`p-6 rounded-lg max-w-2xl mx-auto ${className}`} 
+         style={{ 
+           backgroundColor: 'var(--md-sys-color-surface-container)',
+           color: 'var(--md-sys-color-on-surface)'
+         }}>
+      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--md-sys-color-on-surface)' }}>
         {isEditing ? 'Edit Life Event' : 'Create Life Event'}
       </h2>
 
       {errors.general && (
-        <div className="bg-red-900/20 border border-red-500 text-red-400 px-4 py-3 rounded-md mb-6">
+        <div className="p-4 mb-6 rounded-lg" 
+             style={{ 
+               backgroundColor: 'var(--md-sys-color-error-container)',
+               color: 'var(--md-sys-color-on-error-container)',
+               border: '1px solid var(--md-sys-color-error)'
+             }}>
           {errors.general}
         </div>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Title */}
-        {renderFormField('Title', errors.title, true, 
+        {renderFormField('Title',
           <input
             type="text"
             value={formState.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            className="form-element w-full"
+            className="form-input"
             placeholder="What happened?"
             maxLength={200}
             required
-          />
+          />,
+          errors.title,
+          true
         )}
 
         {/* Description */}
-        {renderFormField('Description', undefined, false,
+        {renderFormField('Description',
           <textarea
             value={formState.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
-            className="form-element w-full h-24 resize-none"
+            className="form-textarea"
             placeholder="Tell the story..."
             rows={3}
           />
@@ -334,69 +364,51 @@ export function LifeEventForm({
 
         {/* Date fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Start Date */}
-          <div>
-            <label className="block text-sm font-semibold text-white mb-2">
-              Start Date <span className="text-red-400">*</span>
-            </label>
+          {renderFormField('Start Date',
             <input
               type="date"
               value={formState.start_date}
               onChange={(e) => handleInputChange('start_date', e.target.value)}
-              className="form-element w-full"
+              className="form-input"
               required
-            />
-            {errors.start_date && (
-              <p className="text-red-400 text-sm mt-1" role="alert">
-                {errors.start_date}
-              </p>
-            )}
-          </div>
+            />,
+            errors.start_date,
+            true
+          )}
 
-          {/* End Date */}
-          <div>
-            <label className="block text-sm font-semibold text-white mb-2">
-              End Date
-            </label>
+          {renderFormField('End Date',
             <input
               type="date"
               value={formState.end_date}
               onChange={(e) => handleInputChange('end_date', e.target.value)}
-              className="form-element w-full"
+              className="form-input"
               disabled={formState.is_ongoing}
-            />
-            {errors.end_date && (
-              <p className="text-red-400 text-sm mt-1" role="alert">
-                {errors.end_date}
-              </p>
-            )}
-          </div>
+            />,
+            errors.end_date
+          )}
         </div>
 
         {/* Ongoing checkbox */}
-        <div className="mb-6">
-          <label className="flex items-center gap-2 text-sm">
+        <div className="form-group">
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input
               type="checkbox"
               checked={formState.is_ongoing}
               onChange={(e) => handleInputChange('is_ongoing', e.target.checked)}
-              className="w-4 h-4 text-accent-100 rounded"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: 'var(--md-sys-color-primary)' }}
             />
-            <span>This is an ongoing event</span>
+            This is ongoing
           </label>
         </div>
 
         {/* Category and Location */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-semibold text-white mb-2">
-              Category
-            </label>
+          {renderFormField('Category',
             <select
               value={formState.category}
               onChange={(e) => handleInputChange('category', e.target.value)}
-              className="form-element w-full"
+              className="form-select"
             >
               {CATEGORY_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -404,25 +416,21 @@ export function LifeEventForm({
                 </option>
               ))}
             </select>
-          </div>
+          )}
 
-          {/* Location */}
-          <div>
-            <label className="block text-sm font-semibold text-white mb-2">
-              Location
-            </label>
+          {renderFormField('Location',
             <input
               type="text"
               value={formState.location}
               onChange={(e) => handleInputChange('location', e.target.value)}
-              className="form-element w-full"
+              className="form-input"
               placeholder="Where did this happen?"
             />
-          </div>
+          )}
         </div>
 
         {/* Importance */}
-        {renderFormField('Importance', undefined, false,
+        {renderFormField('Importance',
           <div className="flex items-center gap-4">
             <input
               type="range"
@@ -431,8 +439,9 @@ export function LifeEventForm({
               value={formState.importance}
               onChange={(e) => handleInputChange('importance', parseInt(e.target.value))}
               className="flex-1"
+              style={{ accentColor: 'var(--md-sys-color-primary)' }}
             />
-            <span className="text-sm font-medium w-16">
+            <span className="text-sm font-medium" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
               {formState.importance}/10
             </span>
           </div>
@@ -442,25 +451,43 @@ export function LifeEventForm({
         {renderTagInput()}
 
         {/* Actions */}
-        <div className="flex gap-4 pt-4 border-t border-neutral-dark">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="btn btn-primary flex-1"
-          >
-            {isLoading ? 'Saving...' : (isEditing ? 'Update Event' : 'Create Event')}
-          </button>
-          
+        <div className="form-buttons">
           <button
             type="button"
             onClick={handleCancel}
+            className="form-button secondary"
             disabled={isLoading}
-            className="btn btn-secondary px-6"
           >
             Cancel
+          </button>
+          <button
+            type="submit"
+            className="form-button primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : (isEditing ? 'Update Event' : 'Create Event')}
           </button>
         </div>
       </form>
     </div>
   )
-} 
+}
+
+// ──────────────────────
+// Icon Components
+// ──────────────────────
+
+function CloseIcon() {
+  return (
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-3 h-3" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  )
+}

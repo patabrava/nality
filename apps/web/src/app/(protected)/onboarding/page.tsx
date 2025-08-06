@@ -1,7 +1,7 @@
 'use client';
 
 import ChatInterface from '@/components/onboarding/ChatInterface';
-import { fetchUserProfile, supabase } from '@/lib/supabase/client'
+import { fetchUserProfile } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -20,21 +20,6 @@ export default function OnboardingPage() {
       })
     }
   }, [loading, isAuthenticated, user, router])
-
-  // At the end of onboarding, call this function:
-  async function completeOnboarding() {
-    if (!user?.id) return
-    const { error } = await supabase
-      .from('users')
-      .update({ onboarding_complete: true })
-      .eq('id', user.id)
-    if (!error) {
-      console.log('🎉 Onboarding complete, redirecting to /timeline')
-      router.replace('/timeline')
-    } else {
-      console.error('❌ Failed to update onboarding_complete:', error)
-    }
-  }
 
   return (
     <div 
