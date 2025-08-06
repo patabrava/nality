@@ -296,7 +296,7 @@ export function TimelineModule() {
           margin: '0 0 clamp(16px, 4vw, 32px) 0'
         }}
       >
-        Begin documenting your life's journey. Add your first memory, achievement, or milestone.
+        Begin documenting your life's journey. Share your first memory, achievement, or milestone.
       </p>
       <button
         onClick={() => setShowForm(true)}
@@ -326,8 +326,8 @@ export function TimelineModule() {
           e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)'
         }}
       >
-        <PlusIcon />
-        Create Your First Event
+        <ChatbotIcon />
+        Add Your First Memory
       </button>
     </div>
   )
@@ -628,7 +628,7 @@ export function TimelineModule() {
         )}
       </div>
 
-      {/* Responsive Floating Action Button - Explicit Error Handling */}
+      {/* Responsive Floating Action Button - Add New Memory - Explicit Error Handling */}
       <button
         onClick={() => setShowForm(true)}
         disabled={creating || updating || deleting}
@@ -636,24 +636,26 @@ export function TimelineModule() {
           position: 'fixed',
           bottom: 'clamp(16px, 4vw, 24px)',
           right: 'clamp(16px, 4vw, 24px)',
-          width: 'clamp(48px, 12vw, 56px)',
+          width: 'clamp(140px, 35vw, 180px)',
           height: 'clamp(48px, 12vw, 56px)',
           background: 'var(--md-sys-color-primary)',
           color: 'var(--md-sys-color-on-primary)',
           border: 'none',
-          borderRadius: 'clamp(12px, 3vw, 16px)',
+          borderRadius: 'clamp(24px, 6vw, 28px)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: 'clamp(8px, 2vw, 12px)',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)',
           transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
           zIndex: 100,
-          backdropFilter: 'blur(10px)'
+          backdropFilter: 'blur(10px)',
+          padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px)'
         }}
         onMouseOver={(e) => {
           if (!e.currentTarget.disabled) {
-            e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'
+            e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)'
             e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)'
           }
         }}
@@ -661,9 +663,17 @@ export function TimelineModule() {
           e.currentTarget.style.transform = 'scale(1) translateY(0)'
           e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)'
         }}
-        aria-label="Add new timeline event"
+        aria-label="Add new memory"
       >
-        <PlusIcon />
+        <ChatbotIcon />
+        <span style={{
+          fontSize: 'clamp(12px, 3vw, 14px)',
+          fontWeight: '500',
+          whiteSpace: 'nowrap',
+          lineHeight: 1
+        }}>
+          Add Memory
+        </span>
       </button>
 
       {/* Loading overlay - Graceful Fallbacks */}
@@ -727,20 +737,26 @@ export function TimelineModule() {
 // Icon Components - Material Design 3
 // ──────────────────────
 
-function PlusIcon() {
+function ChatbotIcon() {
   return (
     <svg 
       viewBox="0 0 24 24" 
       style={{ 
-        width: 'clamp(16px, 4vw, 24px)', 
-        height: 'clamp(16px, 4vw, 24px)' 
+        width: 'clamp(16px, 4vw, 20px)', 
+        height: 'clamp(16px, 4vw, 20px)' 
       }}
       fill="none" 
       stroke="currentColor" 
       strokeWidth="2"
       aria-hidden="true"
     >
-      <path d="M12 5v14M5 12h14" />
+      {/* Robot head/chatbot icon */}
+      <rect x="3" y="8" width="18" height="10" rx="2" />
+      <circle cx="8" cy="12" r="1.5" />
+      <circle cx="16" cy="12" r="1.5" />
+      <path d="M9 16h6" />
+      <path d="M12 2v6" />
+      <path d="M7 8V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" />
     </svg>
   )
 }
