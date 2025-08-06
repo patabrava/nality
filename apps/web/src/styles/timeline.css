@@ -1,421 +1,934 @@
-/* ===== TIMELINE COMPONENTS ===== */
-/* Material Design 3 Timeline Implementation */
-/* Following design tokens from style2.html */
+/* ===== TIMELINE COMPONENTS - PHASE 1 FOUNDATION RESET ===== */
+/* MONOCODE Implementation: Observable, Explicit, Transparent, Progressive */
+/* SPARK_OF_THOUGHT: Mobile-first foundation with systematic progressive enhancement */
 
+/* Observable Implementation: Clean container hierarchy with clear behavior patterns */
 .timeline-section {
-  background: var(--tl-bg);
-  border-radius: 24px;
-  padding: 32px;
-  margin: 48px 0;
-  border: 1px solid var(--md-sys-color-outline-variant);
+  /* Foundation: Simple container with clear boundaries */
+  background: var(--tl-bg, #ffffff);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+  
+  /* Dependency Transparency: Container queries for responsive behavior */
+  container-type: inline-size;
+  container-name: timeline-section;
+  
+  /* Explicit Error Handling: Fallback values and overflow protection */
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .full-timeline-viewport {
+  /* Progressive Construction: Start with simple full-height container */
   position: relative;
-  height: 600px;
-  background: var(--tl-bg);
-  border-radius: 16px;
+  height: 100vh;
+  background: var(--tl-bg, #ffffff);
   overflow: hidden;
-  border: 1px solid var(--md-sys-color-outline);
+  
+  /* Observable Implementation: No complex styling until proven necessary */
+  border: none;
+  border-radius: 0;
+  
+  /* Dependency Transparency: Clear container context */
+  container-type: inline-size;
+  container-name: timeline-viewport;
 }
 
 .timeline-scroll-zone {
+  /* Foundation: Simple scrollable area */
   height: 100%;
   overflow-y: auto;
-  padding: 24px 16px;
-  background: linear-gradient(to bottom, 
-    var(--tl-bg) 0%, 
-    var(--md-sys-color-surface-container-low) 50%, 
-    var(--tl-bg) 100%);
+  overflow-x: hidden;
+  padding: 16px 8px;
+  
+  /* Explicit Error Handling: Ensure smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Progressive Construction: Mobile-first timeline list - start simple */
 .timeline-list {
+  /* Foundation: Simple container with mobile-first approach */
   position: relative;
-  max-width: 800px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding-top: 40px;
+  padding: 24px 0;
+  
+  /* Observable Implementation: Clear container behavior */
+  min-height: 200px;
+  
+  /* Dependency Transparency: Container queries for responsive scaling */
+  container-type: inline-size;
+  container-name: timeline-list;
+  
+  /* Explicit Error Handling: Prevent overflow issues */
+  box-sizing: border-box;
+  overflow: visible;
 }
 
+/* PHASE 1: Mobile-First Timeline Spine - Simplified positioning */
 .timeline-spine {
+  /* Foundation: Simple left-aligned spine for mobile */
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
+  left: 24px;
+  top: 0;
+  width: 2px;
   height: 100%;
-  background: linear-gradient(to bottom, 
-    var(--md-sys-color-on-surface), 
-    var(--md-sys-color-on-surface-variant), 
-    var(--md-sys-color-outline));
-  border-radius: 2px;
+  
+  /* Observable Implementation: Clear visual indicator */
+  background: var(--md-sys-color-outline, #79747e);
+  border-radius: 1px;
+  z-index: 1;
+  
+  /* Progressive Construction: Start with solid color, enhance later */
+  opacity: 0.6;
 }
 
+/* PHASE 1: Mobile-First Timeline Items - Simple stacked layout */
 .timeline-item {
+  /* Foundation: Simple flex container */
   position: relative;
-  margin-bottom: 48px;
   display: flex;
-  align-items: center;
-  opacity: 0;
-  animation: timelineItemAppear var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard) forwards;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-left: 56px;
+  
+  /* Observable Implementation: Clear layout behavior */
   min-height: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Explicit Error Handling: Establish stacking context for proper z-index layering */
+  z-index: 2;
+  
+  /* Progressive Construction: Simple fade-in animation */
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+  animation-delay: calc(var(--item-index, 0) * 0.1s);
 }
 
 .timeline-item:first-child {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
-.timeline-item:nth-child(odd) {
-  animation-delay: calc(var(--item-index, 0) * 100ms);
+.timeline-item:last-child {
+  margin-bottom: 0;
 }
 
-.timeline-item:nth-child(even) {
-  animation-delay: calc(var(--item-index, 0) * 100ms + 50ms);
-}
-
+/* PHASE 1: Mobile-First Event Nodes - Simple positioning */
 .timeline-event-node {
-  width: 16px;
-  height: 16px;
+  /* Foundation: Simple circular node */
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--md-sys-color-on-surface);
-  border: 3px solid var(--tl-bg);
+  background: var(--md-sys-color-primary, #6750a4);
+  border: 2px solid var(--tl-bg, #ffffff);
+  
+  /* Observable Implementation: Clear positioning relative to spine */
   position: absolute;
-  left: 50%;
+  left: 24px;
+  top: 8px;
   transform: translateX(-50%);
   z-index: 2;
-  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  
+  /* Progressive Construction: Simple hover effect */
+  transition: transform 0.2s ease-out;
 }
 
 .timeline-event-node:hover {
-  transform: translateX(-50%) scale(1.5);
-  box-shadow: 0 0 16px var(--md-sys-color-on-surface);
+  transform: translateX(-50%) scale(1.2);
 }
 
+/* PHASE 1: Mobile-First Event Cards - Responsive width with safety margins */
 .timeline-event-card {
-  background: var(--tl-surface-elevated);
-  border-radius: 16px;
-  padding: 20px;
-  max-width: 300px;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
-  backdrop-filter: blur(10px);
-  position: relative;
-}
-
-.timeline-item:nth-child(odd) .timeline-event-card {
-  margin-right: auto;
-  margin-left: calc(50% + 32px);
-}
-
-.timeline-item:nth-child(even) .timeline-event-card {
-  margin-left: auto;
-  margin-right: calc(50% + 32px);
+  /* Foundation: Simple card with mobile-optimized spacing */
+  background: var(--tl-surface-elevated, #ffffff);
+  border-radius: 12px;
+  padding: 16px;
+  
+  /* Explicit Error Handling: Responsive width with safety margins */
+  width: 100%;
+  max-width: calc(100vw - 120px);
+  min-width: 200px;
+  
+  /* Observable Implementation: Clear visual hierarchy */
+  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  /* Progressive Construction: Simple transitions */
+  transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
+  
+  /* Dependency Transparency: Container for internal responsive behavior */
+  container-type: inline-size;
+  container-name: event-card;
+  
+  /* Explicit Error Handling: Prevent text overflow */
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .timeline-event-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
-.timeline-event-card.featured {
-  outline: 2px solid var(--tl-accent-primary);
-  outline-offset: -1px;
+/* PHASE 1: Simplified mobile layout - no alternating positions yet */
+.timeline-item .timeline-event-card {
+  margin: 0;
 }
 
-/* Card Content Styles */
+/* PHASE 1: Simple animations foundation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== PHASE 2: MOBILE OPTIMIZATION ===== */
+/* Progressive Construction: Enhanced mobile experience with touch optimization */
+
+/* Mobile touch optimization - larger touch targets */
+@media (max-width: 767px) {
+  .timeline-event-node {
+    width: 16px;
+    height: 16px;
+    border: 3px solid var(--tl-bg, #ffffff);
+  }
+  
+  .timeline-event-card {
+    padding: 20px;
+    border-radius: 16px;
+    /* Explicit Error Handling: Ensure minimum viable touch target */
+    min-height: 80px;
+  }
+  
+  .timeline-item {
+    margin-bottom: 40px;
+  }
+  
+  .timeline-spine {
+    left: 28px;
+    width: 3px;
+  }
+  
+  .timeline-item {
+    padding-left: 64px;
+  }
+  
+  .timeline-event-node {
+    left: 28px;
+  }
+}
+
+/* Small mobile optimization (320px-479px) */
+@media (max-width: 479px) {
+  .timeline-section {
+    margin: 4px 0;
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .timeline-scroll-zone {
+    padding: 12px 4px;
+  }
+  
+  .timeline-event-card {
+    max-width: calc(100vw - 100px);
+    padding: 16px;
+  }
+}
+
+/* ===== PHASE 3: DESKTOP ENHANCEMENT ===== */
+/* Progressive Construction: Enhanced desktop experience with centered timeline */
+
+/* Tablet landscape / Desktop (768px+) - Centered timeline with alternating cards */
+@media (min-width: 768px) {
+  .timeline-section {
+    padding: 32px;
+    border-radius: 20px;
+    margin: 24px 0;
+  }
+  
+  .timeline-list {
+    max-width: 800px;
+    padding: 40px 0;
+  }
+  
+  /* Observable Implementation: Centered spine for desktop */
+  .timeline-spine {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    background: linear-gradient(to bottom, 
+      var(--md-sys-color-primary, #6750a4) 0%, 
+      var(--md-sys-color-outline, #79747e) 100%);
+  }
+  
+  .timeline-item {
+    /* Dependency Transparency: Clear positioning system */
+    padding-left: 0;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 48px;
+  }
+  
+  .timeline-event-node {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 3px solid var(--tl-bg, #ffffff);
+  }
+  
+  .timeline-event-node:hover {
+    transform: translate(-50%, -50%) scale(1.3);
+    box-shadow: 0 0 12px var(--md-sys-color-primary, #6750a4);
+  }
+  
+  .timeline-event-card {
+    max-width: 360px;
+    padding: 24px;
+    border-radius: 16px;
+  }
+  
+  /* Progressive Construction: Alternating layout for visual balance */
+  .timeline-item:nth-child(odd) .timeline-event-card {
+    margin-left: calc(50% + 32px);
+    margin-right: auto;
+  }
+  
+  .timeline-item:nth-child(even) .timeline-event-card {
+    margin-right: calc(50% + 32px);
+    margin-left: auto;
+  }
+}
+
+/* Large Desktop (1024px+) - Enhanced spacing and interactions */
+@media (min-width: 1024px) {
+  .timeline-list {
+    max-width: 1000px;
+    padding: 56px 0;
+  }
+  
+  .timeline-item {
+    margin-bottom: 64px;
+  }
+  
+  .timeline-event-node {
+    width: 20px;
+    height: 20px;
+    border: 4px solid var(--tl-bg, #ffffff);
+  }
+  
+  .timeline-event-card {
+    max-width: 420px;
+    padding: 28px;
+  }
+  
+  .timeline-event-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Explicit Error Handling: Ensure proper spacing */
+  .timeline-item:nth-child(odd) .timeline-event-card {
+    margin-left: calc(50% + 40px);
+  }
+  
+  .timeline-item:nth-child(even) .timeline-event-card {
+    margin-right: calc(50% + 40px);
+  }
+}
+
+/* Ultra-wide Desktop (1440px+) - Maximum layout optimization */
+@media (min-width: 1440px) {
+  .timeline-list {
+    max-width: 1200px;
+  }
+  
+  .timeline-event-card {
+    max-width: 480px;
+  }
+  
+  .timeline-item:nth-child(odd) .timeline-event-card {
+    margin-left: calc(50% + 48px);
+  }
+  
+  .timeline-item:nth-child(even) .timeline-event-card {
+    margin-right: calc(50% + 48px);
+  }
+}
+
+/* ===== PHASE 4: CARD CONTENT STRUCTURE ===== */
+/* Progressive Construction: Mobile-first card content with responsive enhancement */
+/* Following style2.html Material Design 3 patterns - CODE_EXPANSION: Minimal essential additions */
+
+/* Source Badge - Observable Implementation */
 .card-source-badge {
   position: absolute;
   top: -8px;
   right: 12px;
-  background: var(--tl-accent-primary);
-  color: var(--md-sys-color-on-primary);
-  font-size: 10px;
+  background: var(--tl-accent-primary, var(--md-sys-color-primary, #6750a4));
+  color: var(--md-sys-color-on-primary, #ffffff);
+  font-size: 0.625rem;
   font-weight: 600;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  z-index: 1;
+  font-family: 'Roboto', system-ui, sans-serif;
+  text-transform: uppercase;
+}
+
+/* Observable Implementation: Clear card content hierarchy */
+.card-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .card-header {
-  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
+.card-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Foundation: Typography hierarchy */
 .card-title-text {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--tl-ink-100);
-  margin-bottom: 8px;
+  color: var(--md-sys-color-on-surface, #1c1c1c);
   line-height: 1.3;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .card-date-range {
   font-size: 0.875rem;
-  color: var(--tl-ink-60);
-  margin-bottom: 12px;
-}
-
-.card-date-text {
-  color: var(--tl-ink-60);
-}
-
-.card-description {
-  margin-bottom: 12px;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
 .card-description-text {
   font-size: 0.875rem;
-  color: var(--tl-ink-100);
+  color: var(--md-sys-color-on-surface-variant, #49454f);
   line-height: 1.4;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .card-location {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  color: var(--tl-ink-60);
-}
-
-.card-location-text {
-  color: var(--tl-ink-60);
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  flex-wrap: wrap;
 }
 
 .card-importance {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 12px;
-  font-size: 0.8rem;
-  color: var(--tl-accent-positive);
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-tertiary, #7d5260);
+  margin-top: 4px;
 }
 
-.card-importance-text {
-  color: var(--tl-accent-positive);
+/* Card component structure - Following style2.html MD3 patterns */
+.card-top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.card-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.card-primary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface, #1c1c1c);
+  line-height: 1.3;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.card-date-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.card-date {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.card-date-separator {
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  font-weight: 300;
+  font-size: 0.875rem;
+}
+
+.card-ongoing-indicator {
+  font-size: 0.875rem;
+  color: var(--tl-accent-primary, var(--md-sys-color-primary, #6750a4));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card-description-section {
+  margin-top: 4px;
+}
+
+.card-description {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  line-height: 1.4;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.card-metadata-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.card-metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.card-metadata-label {
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card-metadata-value {
+  color: var(--md-sys-color-on-surface, #1c1c1c);
+  font-weight: 400;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.card-importance-item {
+  color: var(--md-sys-color-tertiary, #7d5260);
+}
+
+.card-importance-item svg {
+  color: var(--md-sys-color-tertiary, #7d5260);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.card-tags-container {
+  margin-top: 8px;
 }
 
 .card-tag-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
 }
 
 .card-tag-chip {
-  background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
+  font-size: 0.6875rem;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  background: var(--md-sys-color-surface-container-high, #333333);
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+  transition: background-color var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .card-tag-chip:hover {
-  background: var(--md-sys-color-surface-container-highest);
+  background: var(--md-sys-color-surface-container-highest, #2a2a2a);
 }
 
-.card-overflow-menu-button {
-  background: none;
+.card-menu-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card-menu-button {
+  background: transparent;
   border: none;
-  color: var(--tl-ink-60);
+  padding: 6px;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  transition: all var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
   display: flex;
-  flex-direction: column;
-  gap: 2px;
   align-items: center;
-  transition: background-color var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+  justify-content: center;
+  width: 28px;
+  height: 28px;
 }
 
-.card-overflow-menu-button:hover {
-  background: var(--md-sys-color-surface-container-high);
+.card-menu-button:hover {
+  background: var(--md-sys-color-surface-container-high, #333333);
+  color: var(--md-sys-color-on-surface, #1c1c1c);
 }
 
-.card-overflow-menu-button span {
-  width: 4px;
-  height: 4px;
-  background: currentColor;
-  border-radius: 50%;
-}
-
-.card-overflow-menu-dropdown {
+.card-menu-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  background: var(--md-sys-color-surface-container-high);
-  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container, #1a1a1a);
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+  min-width: 100px;
   z-index: 10;
-  min-width: 120px;
+  overflow: hidden;
 }
 
-.card-overflow-menu-item {
+.card-menu-item {
   display: block;
   width: 100%;
-  padding: 12px 16px;
-  background: none;
+  padding: 10px 12px;
+  background: transparent;
   border: none;
-  color: var(--tl-ink-100);
   text-align: left;
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface, #1c1c1c);
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+  transition: background-color var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
-.card-overflow-menu-item:hover {
-  background: var(--md-sys-color-surface-container-highest);
+.card-menu-item:hover {
+  background: var(--md-sys-color-surface-container-high, #333333);
 }
 
-.card-overflow-menu-item.destructive {
-  color: var(--md-sys-color-error);
+.card-menu-item-destructive {
+  color: var(--md-sys-color-error, #ffffff);
+}
+
+.card-menu-item-destructive:hover {
+  background: var(--md-sys-color-error-container, #1a1a1a);
+  color: var(--md-sys-color-on-error-container, #ffffff);
 }
 
 .card-dismiss-button {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--md-sys-color-surface-container-high);
+  background: var(--md-sys-color-surface-container-high, #333333);
   border: none;
-  color: var(--tl-ink-60);
-  cursor: pointer;
-  padding: 4px;
   border-radius: 50%;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  transition: all var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
 .card-dismiss-button:hover {
-  background: var(--md-sys-color-error-container);
-  color: var(--md-sys-color-on-error-container);
-  transform: scale(1.1);
+  background: var(--md-sys-color-error-container, #1a1a1a);
+  color: var(--md-sys-color-on-error-container, #ffffff);
 }
 
-.card-media-region {
-  margin: -20px -20px 16px -20px;
-  border-radius: 16px 16px 0 0;
-  overflow: hidden;
-}
-
-.card-media-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-}
-
-.card-media-video-thumb {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  background: var(--md-sys-color-surface-container);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.play-icon {
-  width: 48px;
-  height: 48px;
-  background: var(--tl-accent-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--md-sys-color-on-primary);
-}
-
-.card-media-doc {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--md-sys-color-surface-container-high);
-  border-radius: 8px;
-  margin-bottom: 16px;
-  color: var(--tl-ink-100);
-}
-
-/* Timeline Decade and Year Markers */
-.timeline-decade-chip {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  padding: 8px 16px;
-  border-radius: 16px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  z-index: 3;
-  white-space: nowrap;
-  margin-top: -20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.timeline-year-marker {
-  position: absolute;
-  left: calc(50% + 24px);
-  transform: translateY(-50%);
-  background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-on-surface-variant);
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  z-index: 1;
-  border: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.timeline-node-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.timeline-card-container {
-  flex: 1;
-  display: flex;
-}
-
-/* Timeline Animations */
-@keyframes timelineItemAppear {
-  from {
-    transform: translateX(-30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Mobile Timeline Responsive Design */
-@media (max-width: 768px) {
-  .timeline-item:nth-child(even) .timeline-event-card {
-    margin-left: calc(50% + 32px);
-    margin-right: auto;
+/* Responsive card content adjustments */
+@media (min-width: 768px) {
+  .card-content-container {
+    gap: 16px;
   }
   
+  .card-source-badge {
+    top: -10px;
+    right: 16px;
+    font-size: 0.6875rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+  }
+  
+  .card-title-text,
+  .card-title {
+    font-size: 1.125rem;
+  }
+  
+  .card-description-text,
+  .card-description {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  
+  .card-date {
+    font-size: 0.9375rem;
+  }
+  
+  .card-location,
+  .card-importance {
+    font-size: 0.875rem;
+  }
+  
+  .card-metadata-item {
+    font-size: 0.875rem;
+    gap: 8px;
+  }
+  
+  .card-tag-chip {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  
+  .card-menu-button {
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+  }
+  
+  .card-dismiss-button {
+    width: 32px;
+    height: 32px;
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-source-badge {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 10px;
+  }
+  
+  .card-title-text,
+  .card-title {
+    font-size: 1.1875rem;
+  }
+  
+  .card-description-text,
+  .card-description {
+    font-size: 1rem;
+  }
+  
+  .card-date {
+    font-size: 1rem;
+  }
+  
+  .card-metadata-item {
+    font-size: 0.9375rem;
+  }
+  
+  .card-tag-chip {
+    font-size: 0.8125rem;
+    padding: 5px 10px;
+    border-radius: 10px;
+  }
+}
+
+/* ===== PHASE 5: DECADE CHIPS & YEAR MARKERS ===== */
+/* Following style2.html Material Design 3 patterns - CODE_EXPANSION: Minimal essential additions */
+
+/* Mobile-First Decade Chips - Observable Implementation */
+.timeline-decade-chip {
+  position: absolute;
+  left: 24px;
+  transform: translateX(-50%);
+  background: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-on-primary, #ffffff);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 5;
+  white-space: nowrap;
+  margin-top: -16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-variant-numeric: tabular-nums;
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+/* Mobile-First Year Markers - Progressive Construction */
+.timeline-year-marker {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--md-sys-color-surface-container-high, #333333);
+  color: var(--md-sys-color-on-surface-variant, #cccccc);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  z-index: 1;
+  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+  text-align: center;
+  min-width: 40px;
+  font-family: 'Roboto Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Responsive adjustments for decade chips and year markers */
+@media (max-width: 767px) {
+  .timeline-decade-chip {
+    left: 28px;
+    padding: 4px 10px;
+    font-size: 0.6875rem;
+    border-radius: 10px;
+    margin-top: -14px;
+  }
+  
+  .timeline-year-marker {
+    left: 12px;
+    padding: 3px 6px;
+    font-size: 0.625rem;
+    min-width: 36px;
+    border-radius: 6px;
+  }
+}
+
+@media (min-width: 768px) {
+  .timeline-decade-chip {
+    left: 50%;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    border-radius: 16px;
+    margin-top: -20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .timeline-year-marker {
+    left: calc(50% - 48px);
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    min-width: 56px;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .timeline-decade-chip {
+    padding: 10px 20px;
+    font-size: 0.9375rem;
+    border-radius: 18px;
+    margin-top: -22px;
+  }
+  
+  .timeline-year-marker {
+    left: calc(50% - 56px);
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+    min-width: 64px;
+  }
+}
+
+/* ===== PHASE 6: UTILITIES & ACCESSIBILITY ===== */
+/* Explicit Error Handling: Fallbacks and accessibility support */
+
+/* Focus and accessibility styles */
+.timeline-event-card:focus-within {
+  outline: 2px solid var(--md-sys-color-primary, #6750a4);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
   .timeline-spine {
-    left: 32px;
-    transform: none;
+    background: var(--md-sys-color-on-surface, #1c1c1c);
   }
   
   .timeline-event-node {
-    left: 32px;
-    transform: translateX(-50%);
+    border-width: 3px;
   }
   
-  .timeline-list {
-    padding-left: 60px;
+  .timeline-event-card {
+    border-width: 2px;
   }
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-item,
+  .timeline-event-card,
+  .timeline-event-node {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Performance optimizations */
+.timeline-list {
+  contain: layout style;
+}
+
+.timeline-event-card {
+  contain: layout style;
+  will-change: transform;
+}
+
+.timeline-event-node {
+  contain: layout style paint;
+}
+
+/* ===== END OF TIMELINE REFACTOR ===== */
+/* Observable Implementation: Clean, systematic mobile-first responsive timeline */
+/* Progressive Construction: Foundation → Mobile → Desktop → Enhancement → Utilities */
+/* MONOCODE Principles Applied: Observable, Explicit Error Handling, Dependency Transparency, Progressive Construction */

@@ -107,8 +107,29 @@ export function LifeEventCard({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-md-sys-color-surface-container rounded-lg flex items-center justify-center">
-                <div className="play-icon">
+              <div 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background: 'var(--md-sys-color-surface-container)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <div 
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    background: 'var(--tl-accent-primary)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--md-sys-color-on-primary)'
+                  }}
+                >
                   <PlayIcon />
                 </div>
               </div>
@@ -134,18 +155,20 @@ export function LifeEventCard({
     if (!event.tags || event.tags.length === 0) return null
 
     return (
-      <div className="card-tag-chips">
-        {event.tags.map((tag: string, index: number) => (
-          <span 
-            key={index} 
-            className="card-tag-chip"
-            role="button"
-            tabIndex={0}
-            aria-label={`Tag: ${tag}`}
-          >
-            #{tag}
-          </span>
-        ))}
+      <div className="card-tags-container">
+        <div className="card-tag-chips">
+          {event.tags.map((tag: string, index: number) => (
+            <span 
+              key={index} 
+              className="card-tag-chip"
+              role="button"
+              tabIndex={0}
+              aria-label={`Tag: ${tag}`}
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
       </div>
     )
   }
@@ -154,24 +177,22 @@ export function LifeEventCard({
     if (!onEdit && !onDelete) return null
 
     return (
-      <div className="relative">
+      <div className="card-menu-container">
         <button 
-          className="card-overflow-menu-button"
+          className="card-menu-button"
           onClick={handleMenuToggle}
           aria-label="More options"
           aria-expanded={showMenu}
           aria-haspopup="true"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <MenuDotsIcon />
         </button>
         
         {showMenu && (
-          <div className="card-overflow-menu-dropdown">
+          <div className="card-menu-dropdown">
             {onEdit && (
               <button
-                className="card-overflow-menu-item"
+                className="card-menu-item"
                 onClick={handleEdit}
               >
                 Edit
@@ -179,7 +200,7 @@ export function LifeEventCard({
             )}
             {onDelete && (
               <button
-                className="card-overflow-menu-item destructive"
+                className="card-menu-item card-menu-item-destructive"
                 onClick={handleDelete}
               >
                 Delete
@@ -192,7 +213,7 @@ export function LifeEventCard({
   }
 
   // ──────────────────────
-  // Main Render - Material Design 3
+  // Main Render - Material Design 3 with Proper Information Hierarchy
   // ──────────────────────
 
   const cardClasses = [
@@ -206,94 +227,103 @@ export function LifeEventCard({
 
   return (
     <div className={cardClasses}>
-      {/* Source Badge */}
-      {renderSourceBadge()}
+      {/* Card Container with proper responsive spacing and structure */}
+      <div className="card-content-container">
+        
+        {/* Top Section: Source Badge and Menu - Observable Implementation */}
+        <div className="card-top-section">
+          {renderSourceBadge()}
+          {renderOverflowMenu()}
+        </div>
 
-      {/* Media Content */}
-      {renderMedia()}
+        {/* Media Content (if available) - Progressive Construction */}
+        {renderMedia()}
 
-      {/* Card Header */}
-      <div className="card-header">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h3 className="card-title-text">
+        {/* Main Content Section - Mobile-First Design */}
+        <div className="card-main-content">
+          
+          {/* Primary Information: Title and Date - Explicit Error Handling */}
+          <div className="card-primary-info">
+            <h3 className="card-title">
               {event.title}
             </h3>
             
-            {/* Date Range */}
-            <div className="card-date-range">
-              {event.start_date && (
-                <span className="card-date-text">
+            {/* Date Information with Clear Responsive Hierarchy */}
+            {event.start_date && (
+              <div className="card-date-section">
+                <time className="card-date" dateTime={event.start_date}>
                   {new Date(event.start_date).toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'short',
+                    month: 'short', 
                     day: 'numeric'
                   })}
-                  {event.end_date && !event.is_ongoing && (
-                    <span>
-                      {' - '}
+                </time>
+                {event.end_date && !event.is_ongoing && (
+                  <>
+                    <span className="card-date-separator">—</span>
+                    <time className="card-date" dateTime={event.end_date}>
                       {new Date(event.end_date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
                       })}
-                    </span>
-                  )}
-                  {event.is_ongoing && (
-                    <span style={{ color: 'var(--tl-accent-primary)' }}> - Present</span>
-                  )}
-                </span>
-              )}
-            </div>
+                    </time>
+                  </>
+                )}
+                {event.is_ongoing && (
+                  <>
+                    <span className="card-date-separator">—</span>
+                    <span className="card-ongoing-indicator">Present</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-          
-          {/* Overflow Menu */}
-          {renderOverflowMenu()}
+
+          {/* Secondary Information: Description - Dependency Transparency */}
+          {event.description && (
+            <div className="card-description-section">
+              <p className="card-description">
+                {event.description}
+              </p>
+            </div>
+          )}
+
+          {/* Metadata Section: Location, Importance, Tags - Progressive Construction */}
+          <div className="card-metadata-section">
+            
+            {/* Location with proper responsive spacing */}
+            {event.location && (
+              <div className="card-metadata-item">
+                <span className="card-metadata-label">Location:</span>
+                <span className="card-metadata-value">{event.location}</span>
+              </div>
+            )}
+
+            {/* Importance Indicator with responsive design */}
+            {event.importance && event.importance >= 8 && (
+              <div className="card-metadata-item card-importance-item">
+                <StarIcon />
+                <span className="card-metadata-value">High Importance</span>
+              </div>
+            )}
+
+            {/* Tags Section - Mobile-First Responsive */}
+            {renderTags()}
+          </div>
         </div>
+
+        {/* Dismiss Button (positioned responsively) */}
+        {onDismiss && (
+          <button
+            className="card-dismiss-button"
+            onClick={handleDismiss}
+            aria-label="Dismiss event"
+          >
+            <CloseIcon />
+          </button>
+        )}
       </div>
-
-      {/* Description */}
-      {event.description && (
-        <div className="card-description">
-          <p className="card-description-text">
-            {event.description}
-          </p>
-        </div>
-      )}
-
-      {/* Location */}
-      {event.location && (
-        <div className="card-location">
-          <LocationIcon />
-          <span className="card-location-text">
-            {event.location}
-          </span>
-        </div>
-      )}
-
-      {/* Importance Indicator */}
-      {event.importance && event.importance >= 8 && (
-        <div className="card-importance">
-          <StarIcon />
-          <span className="card-importance-text">
-            High Importance
-          </span>
-        </div>
-      )}
-
-      {/* Tags */}
-      {renderTags()}
-
-      {/* Dismiss Button (if applicable) */}
-      {onDismiss && (
-        <button
-          className="card-dismiss-button"
-          onClick={handleDismiss}
-          aria-label="Dismiss event"
-        >
-          <CloseIcon />
-        </button>
-      )}
     </div>
   )
 }
@@ -349,31 +379,32 @@ function DocumentIcon() {
   )
 }
 
-function LocationIcon() {
+function StarIcon() {
   return (
     <svg 
       viewBox="0 0 24 24" 
-      className="w-3 h-3" 
+      className="w-4 h-4" 
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  )
+}
+
+function MenuDotsIcon() {
+  return (
+    <svg 
+      viewBox="0 0 24 24" 
+      className="w-5 h-5" 
       fill="none" 
       stroke="currentColor" 
       strokeWidth="2"
       aria-hidden="true"
     >
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  )
-}
-
-function StarIcon() {
-  return (
-    <svg 
-      viewBox="0 0 24 24" 
-      className="w-3 h-3" 
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
     </svg>
   )
 } 

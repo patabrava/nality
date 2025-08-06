@@ -259,14 +259,16 @@ export function TimelineModule() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
-        padding: '48px 24px',
-        textAlign: 'center'
+        padding: 'clamp(24px, 6vw, 48px) clamp(12px, 3vw, 24px)',
+        textAlign: 'center',
+        maxWidth: '100%',
+        boxSizing: 'border-box'
       }}
     >
       <div 
         style={{
-          fontSize: '4rem',
-          marginBottom: '24px',
+          fontSize: 'clamp(2.5rem, 8vw, 4rem)',
+          marginBottom: 'clamp(12px, 3vw, 24px)',
           opacity: 0.6
         }}
       >
@@ -274,22 +276,24 @@ export function TimelineModule() {
       </div>
       <h2 
         style={{
-          fontSize: '1.5rem',
+          fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
           fontWeight: 600,
           color: 'var(--md-sys-color-on-surface)',
-          marginBottom: '16px',
-          fontFamily: 'Roboto, system-ui, sans-serif'
+          marginBottom: 'clamp(8px, 2vw, 16px)',
+          fontFamily: 'Roboto, system-ui, sans-serif',
+          margin: '0 0 clamp(8px, 2vw, 16px) 0'
         }}
       >
         Your story starts here
       </h2>
       <p 
         style={{
-          fontSize: '1rem',
+          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
           color: 'var(--md-sys-color-on-surface-variant)',
-          maxWidth: '400px',
+          maxWidth: 'clamp(280px, 80vw, 400px)',
           lineHeight: 1.5,
-          marginBottom: '32px'
+          marginBottom: 'clamp(16px, 4vw, 32px)',
+          margin: '0 0 clamp(16px, 4vw, 32px) 0'
         }}
       >
         Begin documenting your life's journey. Add your first memory, achievement, or milestone.
@@ -297,20 +301,21 @@ export function TimelineModule() {
       <button
         onClick={() => setShowForm(true)}
         style={{
-          padding: '16px 32px',
+          padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 32px)',
           background: 'var(--md-sys-color-primary)',
           color: 'var(--md-sys-color-on-primary)',
           border: 'none',
-          borderRadius: '20px',
-          fontSize: '1rem',
+          borderRadius: 'clamp(16px, 4vw, 20px)',
+          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
           fontWeight: 600,
           cursor: 'pointer',
           transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
           fontFamily: 'Roboto, system-ui, sans-serif',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+          gap: 'clamp(6px, 1.5vw, 8px)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+          minHeight: 'clamp(40px, 10vw, 48px)'
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
@@ -339,45 +344,47 @@ export function TimelineModule() {
             <div 
               style={{
                 background: 'var(--md-sys-color-surface-container)',
-                borderRadius: '16px',
-                padding: '20px',
-                maxWidth: '300px',
+                borderRadius: 'clamp(12px, 3vw, 16px)',
+                padding: 'clamp(12px, 3vw, 20px)',
+                maxWidth: 'clamp(280px, 80vw, 300px)',
+                width: '100%',
                 border: '1px solid var(--md-sys-color-outline-variant)',
-                animation: 'pulse 2s ease-in-out infinite'
+                animation: 'pulse 2s ease-in-out infinite',
+                boxSizing: 'border-box'
               }}
             >
               <div style={{ 
-                height: '16px', 
+                height: 'clamp(12px, 3vw, 16px)', 
                 background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: '8px', 
-                marginBottom: '12px',
+                borderRadius: 'clamp(6px, 1.5vw, 8px)', 
+                marginBottom: 'clamp(8px, 2vw, 12px)',
                 width: '60%'
               }} />
               <div style={{ 
-                height: '14px', 
+                height: 'clamp(10px, 2.5vw, 14px)', 
                 background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: '7px', 
-                marginBottom: '8px',
+                borderRadius: 'clamp(5px, 1.25vw, 7px)', 
+                marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '40%'
               }} />
               <div style={{ 
-                height: '12px', 
+                height: 'clamp(8px, 2vw, 12px)', 
                 background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: '6px', 
-                marginBottom: '8px',
+                borderRadius: 'clamp(4px, 1vw, 6px)', 
+                marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '80%'
               }} />
               <div style={{ 
-                height: '12px', 
+                height: 'clamp(8px, 2vw, 12px)', 
                 background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: '6px', 
-                marginBottom: '8px',
+                borderRadius: 'clamp(4px, 1vw, 6px)', 
+                marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '70%'
               }} />
               <div style={{ 
-                height: '10px', 
+                height: 'clamp(6px, 1.5vw, 10px)', 
                 background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: '5px',
+                borderRadius: 'clamp(3px, 0.75vw, 5px)',
                 width: '30%'
               }} />
             </div>
@@ -498,7 +505,7 @@ export function TimelineModule() {
   // Main Render - Full Screen Material Design 3
   // ──────────────────────
 
-  // Show form overlay
+  // Show form overlay - Mobile-First Responsive Design
   if (showForm || editingEvent) {
     return (
       <div 
@@ -510,13 +517,18 @@ export function TimelineModule() {
           bottom: 0,
           background: 'var(--md-sys-color-surface)',
           zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px'
+          overflow: 'auto',
+          padding: 'clamp(8px, 2vw, 24px)',
+          boxSizing: 'border-box'
         }}
       >
-        <div style={{ width: '100%', maxWidth: '800px' }}>
+        <div style={{ 
+          width: '100%', 
+          maxWidth: 'clamp(320px, 90vw, 800px)', 
+          margin: '0 auto', 
+          minHeight: 'calc(100vh - clamp(16px, 4vw, 48px))',
+          boxSizing: 'border-box'
+        }}>
           <LifeEventForm
             event={editingEvent}
             onSubmit={editingEvent ? handleUpdateEvent : handleCreateEvent}
@@ -543,16 +555,16 @@ export function TimelineModule() {
         overflow: 'hidden'
       }}
     >
-      {/* Simple Timeline Title */}
+      {/* Responsive Timeline Title - Observable Implementation */}
       <div 
         style={{
-          padding: '24px 32px 16px 32px',
+          padding: 'clamp(16px, 4vw, 32px) clamp(12px, 4vw, 32px) clamp(8px, 2vw, 16px) clamp(12px, 4vw, 32px)',
           flexShrink: 0
         }}
       >
         <h1 
           style={{
-            fontSize: '2rem',
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
             fontWeight: 700,
             color: 'var(--md-sys-color-on-surface)',
             margin: 0,
@@ -564,13 +576,15 @@ export function TimelineModule() {
         </h1>
       </div>
 
-      {/* Timeline Content */}
+      {/* Responsive Timeline Content - Progressive Construction */}
       <div 
         style={{
           flex: 1,
           overflow: 'auto',
-          padding: '24px 24px 24px 24px',
-          background: 'linear-gradient(to bottom, var(--md-sys-color-surface) 0%, var(--md-sys-color-surface-container-low) 50%, var(--md-sys-color-surface) 100%)'
+          padding: 'clamp(8px, 2vw, 24px) clamp(4px, 2vw, 24px) clamp(8px, 2vw, 24px) clamp(4px, 2vw, 24px)',
+          background: 'linear-gradient(to bottom, var(--md-sys-color-surface) 0%, var(--md-sys-color-surface-container-low) 50%, var(--md-sys-color-surface) 100%)',
+          width: '100%',
+          boxSizing: 'border-box'
         }}
       >
         {error ? (
@@ -581,10 +595,10 @@ export function TimelineModule() {
           renderEmptyState()
         ) : (
           <div className="timeline-list">
-            {/* Timeline spine */}
+            {/* Timeline spine - Dependency Transparency */}
             <div className="timeline-spine" />
 
-            {/* Timeline items */}
+            {/* Timeline items - Mobile-First Responsive */}
             {timelineData.map((item, index) => {
               if (item.type === 'decade') {
                 return (
@@ -599,7 +613,11 @@ export function TimelineModule() {
               const showYearMarker = item.type === 'year' && item.year
 
               return (
-                <div key={`timeline-item-${item.event.id}-${index}`} className="timeline-item">
+                <div 
+                  key={`timeline-item-${item.event.id}-${index}`} 
+                  className="timeline-item"
+                  style={{ '--item-index': index } as React.CSSProperties}
+                >
                   {showYearMarker && renderYearMarker(item.year!)}
                   {renderTimelineNode(item, index)}
                   {renderTimelineCard(item.event, index)}
@@ -610,20 +628,20 @@ export function TimelineModule() {
         )}
       </div>
 
-      {/* Floating Action Button - Bottom Right */}
+      {/* Responsive Floating Action Button - Explicit Error Handling */}
       <button
         onClick={() => setShowForm(true)}
         disabled={creating || updating || deleting}
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '56px',
-          height: '56px',
+          bottom: 'clamp(16px, 4vw, 24px)',
+          right: 'clamp(16px, 4vw, 24px)',
+          width: 'clamp(48px, 12vw, 56px)',
+          height: 'clamp(48px, 12vw, 56px)',
           background: 'var(--md-sys-color-primary)',
           color: 'var(--md-sys-color-on-primary)',
           border: 'none',
-          borderRadius: '16px',
+          borderRadius: 'clamp(12px, 3vw, 16px)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -648,7 +666,7 @@ export function TimelineModule() {
         <PlusIcon />
       </button>
 
-      {/* Loading overlay */}
+      {/* Loading overlay - Graceful Fallbacks */}
       {(creating || updating || deleting) && (
         <div 
           style={{
@@ -669,16 +687,17 @@ export function TimelineModule() {
             style={{
               background: 'var(--md-sys-color-surface-container)',
               borderRadius: '16px',
-              padding: '24px',
+              padding: 'clamp(16px, 4vw, 24px)',
               textAlign: 'center',
               border: '1px solid var(--md-sys-color-outline-variant)',
-              minWidth: '200px'
+              minWidth: 'clamp(160px, 40vw, 200px)',
+              maxWidth: '90vw'
             }}
           >
             <div 
               style={{
-                width: '32px',
-                height: '32px',
+                width: 'clamp(24px, 6vw, 32px)',
+                height: 'clamp(24px, 6vw, 32px)',
                 border: '3px solid var(--md-sys-color-primary)',
                 borderTop: '3px solid transparent',
                 borderRadius: '50%',
@@ -689,7 +708,7 @@ export function TimelineModule() {
             <p 
               style={{
                 color: 'var(--md-sys-color-on-surface)',
-                fontSize: '0.875rem',
+                fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
                 margin: 0
               }}
             >
@@ -712,7 +731,10 @@ function PlusIcon() {
   return (
     <svg 
       viewBox="0 0 24 24" 
-      style={{ width: '24px', height: '24px' }}
+      style={{ 
+        width: 'clamp(16px, 4vw, 24px)', 
+        height: 'clamp(16px, 4vw, 24px)' 
+      }}
       fill="none" 
       stroke="currentColor" 
       strokeWidth="2"
