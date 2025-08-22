@@ -64,10 +64,7 @@ export default function OnboardingPage() {
                 border: '1px solid var(--md-sys-color-outline-variant)'
               }}
             >
-              <ChatInterface 
-                placeholder="Share a memory, tell me about your childhood, or ask me anything..."
-                initialMessage="Hello! I&apos;m here to help you create a wonderful timeline of your life. We can start wherever you&apos;d like - your childhood, your family, your career, or any special moments you&apos;d like to preserve. What would you like to share first?"
-              />
+              <ChatInterface />
             </div>
           </div>
 

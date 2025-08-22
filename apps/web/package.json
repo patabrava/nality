@@ -12,6 +12,7 @@
     "@ai-sdk/google": "^1.2.22",
     "@ai-sdk/react": "^1.2.12",
     "@nality/schema": "workspace:*",
+    "@supabase/mcp-server-supabase": "^0.1.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.3",
     "ai": "^4.3.19",

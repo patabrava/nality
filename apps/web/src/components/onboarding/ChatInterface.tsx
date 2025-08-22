@@ -20,9 +20,29 @@ interface ChatMessage {
 }
 
 export default function ChatInterface({
-  placeholder = "Share your life story...",
-  initialMessage = "Hi! I'm here to help you create your timeline. What would you like to share today?"
+  placeholder = "Erzähle mir kurz etwas über dich …",
+  initialMessage = "Guten Tag! Bevor wir starten: Möchten Sie mit 'du' oder 'Sie' angesprochen werden? Welchen Namen und ggf. akademischen Titel soll ich verwenden?"
 }: ChatInterfaceProps) {
+  // Sanitize AI output: remove status markers and code fences
+  function sanitizeAIContent(raw: string): string {
+    if (!raw) return '';
+    let text = raw.trim();
+
+    // Remove known status headers/markers if present at the start
+    text = text.replace(/^(prompt_generation_successful|system_ready|runtime_state)\s*/i, '');
+
+    // If wrapped in code fences, unwrap the first fenced block
+    const fenceMatch = text.match(/```(?:text|markdown|md)?\n([\s\S]*?)\n```/i);
+    if (fenceMatch && fenceMatch[1]) {
+      text = fenceMatch[1].trim();
+    }
+
+    // Remove any lingering triple backticks
+    text = text.replace(/```/g, '').trim();
+
+    return text;
+  }
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showTyping, setShowTyping] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,7 +59,7 @@ export default function ChatInterface({
       const aiMessage: ChatMessage = {
         id: `ai-${Date.now()}`,
         type: 'bot',
-        content: message.content,
+        content: sanitizeAIContent(message.content),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiMessage]);
@@ -159,7 +179,7 @@ export default function ChatInterface({
                 lineHeight: 1.2
               }}
             >
-              Timeline Assistant 💕
+              Biografie-Assistent 💕
             </h3>
             <p 
               style={{
@@ -169,7 +189,7 @@ export default function ChatInterface({
                 lineHeight: 1.2
               }}
             >
-              Just like chatting with a friend!
+              Fast wie ein Gespräch unter Freunden.
             </p>
           </div>
         </div>
@@ -422,7 +442,7 @@ export default function ChatInterface({
                   color: 'var(--md-sys-color-on-surface-variant)',
                   margin: 0
                 }}>
-                  💬 Press Enter to send • Shift+Enter for new line
+                  💬 Enter zum Senden • Shift+Enter für neue Zeile
                 </p>
                 <button
                   type="submit"
@@ -458,7 +478,7 @@ export default function ChatInterface({
                   }}
                 >
                   <Send style={{ width: '16px', height: '16px' }} />
-                  Send
+                  Senden
                 </button>
               </div>
             </form>
@@ -490,7 +510,7 @@ export default function ChatInterface({
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity, ease: [0.2, 0, 0, 1] }}
               />
-              <span style={{ fontSize: '0.875rem' }}>Processing your response...</span>
+              <span style={{ fontSize: '0.875rem' }}>Antwort wird verarbeitet …</span>
             </div>
           </motion.div>
         )}
@@ -530,7 +550,7 @@ export default function ChatInterface({
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            Continue Later
+            Später fortsetzen
           </button>
         </div>
     </>
