@@ -599,31 +599,37 @@ export function TimelineModule() {
             <div className="timeline-spine" />
 
             {/* Timeline items - Mobile-First Responsive */}
-            {timelineData.map((item, index) => {
-              if (item.type === 'decade') {
+            {(() => {
+              let eventCounter = 0;
+              return timelineData.map((item, index) => {
+                if (item.type === 'decade') {
+                  return (
+                    <div key={`decade-wrapper-${item.decade}`} className="timeline-item timeline-decade-item">
+                      {renderTimelineNode(item, index)}
+                    </div>
+                  )
+                }
+
+                if (!item.event) return null
+
+                // Increment counter for events only
+                eventCounter++;
+                const isEven = eventCounter % 2 === 0;
+                const showYearMarker = item.type === 'year' && item.year
+
                 return (
-                  <div key={`decade-wrapper-${item.decade}`} className="timeline-item">
+                  <div 
+                    key={`timeline-item-${item.event.id}-${index}`} 
+                    className={`timeline-item timeline-event-item ${isEven ? 'timeline-event-even' : 'timeline-event-odd'}`}
+                    style={{ '--item-index': index } as React.CSSProperties}
+                  >
+                    {showYearMarker && renderYearMarker(item.year!)}
                     {renderTimelineNode(item, index)}
+                    {renderTimelineCard(item.event, index)}
                   </div>
                 )
-              }
-
-              if (!item.event) return null
-
-              const showYearMarker = item.type === 'year' && item.year
-
-              return (
-                <div 
-                  key={`timeline-item-${item.event.id}-${index}`} 
-                  className="timeline-item"
-                  style={{ '--item-index': index } as React.CSSProperties}
-                >
-                  {showYearMarker && renderYearMarker(item.year!)}
-                  {renderTimelineNode(item, index)}
-                  {renderTimelineCard(item.event, index)}
-                </div>
-              )
-            })}
+              });
+            })()}
           </div>
         )}
       </div>
