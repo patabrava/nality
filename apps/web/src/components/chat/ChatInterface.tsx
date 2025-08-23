@@ -7,15 +7,17 @@ import { useChat } from '@/hooks/useChat';
 interface ChatInterfaceProps {
   sessionId?: string | undefined;
   autoCreateSession?: boolean;
+  className?: string;
 }
 
 /**
  * Main chat interface component
  * Manages chat state and orchestrates message flow
  */
-export function ChatInterface({ 
+export function ChatInterface({
   sessionId,
-  autoCreateSession = false
+  autoCreateSession = false,
+  className
 }: ChatInterfaceProps) {
   const {
     currentSessionId,
@@ -30,7 +32,7 @@ export function ChatInterface({
   });
 
   return (
-    <>
+    <div className={className}>
       {/* Error display */}
       {error && (
         <div
@@ -67,6 +69,6 @@ export function ChatInterface({
             : "No active session"
         }
       />
-    </>
+    </div>
   );
 }

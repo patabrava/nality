@@ -52,7 +52,7 @@ export const LifeEventSchema = z.object({
   location: z.string().optional().nullable(),
   importance: z.number().min(1).max(10).default(5).optional(),
   tags: z.array(z.string()).default([]).optional(),
-  metadata: z.record(z.any()).default({}).optional(),
+  metadata: z.record(z.string(), z.any()).default({}).optional(),
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional()
 })
@@ -74,7 +74,7 @@ export const MediaObjectSchema = z.object({
   duration_seconds: z.number().positive().optional().nullable(),
   thumbnail_path: z.string().optional().nullable(),
   alt_text: z.string().optional().nullable(),
-  metadata: z.record(z.any()).default({}).optional(),
+  metadata: z.record(z.string(), z.any()).default({}).optional(),
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional()
 })

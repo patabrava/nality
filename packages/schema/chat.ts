@@ -113,7 +113,7 @@ export const ChatMessageSchema = z.object({
   role: MessageRoleSchema,
   content: z.string().min(1),
   created_at: z.date(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const ChatSessionSchema = z.object({
@@ -123,7 +123,7 @@ export const ChatSessionSchema = z.object({
   type: z.enum(['onboarding', 'general']),
   created_at: z.date(),
   updated_at: z.date(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const ChatExtractedEventSchema = z.object({
