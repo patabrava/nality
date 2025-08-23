@@ -1,0 +1,129 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      turbo:
+        specifier: ^2.2.3
+        version: 2.2.3
+
+  apps/web:
+    dependencies:
+      '@next/bundle-analyzer':
+        specifier: ^14.2.5
+        version: 14.2.5
+      '@supabase/ssr':
+        specifier: latest
+        version: 0.5.1
+      '@supabase/supabase-js':
+        specifier: latest
+        version: 2.45.4
+      '@types/node':
+        specifier: ^20
+        version: 20.16.10
+      '@types/react':
+        specifier: ^18
+        version: 18.3.8
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.3.0
+      autoprefixer:
+        specifier: ^10.4.19
+        version: 10.4.20
+      eslint:
+        specifier: ^8
+        version: 8.57.1
+      eslint-config-next:
+        specifier: 14.2.5
+        version: 14.2.5
+      next:
+        specifier: 14.2.5
+        version: 14.2.5
+      postcss:
+        specifier: ^8
+        version: 8.4.47
+      react:
+        specifier: ^18
+        version: 18.3.1
+      react-dom:
+        specifier: ^18
+        version: 18.3.1
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.13
+      typescript:
+        specifier: ^5
+        version: 5.6.2
+
+packages:
+
+  turbo@2.2.3:
+    resolution: {integrity: sha512-VQmyUYwvWRLpvqQ6CkE8fxVF8Lj+LJSXa7xAi9YaP0F1lOBnCdRFnXVwl7L6LcRc2N2M5a1+bRnKMJQqVJbFTQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+    dev: false
+
+  '@next/bundle-analyzer@14.2.5':
+    resolution: {integrity: sha512-2O6dM9d0bFKFPyCbHlmOvKCZNm1UePSFKZ3c9ZdpYwvFrInYMdm6d4J7qQ3D3VQK7wfCfVz0xv9vEkr3h8kkYw==}
+    dev: false
+
+  '@supabase/ssr@0.5.1':
+    resolution: {integrity: sha512-F1YBrF7VjYFPGQVNI3SYXn5dF2b8wWWKKOBzq0FYyOH4PdkY+9p/3VK1lxJ4rr7TJr0qCnMm5B7LzNpXR7M=}
+    dev: false
+
+  '@supabase/supabase-js@2.45.4':
+    resolution: {integrity: sha512-E8VZn+/aQvO9jKWLdOxPsH5HTMxS5gKpqgW7r8FRxzHf5Z5ZYh+1MKW1GhPfNKpqGVzNhF6VFPrOWpT8JKkDlQ==}
+    dev: false
+
+  '@types/node@20.16.10':
+    resolution: {integrity: sha512-KSMO4FyNC5xSF5iq7tOOkPh3oOYvg6T1s4Qw1e4a5Y4Zm5R8l5o1BqBKGJp2K1VE4R4m8r1vYbKn5FlWX7JaUw==}
+    dev: false
+
+  '@types/react@18.3.8':
+    resolution: {integrity: sha512-syBUrxvZn8utCW8R1sYKj3EmSVrKOpVAiTtc2dYOr8l7g8VnDAjx4WdKSIj4TZsOcf3uo0iGLMqMgwdRk6DsEQ==}
+    dev: false
+
+  '@types/react-dom@18.3.0':
+    resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLHGf4L8J9WwgbgG7yVj8f5vNc78v7JCpM6B5SzRKwP3U8gJMzLdXOdLCGGUa7WRWhsA==}
+    dev: false
+
+  autoprefixer@10.4.20:
+    resolution: {integrity: sha512-XY25y5xSv/wEoqzDyXXME4AFfkZI0P23z6Fs3YgymDnKJkCGOnkL0iTxCa85UTqaSgfcqyf3UA6+c7wUvx/16g==}
+    dev: false
+
+  eslint@8.57.1:
+    resolution: {integrity: sha512-ypowyDxpVSYpkXr9WPv2PAZCtNip1Mv5KTW0SCurXv/9iOpcrH9PaqUElksqEB6pChqHGDRCFTyrZlGhnLNGiA==}
+    dev: false
+
+  eslint-config-next@14.2.5:
+    resolution: {integrity: sha512-zHATtJRGqIjYFe9BrQnOVjlFGksDQcOTEw8a2F1FO1c9CVNVfmdFeCGGvSzNBMkzOtJTfqtw7dmpM8VezUYTfA==}
+    dev: false
+
+  next@14.2.5:
+    resolution: {integrity: sha512-0f8aRfBVL+mpzfBjvBOF8OcjcTTQ1TBLGfvLZWjBGb8S6V/7nR9OMR1S3gKbGPOHZZJGFXn5Xw3PcX0e8qM6p=}
+    dev: false
+
+  postcss@8.4.47:
+    resolution: {integrity: sha512-56rxCq7G/XfB4EkXq9Egn5GCqugWvDFjafDOThIdMBsI15iqPqR5r15TfSr1YPYeEI19YeaXMCbY6u88Y76GLQ==}
+    dev: false
+
+  react@18.3.1:
+    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
+    dev: false
+
+  react-dom@18.3.1:
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    dev: false
+
+  tailwindcss@3.4.13:
+    resolution: {integrity: sha512-KqjHOJKogOUt5Bs752ykCeiwvi0fKVkr5oqsFNt/8px/tA8scFPIlkygsf6jXrfCqGHz7VflA6+yytWuM+XhFw==}
+    dev: false
+
+  typescript@5.6.2:
+    resolution: {integrity: sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==}
+    dev: false
