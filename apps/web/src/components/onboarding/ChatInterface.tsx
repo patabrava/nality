@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useChat } from '@ai-sdk/react';
 import { Bot, User, Send, Sparkles } from 'lucide-react';
+import { supabase } from '@/lib/supabase/client';
 
 interface ChatInterfaceProps {
   placeholder?: string;
@@ -49,10 +50,33 @@ export default function ChatInterface({
   const [isInitialized, setIsInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [hasRedirected, setHasRedirected] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
   
+  // Detect onboarding completion message and redirect to timeline
+  function isCompletionMessage(text: string): boolean {
+    if (!text) return false;
+    const t = text.toLowerCase();
+    // Match both du/sie variants; tolerant to additional suffixes
+    return /grunddaten\s+sind\s+vollständig/.test(t);
+  }
+
+  function handleCompletionRedirect(content: string) {
+    if (hasRedirected) return;
+    if (isCompletionMessage(content)) {
+      console.log('🎯 Onboarding completion detected. Redirecting to /timeline …');
+      setHasRedirected(true);
+      setTimeout(() => {
+        router.push('/timeline');
+      }, 900);
+    }
+  }
+
   const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
     initialMessages: [],
+    body: { userId },
     onFinish: (message) => {
       console.log('Message exchange completed');
       // Add AI response to our messages
@@ -64,6 +88,7 @@ export default function ChatInterface({
       };
       setMessages(prev => [...prev, aiMessage]);
       setIsSubmitting(false);
+      handleCompletionRedirect(aiMessage.content);
     },
     onError: (error) => {
       console.error('Chat error:', error);
@@ -71,10 +96,23 @@ export default function ChatInterface({
     }
   });
 
-  const router = useRouter();
-
   // Initialize chat with welcome message
   useEffect(() => {
+    // Resolve current user ID for persistence bridging
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          console.warn('⚠️ Could not resolve client user via supabase.auth.getUser():', error.message);
+        }
+        const id = data?.user?.id ?? null;
+        setUserId(id);
+        console.log('👤 Client userId hydrated for chat body:', id ?? 'null');
+      } catch (e) {
+        console.error('❌ Unexpected error resolving client user:', e);
+      }
+    })();
+
     console.log('🤖 Initializing chat with welcome message');
     
     const initializeChat = () => {
@@ -114,6 +152,7 @@ export default function ChatInterface({
     if (!input.trim() || isSubmitting) return;
     
     setIsSubmitting(true);
+    console.log('🛰️ Submitting response with userId:', userId ?? 'null');
 
     // Safety timeout to reset submitting state if something goes wrong
     const safetyTimeout = setTimeout(() => {

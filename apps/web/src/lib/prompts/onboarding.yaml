@@ -292,10 +292,10 @@ prompt_system:
     completion_template:
       du:
         examples:
-          - "Super, {salutation}! Deine Grunddaten sind vollständig und stimmig. Für die nächste Phase geht’s hier weiter: https://google.com"
+          - "Super, {salutation}! Deine Grunddaten sind vollständig und stimmig.
       sie:
         examples:
-          - "Großartig, {salutation}! Ihre Grunddaten sind vollständig und konsistent. Weiter geht es hier: https://google.com"
+          - "Großartig, {salutation}! Ihre Grunddaten sind vollständig und konsistent.
 
     fallback_template:
       error_message: |
