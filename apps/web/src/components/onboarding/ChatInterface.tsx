@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useChat } from '@ai-sdk/react';
-import { Bot, User, Send, Sparkles } from 'lucide-react';
+import { Bot, User, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface ChatInterfaceProps {
@@ -218,19 +218,11 @@ export default function ChatInterface({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div 
-            style={{
-              width: '40px',
-              height: '40px',
-              background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Sparkles style={{ width: '20px', height: '20px', color: 'var(--md-sys-color-on-primary)' }} />
-          </div>
+          <img
+            src="/ChatGPT%20Image%2023.%20Aug.%202025%2C%2014_54_47.png"
+            alt="Nality logo"
+            style={{ width: '40px', height: '40px', display: 'block' }}
+          />
           <div>
             <h3 
               style={{
@@ -460,7 +452,7 @@ export default function ChatInterface({
             }}
           >
             <form onSubmit={handleSubmitResponse}>
-              <div style={{ marginBottom: '12px' }}>
+              <div style={{ position: 'relative', marginBottom: '12px' }}>
                 <textarea
                   ref={textareaRef}
                   value={input}
@@ -480,7 +472,8 @@ export default function ChatInterface({
                     outline: 'none',
                     background: 'var(--md-sys-color-surface-container-highest)',
                     lineHeight: 1.4,
-                    resize: 'none'
+                    resize: 'none',
+                    paddingRight: '120px'
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
@@ -497,19 +490,13 @@ export default function ChatInterface({
                     }
                   }}
                 />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <p style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--md-sys-color-on-surface-variant)',
-                  margin: 0
-                }}>
-                  💬 Enter zum Senden • Shift+Enter für neue Zeile
-                </p>
                 <button
                   type="submit"
                   disabled={!input.trim() || isSubmitting}
                   style={{
+                    position: 'absolute',
+                    right: '12px',
+                    bottom: '12px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
@@ -526,7 +513,8 @@ export default function ChatInterface({
                     transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
                     fontSize: '0.875rem',
                     fontWeight: 500,
-                    boxShadow: !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)'
+                    boxShadow: !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)',
+                    transform: 'translateY(0px)'
                   }}
                   onMouseOver={(e) => {
                     if (!isSubmitting && input.trim()) {
@@ -543,9 +531,9 @@ export default function ChatInterface({
                   Senden
                 </button>
               </div>
-            </form>
-          </motion.div>
-        )}
+              </form>
+            </motion.div>
+          )}
 
         {/* Submitting State */}
         {isSubmitting && (

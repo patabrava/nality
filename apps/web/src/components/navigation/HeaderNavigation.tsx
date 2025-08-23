@@ -34,7 +34,7 @@ export function HeaderNavigation() {
       <div className="header-content">
         {/* Logo */}
         <div className="logo">
-          <span className="brand-full">Nality</span>
+          <img src="/ChatGPT%20Image%2023.%20Aug.%202025,%2014_54_47.png" alt="Nality logo" className="brand-full" style={{ height: '48px', width: 'auto' }} />
           <span className="brand-short">N</span>
         </div>
         

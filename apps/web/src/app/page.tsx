@@ -121,12 +121,14 @@ export default function Home() {
           backdrop-filter: blur(20px);
           border-bottom: 1px solid var(--md-sys-color-outline-variant);
           animation: slideDown var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+          height: 48px;
         }
 
         .nality-header-content {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 16px 24px;
+          padding: 0 24px;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -137,6 +139,11 @@ export default function Home() {
           font-weight: 700;
           color: var(--md-sys-color-primary);
           animation: fadeInScale var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+        }
+
+        .nality-logo img {
+          display: block;
+          height: 48px;
         }
 
         .nality-nav {
@@ -472,7 +479,7 @@ export default function Home() {
         /* Responsive Design */
         @media (max-width: 768px) {
           .nality-header-content {
-            padding: 12px 16px;
+            padding: 0 16px;
           }
 
           .nality-container {
@@ -520,7 +527,9 @@ export default function Home() {
         {/* Header */}
         <header className="nality-header">
           <div className="nality-header-content">
-            <div className="nality-logo">Nality</div>
+            <div className="nality-logo">
+              <img src="/ChatGPT%20Image%2023.%20Aug.%202025%2C%2014_54_47.png" alt="Nality logo" />
+            </div>
             <nav className="nality-nav">
               <button className="nality-nav-button" onClick={handleLearnMore}>
                 Features
