@@ -24,9 +24,9 @@ export function HeaderNavigation() {
   }
 
   const handleProfileClick = () => {
-    // Add profile navigation logic here
+    // Navigate to profile page
     setIsMobileMenuOpen(false) // Close mobile menu on profile access
-    // router.push('/profile') // Uncomment when profile route is ready
+    router.push('/dash/profile')
   }
 
   return (
@@ -68,7 +68,13 @@ export function HeaderNavigation() {
         
         {/* User Profile */}
         <div className="header-user">
-          <span className="user-avatar">👤</span>
+          <button 
+            className="user-avatar-btn"
+            aria-label="Access user profile"
+            onClick={handleProfileClick}
+          >
+            <span className="user-avatar">👤</span>
+          </button>
         </div>
       </div>
       
