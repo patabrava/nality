@@ -578,7 +578,7 @@ export function TimelineModule() {
             letterSpacing: '-0.02em'
           }}
         >
-          My Timeline
+          
         </h1>
       </div>
 
