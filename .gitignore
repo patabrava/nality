@@ -32,7 +32,7 @@ Thumbs.db
 .supabase/
 
 # YAML files
-*.yaml
+
 *.yml
 # Allow prompt YAML inside web app prompts
 !apps/web/src/lib/prompts/onboarding.yaml

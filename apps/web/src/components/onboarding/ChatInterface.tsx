@@ -126,7 +126,7 @@ export default function ChatInterface({
       }
     })();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       const token = session?.access_token ?? null;
       setAccessToken(token);
       setUserId(session?.user?.id ?? null);
@@ -288,7 +288,7 @@ export default function ChatInterface({
             background: 'var(--md-sys-color-surface)'
           }}
         >
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {messages.map((message) => (
               <motion.div
                 key={message.id}

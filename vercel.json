@@ -1,0 +1,17 @@
+{
+  "buildCommand": "turbo build --filter=web",
+  "installCommand": "corepack enable && pnpm install",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
+  "functions": {
+    "apps/web/src/app/api/**": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/apps/web/$1"
+    }
+  ]
+}
