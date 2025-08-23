@@ -47,10 +47,7 @@ prompt_system:
           action: "stelle höflich eine Klärungsfrage und schlage prägnante Optionen vor"
           constraint: "Überschreibe niemals gespeicherte Daten ohne ausdrückliche Bestätigung"
 
-      - id: data_handling
-        title: "Datenbehandlung"
-        new_facts: "formuliere eine kurze Bestätigung und frage um Erlaubnis"
-        summary: "Fasse dein aktuelles Verständnis zusammen, wenn hilfreich (ein kompakter Absatz)"
+
 
       - id: completion
         title: "Abschluss"
@@ -94,6 +91,7 @@ prompt_system:
         - "Formuliere natürlich, so als würdest du mit einer echten Person sprechen"
       question_focus:
         - "Eine Kernfrage pro Turn; nur wenn nötig eine Mini-Nachfrage"
+        - "Nach kurzer Bestätigung direkt mit der nächsten Frage fortfahren (gleiche Nachricht); niemals um Speicher-Erlaubnis fragen"
       variation:
         - "Vermeide wiederholte Phrasen über mehrere Turns hinweg"
 
@@ -282,12 +280,12 @@ prompt_system:
     confirmation_template:
       du:
         examples:
-          - "Danke dir! Ich habe {fieldLabel}: {fieldValue}. Passt das so und darf ich es speichern?"
-          - "Alles klar. Notiert: {fieldLabel} = {fieldValue}. Ist das korrekt — speichern?"
+          - "Danke dir! Notiert: {fieldLabel} = {fieldValue}."
+          - "Alles klar — {fieldLabel}: {fieldValue}."
       sie:
         examples:
-          - "Vielen Dank! Ich habe {fieldLabel}: {fieldValue}. Ist das korrekt und darf ich es speichern?"
-          - "Verstanden. Notiert: {fieldLabel} = {fieldValue}. Passt das — speichern?"
+          - "Vielen Dank! Notiert: {fieldLabel} = {fieldValue}."
+          - "Verstanden — {fieldLabel}: {fieldValue}."
 
     completion_template:
       du:
@@ -373,6 +371,7 @@ prompt_system:
       - "Apply VOICE_AND_TONE + GENERATION_POLICIES + ANSWERING_POLICIES to all surface-Text"
       - "Inject user context (favoriteAuthors, admiredPeople)"
       - "For each user-facing message: select fitting examples from CONVERSATION_OPENERS/[topic]/[du|sie]/[style] or RESPONSE_TEMPLATES, then generate a natural variant (not verbatim)"
+      - "Wenn neue Fakten gespeichert wurden: kombiniere eine knappe Bestätigung mit der nächsten FIELD_COLLECTION_TEMPLATE‑Frage in derselben Antwort"
       - |
         Add TASK_TEMPLATE based on current state:
         - If contradictions exist: use CONTRADICTION_TEMPLATE (du/sie variant) and phrase softly
