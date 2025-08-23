@@ -25,12 +25,15 @@ export async function POST(req: Request) {
   console.log(" Chat API endpoint hit");
   
   try {
-    const { messages, userId: bodyUserId } = await req.json();
+    const { messages, userId: bodyUserId, accessToken } = await req.json();
     console.log(" Received messages:", JSON.stringify(messages, null, 2));
     if (bodyUserId) {
       console.log(` ℹ️ Received userId from client body: ${bodyUserId}`);
     } else {
       console.log(' ℹ️ No userId provided in client body. Will attempt server auth.');
+    }
+    if (accessToken) {
+      console.log(' 🔑 Received accessToken in request body (length):', String(accessToken).length);
     }
 
     // Validate messages array
@@ -91,13 +94,27 @@ export async function POST(req: Request) {
 
         // Insert only if we have an answer text
         if (answerText && answerText.trim().length > 0) {
+          // Map question content to topic categories
+          const inferQuestionTopic = (questionText: string | null): string => {
+            if (!questionText) return 'identity'; // fallback
+            const q = questionText.toLowerCase();
+            
+            if (q.includes('ansprechen') || q.includes('name') || q.includes('titel')) return 'identity';
+            if (q.includes('geschwister') || q.includes('familie') || q.includes('eltern')) return 'family';
+            if (q.includes('schule') || q.includes('studium') || q.includes('bildung') || q.includes('abschluss')) return 'education';
+            if (q.includes('beruf') || q.includes('arbeit') || q.includes('rolle') || q.includes('job')) return 'career';
+            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('person') || q.includes('geprägt')) return 'influences';
+            
+            return 'identity'; // default fallback
+          };
+
           const insertPayload = {
             user_id: effectiveUserId,
             session_id: null, // Not tracked in this flow yet
             message_id: null,
-            question_topic: null,
+            question_topic: inferQuestionTopic(questionText),
             field_key: null,
-            question_text: questionText || null,
+            question_text: questionText || 'Unbekannte Frage',
             answer_text: answerText,
             answer_json: null,
             model_name: 'gemini-2.0-flash-exp',
@@ -105,8 +122,9 @@ export async function POST(req: Request) {
             persona_language_style: null,
           } as any;
 
-          // Prefer admin client to bypass RLS when using client-provided userId or when server auth is unavailable
-          const useAdmin = !user?.id || effectiveUserId !== user?.id;
+          // Prefer user-auth client with accessToken to satisfy RLS; fallback to admin if available
+          const canUseUserToken = !!accessToken && typeof accessToken === 'string' && accessToken.length > 0;
+          const useAdmin = !canUseUserToken && (!user?.id || effectiveUserId !== user?.id);
           let insertError: any = null;
 
           // Add some observability without leaking PII
@@ -114,14 +132,40 @@ export async function POST(req: Request) {
             ` 🧾 Preparing insert -> user_id: ${effectiveUserId}, question_present: ${!!questionText}, answer_len: ${answerText.length}`
           );
 
-          if (useAdmin) {
+          if (canUseUserToken) {
+            // Create a user-authenticated client using the provided access token
+            const authed = createSupabaseAdmin(
+              process.env.NEXT_PUBLIC_SUPABASE_URL!,
+              process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+              {
+                global: {
+                  headers: { Authorization: `Bearer ${accessToken}` },
+                },
+              }
+            );
+            const { error } = await authed.from('onboarding_answers').insert(insertPayload);
+            insertError = error;
+            console.log(' 🔒 Used user-authenticated client (JWT) for persistence');
+          } else if (useAdmin) {
             const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
             if (!serviceKey) {
               console.error('❌ Missing SUPABASE_SERVICE_ROLE_KEY; cannot persist without server auth');
             } else {
+              const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+              // Non-sensitive diagnostics
+              console.log(' 🔧 Admin persistence diagnostics -> url present:', !!url, 'key length:', serviceKey.length);
+              // Create admin client with explicit headers to avoid any runtime env quirks
               const admin = createSupabaseAdmin(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                serviceKey
+                url,
+                serviceKey,
+                {
+                  global: {
+                    headers: {
+                      apikey: serviceKey,
+                      Authorization: `Bearer ${serviceKey}`,
+                    },
+                  },
+                }
               );
               const { error } = await admin.from('onboarding_answers').insert(insertPayload);
               insertError = error;

@@ -52,6 +52,7 @@ export default function ChatInterface({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
   
   // Detect onboarding completion message and redirect to timeline
@@ -76,7 +77,7 @@ export default function ChatInterface({
   const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    body: { userId },
+    body: { userId, accessToken },
     onFinish: (message) => {
       console.log('Message exchange completed');
       // Add AI response to our messages
@@ -113,6 +114,25 @@ export default function ChatInterface({
       }
     })();
 
+    // Hydrate access token and keep it fresh
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token ?? null;
+        setAccessToken(token);
+        console.log('🔑 Client accessToken hydrated (length):', token ? String(token).length : 0);
+      } catch (e) {
+        console.error('❌ Unexpected error resolving access token:', e);
+      }
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const token = session?.access_token ?? null;
+      setAccessToken(token);
+      setUserId(session?.user?.id ?? null);
+      console.log('🔄 Auth state changed. userId:', session?.user?.id ?? 'null', 'tokenLen:', token ? String(token).length : 0);
+    });
+
     console.log('🤖 Initializing chat with welcome message');
     
     const initializeChat = () => {
@@ -139,6 +159,9 @@ export default function ChatInterface({
     if (!isInitialized) {
       initializeChat();
     }
+    return () => {
+      sub?.subscription?.unsubscribe?.();
+    };
   }, [initialMessage, isInitialized]);
 
   // Auto-scroll to bottom
@@ -218,7 +241,7 @@ export default function ChatInterface({
                 lineHeight: 1.2
               }}
             >
-              Biografie-Assistent 💕
+              Biografie-Assistent 
             </h3>
             <p 
               style={{
