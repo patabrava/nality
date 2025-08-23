@@ -8,7 +8,7 @@ declare module 'framer-motion' {
     exitBeforeEnter?: boolean;
     presenceAffectsLayout?: boolean;
     mode?: 'sync' | 'popLayout' | 'wait';
-    custom?: any;
+    custom?: unknown;
     propagate?: boolean;
     anchorX?: string | number;
     root?: Element;

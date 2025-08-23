@@ -7,7 +7,7 @@ import type {
   LifeEvent, 
   LifeEventInput, 
   LifeEventUpdate,
-  LifeEventWithMedia,
+  MediaObject,
   TimelineEvent 
 } from '@nality/schema'
 
@@ -158,14 +158,14 @@ export function useLifeEvents(): UseLifeEventsReturn {
       console.log('✅ Fetched life events:', data?.length || 0, 'events')
 
       // Transform events with media information
-      const timelineEvents: TimelineEvent[] = (data || []).map(event => {
+      const timelineEvents: TimelineEvent[] = (data || []).map((event: LifeEvent & { media_objects?: MediaObject[] }) => {
         const timelineEvent = transformToTimelineEvent(event)
         
         // Add media information
-        const mediaObjects = event.media_objects || []
+        const mediaObjects: MediaObject[] = (event.media_objects || []) as MediaObject[]
         timelineEvent.media_objects = mediaObjects
         timelineEvent.media_count = mediaObjects.length
-        timelineEvent.primary_media = mediaObjects.find(m => m.media_type === 'image') || mediaObjects[0] || null
+        timelineEvent.primary_media = mediaObjects.find((m: MediaObject) => m.media_type === 'image') || mediaObjects[0] || null
         
         return timelineEvent
       })
@@ -229,7 +229,7 @@ export function useLifeEvents(): UseLifeEventsReturn {
       const newTimelineEvent = transformToTimelineEvent(data)
       setState(prev => ({ 
         ...prev, 
-        events: [newTimelineEvent, ...prev.events].sort((a, b) => 
+        events: [newTimelineEvent, ...prev.events].sort((a: TimelineEvent, b: TimelineEvent) => 
           new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
         ),
         creating: false 
@@ -267,12 +267,12 @@ export function useLifeEvents(): UseLifeEventsReturn {
         .select()
         .single()
 
-      if (error) {
+      if (error || !data) {
         console.error('❌ Error updating life event:', error)
         setState(prev => ({ 
-          ...prev, 
-          updating: false, 
-          error: `Failed to update event: ${error.message}` 
+          ...prev,
+          updating: false,
+          error: `Failed to update event: ${error?.message || 'Unknown error'}`
         }))
         return null
       }
@@ -283,11 +283,18 @@ export function useLifeEvents(): UseLifeEventsReturn {
       const updatedTimelineEvent = transformToTimelineEvent(data)
       setState(prev => ({ 
         ...prev, 
-        events: prev.events.map(event => 
-          event.id === id ? { ...updatedTimelineEvent, media_objects: event.media_objects } : event
-        ).sort((a, b) => 
-          new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-        ),
+        events: prev.events
+          .map((event: TimelineEvent) => 
+            event.id === id 
+              ? { 
+                  ...updatedTimelineEvent, 
+                  ...(event.media_objects ? { media_objects: event.media_objects } : {})
+                } 
+              : event
+          )
+          .sort((a: TimelineEvent, b: TimelineEvent) => 
+            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+          ),
         updating: false 
       }))
 
@@ -304,121 +311,126 @@ export function useLifeEvents(): UseLifeEventsReturn {
     }
   }
 
-  const deleteEvent = async (id: string): Promise<boolean> => {
-    if (!user?.id) {
-      console.error('❌ Cannot delete event: User not authenticated')
-      return false
-    }
+const deleteEvent = async (id: string): Promise<boolean> => {
+  if (!user?.id) {
+    console.error('❌ Cannot delete event: User not authenticated')
+    return false
+  }
 
-    setState(prev => ({ ...prev, deleting: true, error: null }))
+  setState(prev => ({ ...prev, deleting: true, error: null }))
 
-    try {
-      console.log('🗑️ Deleting life event:', id)
+  try {
+    console.log('🗑️ Deleting life event:', id)
 
-      const { error } = await supabase
-        .from('life_event')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id) // Ensure user owns the event
+    const { error } = await supabase
+      .from('life_event')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id) // Ensure user owns the event
 
-      if (error) {
-        console.error('❌ Error deleting life event:', error)
-        setState(prev => ({ 
-          ...prev, 
-          deleting: false, 
-          error: `Failed to delete event: ${error.message}` 
-        }))
-        return false
-      }
-
-      console.log('✅ Deleted life event:', id)
-
-      // Remove from local state
-      setState(prev => ({ 
-        ...prev, 
-        events: prev.events.filter(event => event.id !== id),
-        deleting: false 
-      }))
-
-      return true
-
-    } catch (error) {
-      console.error('❌ Unexpected error deleting life event:', error)
+    if (error) {
+      console.error('❌ Error deleting life event:', error)
       setState(prev => ({ 
         ...prev, 
         deleting: false, 
-        error: 'An unexpected error occurred while deleting the event' 
+        error: `Failed to delete event: ${error.message}` 
       }))
       return false
     }
+
+    console.log('✅ Deleted life event:', id)
+
+    // Remove from local state
+    setState(prev => ({ 
+      ...prev, 
+      events: prev.events.filter((event: TimelineEvent) => event.id !== id),
+      deleting: false 
+    }))
+
+    return true
+
+  } catch (error) {
+    console.error('❌ Unexpected error deleting life event:', error)
+    setState(prev => ({ 
+      ...prev, 
+      deleting: false, 
+      error: 'An unexpected error occurred while deleting the event' 
+    }))
+    return false
   }
+}
 
-  const getEvent = (id: string): TimelineEvent | null => {
-    return state.events.find(event => event.id === id) || null
+const getEvent = (id: string): TimelineEvent | null => {
+  return state.events.find((event: TimelineEvent) => event.id === id) || null
+}
+
+const refetch = async (): Promise<void> => {
+  await fetchEvents()
+}
+
+// ──────────────────────
+// Effects
+// ──────────────────────
+
+// Initial load and auth state changes
+useEffect(() => {
+  if (isAuthenticated && user) {
+    fetchEvents()
+  } else {
+    setState(prev => ({ ...prev, events: [], loading: false, error: null }))
   }
+}, [isAuthenticated, user, fetchEvents])
 
-  const refetch = async (): Promise<void> => {
-    await fetchEvents()
-  }
+// Real-time subscriptions
+useEffect(() => {
+  if (!user?.id) return
 
-  // ──────────────────────
-  // Effects
-  // ──────────────────────
+  console.log('🔄 Setting up real-time subscription for user:', user.id)
 
-  // Initial load and auth state changes
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchEvents()
-    } else {
-      setState(prev => ({ ...prev, events: [], loading: false, error: null }))
-    }
-  }, [isAuthenticated, user, fetchEvents])
-
-  // Real-time subscriptions
-  useEffect(() => {
-    if (!user?.id) return
-
-    console.log('🔄 Setting up real-time subscription for user:', user.id)
-
-    const subscription = supabase
-      .channel(`life_events:${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'life_event',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          console.log('🔄 Real-time update:', payload)
-          
-          if (payload.eventType === 'INSERT') {
-            const newEvent = transformToTimelineEvent(payload.new as LifeEvent)
-            setState(prev => ({
-              ...prev,
-              events: [newEvent, ...prev.events].sort((a, b) => 
-                new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-              )
-            }))
-          } else if (payload.eventType === 'UPDATE') {
-            const updatedEvent = transformToTimelineEvent(payload.new as LifeEvent)
-            setState(prev => ({
-              ...prev,
-              events: prev.events.map(event => 
-                event.id === payload.new.id ? { ...updatedEvent, media_objects: event.media_objects } : event
-              ).sort((a, b) => 
-                new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-              )
-            }))
-          } else if (payload.eventType === 'DELETE') {
-            setState(prev => ({
-              ...prev,
-              events: prev.events.filter(event => event.id !== payload.old.id)
-            }))
-          }
+  const subscription = supabase
+    .channel(`life_events:${user.id}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'life_event',
+        filter: `user_id=eq.${user.id}`
+      },
+      (payload: any) => {
+        console.log('🔄 Real-time update:', payload)
+        
+        if (payload.eventType === 'INSERT') {
+          const newEvent = transformToTimelineEvent(payload.new as LifeEvent)
+          setState(prev => ({
+            ...prev,
+            events: [newEvent, ...prev.events].sort((a: TimelineEvent, b: TimelineEvent) => 
+              new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+            )
+          }))
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedEvent = transformToTimelineEvent(payload.new as LifeEvent)
+          setState(prev => ({
+            ...prev,
+            events: prev.events.map((event: TimelineEvent) => 
+              event.id === payload.new.id 
+                ? { 
+                    ...updatedEvent, 
+                    ...(event.media_objects ? { media_objects: event.media_objects } : {})
+                  } 
+                : event
+            ).sort((a: TimelineEvent, b: TimelineEvent) => 
+              new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+            )
+          }))
+        } else if (payload.eventType === 'DELETE') {
+          setState(prev => ({
+            ...prev,
+            events: prev.events.filter((event: TimelineEvent) => event.id !== payload.old.id)
+          }))
         }
-      )
+      }
+    )
       .subscribe()
 
     return () => {

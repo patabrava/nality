@@ -19,7 +19,6 @@ export function TabNavigation() {
     activeModule, 
     setActiveModule, 
     averageModuleLoadTime,
-    getModuleLoadTime,
     compactMode 
   } = useDashboard()
 
@@ -54,7 +53,6 @@ export function TabNavigation() {
       role="tablist"
     >
       {tabs.map((tab) => {
-        const moduleLoadTime = getModuleLoadTime(tab.id)
         const isActive = activeModule === tab.id
         
         return (
