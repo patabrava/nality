@@ -27,7 +27,6 @@ function DashboardTile({ title, content, isInteractive = false, svgPath, slogan,
     'timeline-event-card',
     'standard-text-card',
     'dashboard-tile', // Add custom class for grid-specific overrides
-    svgPath ? 'feature-card' : 'view-hero', // Conditional class based on icon presence
     isInteractive ? 'cursor-pointer interactive-tile' : 'static-tile'
   ].filter(Boolean).join(' ')
 
@@ -70,10 +69,17 @@ function DashboardTile({ title, content, isInteractive = false, svgPath, slogan,
               </p>
             )}
             
-            {/* Content container - conditional display based on tile type */}
-            <div className="flex items-center justify-center mt-2">
-              {content}
-            </div>
+            {/* Content container - hide numbers for Picture Chapters */}
+            {!isInteractive ? (
+              <div className="flex items-center justify-center mt-2">
+                {content}
+              </div>
+            ) : (
+              // For Picture Chapters, don't display the content (numbers)
+              <div className="flex items-center justify-center mt-2">
+                {/* Numbers hidden for Picture Chapters */}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -81,8 +87,8 @@ function DashboardTile({ title, content, isInteractive = false, svgPath, slogan,
   )
 }
 
-export default function DashboardPage() {
-  console.log('📊 Dashboard page mounted')
+export default function TestDashboardPage() {
+  console.log('📊 Test Dashboard page mounted')
 
   const handleChapterClick = (chapterNum: number, theme: string) => {
     console.log(`Picture Chapter ${chapterNum} clicked: ${theme}`)
@@ -192,11 +198,11 @@ export default function DashboardPage() {
           margin-left: 0 !important;
           margin-right: 0 !important;
           
-          /* Material Design 3 Surface Container - Sharp Square Design */
+          /* Material Design 3 Surface Container */
           background: var(--md-sys-color-surface-container) !important;
           border: 1px solid var(--md-sys-color-outline-variant) !important;
-          border-radius: 0 !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+          border-radius: 16px !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
           
           /* Center content layout */
           display: flex !important;
@@ -213,8 +219,8 @@ export default function DashboardPage() {
         
         /* Interactive tiles (Picture Chapters) - Enhanced hover effects */
         .dashboard-tile.interactive-tile:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+          transform: translateY(-4px) !important;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
           border-color: var(--md-sys-color-on-surface) !important;
         }
         
@@ -224,7 +230,7 @@ export default function DashboardPage() {
           top: 0;
           left: 0;
           right: 0;
-          height: 4px;
+          height: 3px;
           background: linear-gradient(90deg, var(--md-sys-color-on-surface), var(--md-sys-color-on-surface-variant));
           transform: scaleX(0);
           transition: transform var(--md-sys-motion-duration-medium1, 250ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
@@ -234,39 +240,11 @@ export default function DashboardPage() {
           transform: scaleX(1);
         }
         
-        /* Static tiles (KPI, slogan, call-to-action) - Enhanced subtle styling */
+        /* Static tiles (KPI, slogan, call-to-action) - No hover effects */
         .dashboard-tile.static-tile:hover {
           transform: none !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
           border-color: var(--md-sys-color-outline-variant) !important;
-        }
-        
-        /* Feature Card Styling - Tiles with icons */
-        .dashboard-tile.feature-card {
-          background: var(--md-sys-color-surface-container) !important;
-          border: 2px solid var(--md-sys-color-outline-variant) !important;
-        }
-        
-        .dashboard-tile.feature-card:hover {
-          border-color: var(--md-sys-color-primary) !important;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
-        }
-        
-        /* View Hero Styling - Tiles without icons (stats, CTAs) */
-        .dashboard-tile.view-hero {
-          background: var(--md-sys-color-primary-container) !important;
-          border: 2px solid var(--md-sys-color-primary) !important;
-          color: var(--md-sys-color-on-primary-container) !important;
-        }
-        
-        .dashboard-tile.view-hero:hover {
-          background: var(--md-sys-color-primary) !important;
-          color: var(--md-sys-color-on-primary) !important;
-          transform: scale(1.02) !important;
-        }
-        
-        .dashboard-tile.view-hero .card-title {
-          color: inherit !important;
         }
         
         /* Card content centering */
@@ -299,16 +277,15 @@ export default function DashboardPage() {
           gap: 0.5rem;
         }
         
-        /* Typography improvements - Enhanced hierarchy */
+        /* Typography improvements */
         .dashboard-tile .card-title {
-          font-size: 1.125rem !important;
-          font-weight: 700 !important;
+          font-size: 1rem !important;
+          font-weight: 600 !important;
           color: var(--md-sys-color-on-surface) !important;
           line-height: 1.2 !important;
           text-align: center !important;
           margin: 0 !important;
           word-wrap: break-word;
-          letter-spacing: -0.01em;
         }
         
         /* SVG styling */

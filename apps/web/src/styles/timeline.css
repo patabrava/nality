@@ -38,6 +38,12 @@
   container-name: timeline-viewport;
 }
 
+/* Header-aware timeline viewport - preserves working code while adding header support */
+.full-timeline-viewport.with-header {
+  /* Adjust height to account for 48px header */
+  height: calc(100vh - 48px);
+}
+
 .timeline-scroll-zone {
   /* Foundation: Simple scrollable area */
   height: 100%;

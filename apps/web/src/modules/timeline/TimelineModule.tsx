@@ -27,11 +27,15 @@ export function TimelineModule() {
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
 
+  // Header navigation detection - CODE_EXPANSION: Preserve working functionality
+  const hasHeaderNavigation = process.env.NEXT_PUBLIC_USE_HEADER_NAV === 'true'
+  
   console.log('[TimelineModule] Component mounted', { 
     eventsCount: events.length, 
     loading, 
     showForm, 
-    editingEvent: editingEvent?.id 
+    editingEvent: editingEvent?.id,
+    hasHeaderNavigation // Debug output for header detection
   })
 
   // ──────────────────────
@@ -511,7 +515,8 @@ export function TimelineModule() {
       <div 
         style={{
           position: 'fixed',
-          top: 0,
+          // Header-aware positioning for form overlay
+          top: hasHeaderNavigation ? '48px' : '0',
           left: 0,
           right: 0,
           bottom: 0,
@@ -544,7 +549,8 @@ export function TimelineModule() {
     <div 
       style={{
         position: 'fixed',
-        top: 0,
+        // Header-aware positioning - CODE_EXPANSION: Conditional fix preserves working functionality
+        top: hasHeaderNavigation ? '48px' : '0',
         left: 0,
         right: 0,
         bottom: 0,
