@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Use service role key for admin operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Ensure this route is always dynamic and runs on Node.js runtime
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url) throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
+  if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
+  return createClient(url, key)
+}
 
 const migrations = [
   {
@@ -289,6 +295,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     // Test connection and return database info
     const { data, error } = await supabaseAdmin
       .from('information_schema.tables')
