@@ -27,6 +27,7 @@ function DashboardTile({ title, content, isInteractive = false, svgPath, slogan,
     'timeline-event-card',
     'standard-text-card',
     'dashboard-tile', // Add custom class for grid-specific overrides
+    svgPath ? 'feature-card' : 'view-hero', // Conditional class based on icon presence
     isInteractive ? 'cursor-pointer interactive-tile' : 'static-tile'
   ].filter(Boolean).join(' ')
 
@@ -69,17 +70,10 @@ function DashboardTile({ title, content, isInteractive = false, svgPath, slogan,
               </p>
             )}
             
-            {/* Content container - hide numbers for Picture Chapters */}
-            {!isInteractive ? (
-              <div className="flex items-center justify-center mt-2">
-                {content}
-              </div>
-            ) : (
-              // For Picture Chapters, don't display the content (numbers)
-              <div className="flex items-center justify-center mt-2">
-                {/* Numbers hidden for Picture Chapters */}
-              </div>
-            )}
+            {/* Content container - conditional display based on tile type */}
+            <div className="flex items-center justify-center mt-2">
+              {content}
+            </div>
           </div>
         </div>
       </div>
@@ -245,6 +239,34 @@ export default function DashboardPage() {
           transform: none !important;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
           border-color: var(--md-sys-color-outline-variant) !important;
+        }
+        
+        /* Feature Card Styling - Tiles with icons */
+        .dashboard-tile.feature-card {
+          background: var(--md-sys-color-surface-container) !important;
+          border: 2px solid var(--md-sys-color-outline-variant) !important;
+        }
+        
+        .dashboard-tile.feature-card:hover {
+          border-color: var(--md-sys-color-primary) !important;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+        }
+        
+        /* View Hero Styling - Tiles without icons (stats, CTAs) */
+        .dashboard-tile.view-hero {
+          background: var(--md-sys-color-primary-container) !important;
+          border: 2px solid var(--md-sys-color-primary) !important;
+          color: var(--md-sys-color-on-primary-container) !important;
+        }
+        
+        .dashboard-tile.view-hero:hover {
+          background: var(--md-sys-color-primary) !important;
+          color: var(--md-sys-color-on-primary) !important;
+          transform: scale(1.02) !important;
+        }
+        
+        .dashboard-tile.view-hero .card-title {
+          color: inherit !important;
         }
         
         /* Card content centering */
