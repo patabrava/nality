@@ -505,7 +505,7 @@ export default function ChatInterface({
         }}>
           <button
             type="button"
-            onClick={() => router.push('/timeline')}
+            onClick={() => router.push('/dash')}
             style={{
               width: '100%',
               padding: '12px 24px',

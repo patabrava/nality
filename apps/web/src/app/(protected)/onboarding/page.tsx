@@ -14,8 +14,8 @@ export default function OnboardingPage() {
     if (!loading && isAuthenticated && user?.id) {
       fetchUserProfile(user.id).then(profile => {
         if (profile && profile.onboarding_complete) {
-          console.log('✅ User already onboarded, redirecting to /timeline')
-          router.replace('/timeline')
+          console.log('✅ User already onboarded, redirecting to /dash')
+          router.replace('/dash')
         }
       })
     }

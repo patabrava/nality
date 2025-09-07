@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { fetchUserProfile } from '@/lib/supabase/client'
+import { checkTermsAcceptance } from '@/lib/supabase/terms'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -23,11 +24,22 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          // User is authenticated, check onboarding state
+          // User is authenticated, check onboarding and terms state
           const userId = data.session.user.id
-          const profile = await fetchUserProfile(userId)
+          const [profile, termsStatus] = await Promise.all([
+            fetchUserProfile(userId),
+            checkTermsAcceptance(userId)
+          ])
+          
+          // First check if terms are accepted
+          if (!termsStatus.hasAccepted) {
+            router.push('/terms')
+            return
+          }
+          
+          // Then check onboarding state
           if (profile && profile.onboarding_complete) {
-            router.push('/timeline')
+            router.push('/dash')
           } else {
             router.push('/onboarding')
           }
