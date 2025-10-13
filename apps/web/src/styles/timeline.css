@@ -152,32 +152,35 @@
 
 /* PHASE 1: Mobile-First Event Cards - Responsive width with safety margins */
 .timeline-event-card {
-  /* Foundation: Simple card with mobile-optimized spacing */
-  background: var(--tl-surface-elevated, #ffffff);
-  border-radius: 12px;
-  padding: 16px;
-  
-  /* Explicit Error Handling: Responsive width with safety margins */
-  width: 100%;
-  max-width: calc(100vw - 120px);
-  min-width: 200px;
-  
-  /* Observable Implementation: Clear visual hierarchy */
-  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
-  /* Progressive Construction: Simple transitions */
-  transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
-  
-  /* Dependency Transparency: Container for internal responsive behavior */
-  container-type: inline-size;
-  container-name: event-card;
-  
-  /* Explicit Error Handling: Prevent text overflow */
-  box-sizing: border-box;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
+    /* Foundation: Simple card with mobile-optimized spacing */
+    background: var(--tl-surface-elevated, #ffffff);
+    border-radius: 12px;
+    padding: 16px;
+    
+    /* Explicit Error Handling: Responsive width with safety margins */
+    width: 100%;
+    max-width: calc(100vw - 120px);
+    min-width: 200px;
+    
+    /* Progressive Construction: Clean shadow with color tokens */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--md-sys-color-outline-variant, #c4c7c5);
+    
+    /* Observable Implementation: Clear state feedback */
+    transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+    
+    /* Foundation: Text handling and layout protection */
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Progressive Construction: Container queries for responsive content */
+    container-type: inline-size;
+    container-name: event-card;
+    
+    /* Explicit Error Handling: Prevent text overflow */
+    overflow: hidden;
+  }
 
 .timeline-event-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -279,6 +282,10 @@
     background: linear-gradient(to bottom, 
       var(--md-sys-color-primary, #6750a4) 0%, 
       var(--md-sys-color-outline, #79747e) 100%);
+    
+    /* Enhanced visual presence for alternating layout */
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(103, 80, 164, 0.2);
   }
   
   .timeline-item {
@@ -307,17 +314,32 @@
     max-width: 360px;
     padding: 24px;
     border-radius: 16px;
+    
+    /* Enhance visual balance with consistent width constraints */
+    min-width: 280px;
   }
   
   /* Progressive Construction: Alternating layout for visual balance */
+  /* Using nth-child selectors for CSS-only approach - CORRECTED MARGINS */
   .timeline-item:nth-child(odd) .timeline-event-card {
+    margin-right: calc(50% + 32px);
+    margin-left: auto;
+  }
+  
+  .timeline-item:nth-child(even) .timeline-event-card {
     margin-left: calc(50% + 32px);
     margin-right: auto;
   }
   
-  .timeline-item:nth-child(even) .timeline-event-card {
+  /* Explicit class-based alternating layout for precise event positioning */
+  .timeline-event-odd .timeline-event-card {
     margin-right: calc(50% + 32px);
     margin-left: auto;
+  }
+  
+  .timeline-event-even .timeline-event-card {
+    margin-left: calc(50% + 32px);
+    margin-right: auto;
   }
 }
 
@@ -341,20 +363,35 @@
   .timeline-event-card {
     max-width: 420px;
     padding: 28px;
+    
+    /* Maintain consistent width constraints for larger screens */
+    min-width: 320px;
   }
   
   .timeline-event-card:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    
+    /* Smooth transition for enhanced interactivity */
+    transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized);
   }
   
-  /* Explicit Error Handling: Ensure proper spacing */
+  /* Explicit Error Handling: Ensure proper spacing - CORRECTED MARGINS */
   .timeline-item:nth-child(odd) .timeline-event-card {
-    margin-left: calc(50% + 40px);
+    margin-right: calc(50% + 40px);
   }
   
   .timeline-item:nth-child(even) .timeline-event-card {
+    margin-left: calc(50% + 40px);
+  }
+  
+  /* Explicit class-based alternating layout for 1024px+ */
+  .timeline-event-odd .timeline-event-card {
     margin-right: calc(50% + 40px);
+  }
+  
+  .timeline-event-even .timeline-event-card {
+    margin-left: calc(50% + 40px);
   }
 }
 
@@ -366,14 +403,26 @@
   
   .timeline-event-card {
     max-width: 480px;
+    
+    /* Maximum screen optimization with visual balance */
+    min-width: 360px;
   }
   
   .timeline-item:nth-child(odd) .timeline-event-card {
-    margin-left: calc(50% + 48px);
+    margin-right: calc(50% + 48px);
   }
   
   .timeline-item:nth-child(even) .timeline-event-card {
+    margin-left: calc(50% + 48px);
+  }
+  
+  /* Explicit class-based alternating layout for 1440px+ */
+  .timeline-event-odd .timeline-event-card {
     margin-right: calc(50% + 48px);
+  }
+  
+  .timeline-event-even .timeline-event-card {
+    margin-left: calc(50% + 48px);
   }
 }
 

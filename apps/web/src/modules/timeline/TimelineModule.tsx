@@ -6,6 +6,9 @@ import { LifeEventCard } from '@/components/timeline/LifeEventCard'
 import { LifeEventForm } from '@/components/timeline/LifeEventForm'
 import type { TimelineEvent, LifeEventFormData } from '@nality/schema'
 
+// CODE_EXPANSION: Import timeline CSS for alternating layout functionality
+import '@/styles/timeline.css'
+
 /**
  * Timeline Module Component
  * Full-screen Material Design 3 implementation following MONOCODE principles
@@ -217,10 +220,9 @@ export function TimelineModule() {
     const event = item.event
     const nodeType = event.is_duration ? 'duration-start' : 'moment'
 
+    // CODE_EXPANSION: Preserve working node functionality, simplify structure for alternating CSS
     return (
-      <div key={`node-${event.id}-${index}`} className="timeline-node-container">
-        <div className={`timeline-event-node ${nodeType}`} />
-      </div>
+      <div key={`node-${event.id}-${index}`} className={`timeline-event-node ${nodeType}`} />
     )
   }
 
@@ -234,16 +236,15 @@ export function TimelineModule() {
       variant = 'featured'
     }
 
+    // CODE_EXPANSION: Remove wrapper div since LifeEventCard already has timeline-event-card class
     return (
-      <div className="timeline-card-container">
-        <LifeEventCard
-          key={`card-${event.id}-${index}`}
-          event={event}
-          variant={variant}
-          onEdit={handleEditEvent}
-          onDelete={handleDeleteEvent}
-        />
-      </div>
+      <LifeEventCard
+        key={`card-${event.id}-${index}`}
+        event={event}
+        variant={variant}
+        onEdit={handleEditEvent}
+        onDelete={handleDeleteEvent}
+      />
     )
   }
 
@@ -341,57 +342,54 @@ export function TimelineModule() {
       <div className="timeline-spine" />
       {[1, 2, 3].map(i => (
         <div key={i} className="timeline-item">
-          <div className="timeline-node-container">
-            <div className="timeline-event-node moment" />
-          </div>
-          <div className="timeline-card-container">
-            <div 
-              style={{
-                background: 'var(--md-sys-color-surface-container)',
-                borderRadius: 'clamp(12px, 3vw, 16px)',
-                padding: 'clamp(12px, 3vw, 20px)',
-                maxWidth: 'clamp(280px, 80vw, 300px)',
-                width: '100%',
-                border: '1px solid var(--md-sys-color-outline-variant)',
-                animation: 'pulse 2s ease-in-out infinite',
-                boxSizing: 'border-box'
-              }}
-            >
-              <div style={{ 
-                height: 'clamp(12px, 3vw, 16px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(6px, 1.5vw, 8px)', 
-                marginBottom: 'clamp(8px, 2vw, 12px)',
-                width: '60%'
-              }} />
-              <div style={{ 
-                height: 'clamp(10px, 2.5vw, 14px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(5px, 1.25vw, 7px)', 
-                marginBottom: 'clamp(6px, 1.5vw, 8px)',
-                width: '40%'
-              }} />
-              <div style={{ 
-                height: 'clamp(8px, 2vw, 12px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(4px, 1vw, 6px)', 
-                marginBottom: 'clamp(6px, 1.5vw, 8px)',
-                width: '80%'
-              }} />
-              <div style={{ 
-                height: 'clamp(8px, 2vw, 12px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(4px, 1vw, 6px)', 
-                marginBottom: 'clamp(6px, 1.5vw, 8px)',
-                width: '70%'
-              }} />
-              <div style={{ 
-                height: 'clamp(6px, 1.5vw, 10px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(3px, 0.75vw, 5px)',
-                width: '30%'
-              }} />
-            </div>
+          <div className="timeline-event-node moment" />
+          <div 
+            className="timeline-event-card"
+            style={{
+              background: 'var(--md-sys-color-surface-container)',
+              borderRadius: 'clamp(12px, 3vw, 16px)',
+              padding: 'clamp(12px, 3vw, 20px)',
+              maxWidth: 'clamp(280px, 80vw, 300px)',
+              width: '100%',
+              border: '1px solid var(--md-sys-color-outline-variant)',
+              animation: 'pulse 2s ease-in-out infinite',
+              boxSizing: 'border-box'
+            }}
+          >
+            <div style={{ 
+              height: 'clamp(12px, 3vw, 16px)', 
+              background: 'var(--md-sys-color-surface-container-high)', 
+              borderRadius: 'clamp(6px, 1.5vw, 8px)', 
+              marginBottom: 'clamp(8px, 2vw, 12px)',
+              width: '60%'
+            }} />
+            <div style={{ 
+              height: 'clamp(10px, 2.5vw, 14px)', 
+              background: 'var(--md-sys-color-surface-container-high)', 
+              borderRadius: 'clamp(5px, 1.25vw, 7px)', 
+              marginBottom: 'clamp(6px, 1.5vw, 8px)',
+              width: '40%'
+            }} />
+            <div style={{ 
+              height: 'clamp(8px, 2vw, 12px)', 
+              background: 'var(--md-sys-color-surface-container-high)', 
+              borderRadius: 'clamp(4px, 1vw, 6px)', 
+              marginBottom: 'clamp(6px, 1.5vw, 8px)',
+              width: '80%'
+            }} />
+            <div style={{ 
+              height: 'clamp(8px, 2vw, 12px)', 
+              background: 'var(--md-sys-color-surface-container-high)', 
+              borderRadius: 'clamp(4px, 1vw, 6px)', 
+              marginBottom: 'clamp(6px, 1.5vw, 8px)',
+              width: '70%'
+            }} />
+            <div style={{ 
+              height: 'clamp(6px, 1.5vw, 10px)', 
+              background: 'var(--md-sys-color-surface-container-high)', 
+              borderRadius: 'clamp(3px, 0.75vw, 5px)',
+              width: '30%'
+            }} />
           </div>
         </div>
       ))}
@@ -618,10 +616,26 @@ export function TimelineModule() {
 
               const showYearMarker = item.type === 'year' && item.year
 
+              // Calculate alternating position for event cards
+              // Count actual events (excluding decade markers) to determine odd/even
+              const eventItems = timelineData.filter(t => t.event)
+              const eventIndex = eventItems.findIndex(t => t.event?.id === item.event?.id)
+              const isEven = eventIndex % 2 === 0
+              const positionClass = isEven ? 'timeline-event-even' : 'timeline-event-odd'
+
+              // CODE_EXPANSION: Debug logging for alternating layout verification
+              console.log('[TimelineModule] Event positioning:', {
+                eventId: item.event.id,
+                eventIndex,
+                isEven,
+                positionClass,
+                title: item.event.title
+              })
+
               return (
                 <div 
                   key={`timeline-item-${item.event.id}-${index}`} 
-                  className="timeline-item"
+                  className={`timeline-item ${positionClass}`}
                   style={{ '--item-index': index } as React.CSSProperties}
                 >
                   {showYearMarker && renderYearMarker(item.year!)}
