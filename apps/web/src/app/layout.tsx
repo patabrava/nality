@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import "../styles/timeline.css";
+import "../styles/landing.css";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -11,9 +12,9 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Nality - Your Life Story Platform",
-  description: "Capture, organize, and share your life's most important moments with Nality. Create a beautiful timeline of your experiences with photos, videos, and memories.",
-  keywords: ["life story", "timeline", "memories", "family history", "personal timeline"],
+  title: "Nality — Your life, beautifully told",
+  description: "Turn memories into a living timeline and a beautiful Life Book. Private by design. Start in minutes.",
+  keywords: ["life story", "timeline", "memories", "family history", "personal timeline", "AI assistant", "life book", "memoir"],
   authors: [{ name: "Nality Team" }],
   creator: "Nality",
   publisher: "Nality",
@@ -22,6 +23,36 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  openGraph: {
+    title: "Nality — Your life, beautifully told",
+    description: "Turn memories into a living timeline and a beautiful Life Book.",
+    type: "website",
+    images: [
+      {
+        url: "/hero/hero-timeline-book.png", // Will be created later
+        width: 1200,
+        height: 800,
+        alt: "A life timeline with photos alongside a preview of a printed Life Book"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nality — Your life, beautifully told",
+    description: "Turn memories into a living timeline and a beautiful Life Book.",
+    images: ["/hero/hero-timeline-book.png"]
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  }
 };
 
 export default function RootLayout({
