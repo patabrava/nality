@@ -1,0 +1,226 @@
+````markdown
+# 🚀 Gesamt-Blueprint: Biografie-Onboarding-Chatbot (Supabase × Gemini)
+
+---
+
+## 1. Datenmodell (Supabase SQL)
+
+```sql
+-- AUTH: kommt von Supabase (Table `users`)
+
+create table user_profile (
+  user_id               uuid primary key references users(id),
+  form_of_address       text check (form_of_address in ('du','sie')),
+  first_name            text,
+  last_name             text,
+  academic_title        text,              -- z. B. "Prof. Dr."
+  language_style        text check (language_style in ('prosa','fachlich','locker')),
+  onboarding_complete   boolean default false,
+  completion_message_sent boolean default false,
+  created_at            timestamptz default now(),
+  updated_at            timestamptz default now()
+);
+
+create table favorite_authors (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid references users(id) on delete cascade,
+  author_name text,
+  created_at timestamptz default now()
+);
+
+create table admired_people (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid references users(id) on delete cascade,
+  full_name  text,            -- inkl. Titel
+  traits     text[],          -- {'humorvoll','inspirierend'}
+  created_at timestamptz default now()
+);
+
+create table life_events (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid references users(id) on delete cascade,
+  category   text check (category in
+    ('primary','secondary','abitur','fachhochschulreife',
+     'university','career','family','milestone')),
+  title       text,
+  start_date  date,
+  end_date    date,
+  description text
+);
+
+create table validation_flags (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid references users(id) on delete cascade,
+  rule_id     text,
+  description text,
+  status      text default 'open', -- 'open' | 'resolved' | 'closed'
+  created_at  timestamptz default now()
+);
+
+-- Row-Level Security
+alter table user_profile      enable row level security;
+alter table favorite_authors  enable row level security;
+alter table admired_people    enable row level security;
+alter table life_events       enable row level security;
+alter table validation_flags  enable row level security;
+
+create policy "own_rows" on user_profile     for all using (auth.uid() = user_id);
+create policy "own_rows" on favorite_authors for all using (auth.uid() = user_id);
+create policy "own_rows" on admired_people   for all using (auth.uid() = user_id);
+create policy "own_rows" on life_events      for all using (auth.uid() = user_id);
+create policy "own_rows" on validation_flags for all using (auth.uid() = user_id);
+````
+
+---
+
+## 2. Prompt-Framework
+
+| Ebene                          | Zweck                                                  |
+| ------------------------------ | ------------------------------------------------------ |
+| **System-Prompt** (statisch)   | Rolle, Datenschutz, allgemeine Regeln                  |
+| **Persona-Prompt** (dynamisch) | Du/Sie-Logik, Name, Stil, Autoren, bewunderte Personen |
+| **Task-Prompt** (dynamisch)    | Nächste Frage **oder** Klärung bei Widerspruch         |
+| **History**                    | Letzte *N* Chat-Nachrichten                            |
+
+### 2.1 Persona-Prompt (Mustache)
+
+```mustache
+[Anrede: {{form_of_address}}]
+
+{% if form_of_address == "du" %}
+Bitte sprich den Nutzer immer mit seinem Vornamen **{{first_name}}** an
+und verzichte auf Titel.
+{% else %}
+Bitte verwenden Sie die Anrede „{{ academic_title }} {{ last_name }}“
+(sofern Titel vorhanden).
+{% endif %}
+
+Lieblingsautor:innen:
+{{#favorite_authors}}- {{author_name}}
+{{/favorite_authors}}
+
+Bewunderte Personen:
+{{#admired_people}}- {{full_name}} (Charakter: {{traits}})
+{{/admired_people}}
+```
+
+### 2.2 Task-Prompt
+
+```mustache
+{% if open_flags | length %}
+Ich habe eine Unstimmigkeit bemerkt:
+{{ open_flags[0].description }}
+Könntest du das bitte präzisieren?
+{% else %}
+Stelle eine offene Frage, um das Feld {{ next_missing_field }} zu ergänzen.
+{% endif %}
+```
+
+---
+
+## 3. Konsistenz-Regeln (Beispiele)
+
+| ID     | Regel                               | Ergebnis bei Verstoß                                     |
+| ------ | ----------------------------------- | -------------------------------------------------------- |
+| **T1** | Überlappende Schuljahre             | Flag „Schuljahre überlappen“                             |
+| **T2** | Weiterführende Schule < Grundschule | Flag                                                     |
+| **E1** | Studium ohne (Fach-)Abitur          | Flag + Rückfrage „Wie erlangten Sie die Hochschulreife?“ |
+
+---
+
+## 4. Edge Functions (TypeScript / Deno)
+
+### 4.1 `validate_entry.ts`
+
+1. Auth-JWT prüfen (`supabase.auth.getUser()`).
+2. Aktuelle Events & Flags laden.
+3. Alle Konsistenz-Regeln prüfen.
+4. Flags als `open/resolved` updaten.
+
+### 4.2 `trigger_complete.ts`
+
+```ts
+export async function trigger_complete(user_id: string) {
+  await supabase
+    .from('user_profile')
+    .update({ onboarding_complete: true })
+    .eq('user_id', user_id);
+}
+```
+
+Ausführung, wenn
+*Pflichtfelder vollständig* **und** *keine offenen Flags*.
+
+### 4.3 `chat.ts` (Haupt-Endpoint)
+
+1. Auth prüfen → `user.id`.
+2. Profil + Autoren + admired\_people in parallelen Queries laden.
+3. Persona-Prompt rendern, Task-Prompt bestimmen.
+4. Gemini anrufen (Streaming).
+5. Antwort zurückgeben, bei neuen Infos → `validate_entry()` auslösen.
+
+---
+
+## 5. Frontend-UX (Next.js)
+
+1. **Supabase Auth** (Login/OAuth).
+2. **Chat-UI** (Streaming) + **Progress-Ring** (z. B. 60 % vollständig).
+3. **Onboarding-Wizard** für Erstbefüllung (max. 3 Fragen/Screen).
+4. **Abschluss-Meldung**
+
+   ```text
+   Alle Basisdaten sind erfasst 🎉  
+   Weiterführende Biografiearbeit findest du hier ➜ https://google.com
+   ```
+
+   danach `completion_message_sent = true`, Chat-Input deaktivieren.
+
+---
+
+## 6. Ablaufdiagramm (vereinfacht)
+
+```mermaid
+graph TD
+A[User antwortet] -->|UPSERT| B(life_events / user_profile)
+B --> C(validate_entry)
+C -->|open flags| D[Chat: Klärungsfrage]
+C -->|keine flags| E[check Pflichtfelder]
+E -->|fehlt etwas| F[Chat: fragt fehlendes Feld]
+E -->|alles da| G(trigger_complete)
+G --> H[Einmalige Abschlussmeldung + Link]
+```
+
+---
+
+## 7. Test-Suite (Kernauswahl)
+
+| Szenario             | Erwartung                                                         |
+| -------------------- | ----------------------------------------------------------------- |
+| Pflichtfeld fehlt    | Chat fragt gezielt nach                                           |
+| Widerspruch erzeugt  | Flag `open`, Chat klärt                                           |
+| Widerspruch behoben  | Flag `resolved`, Chat geht weiter                                 |
+| Alle Daten valid     | `onboarding_complete=true`, Meldung mit Link erscheint **einmal** |
+| Anrede „Sie“ + Titel | Begrüßung: „Guten Tag, Dr. Mayer.“                                |
+| Anrede „Du“          | Begrüßung: „Hi Anna,“                                             |
+| Mehrere Autoren      | Werden alle im Persona-Prompt gelistet                            |
+
+---
+
+## 8. Deployment-Reihenfolge
+
+1. **Supabase-Projekt**
+   *SQL-Schema & RLS Policies einspielen.*
+2. **Edge Functions** (`chat`, `validate_entry`, `trigger_complete`) deployen.
+3. **Prompt-Templates** versionieren (Git / Storage).
+4. **Next.js-Frontend** (Auth, Chat-UI, Wizard, Progress) veröffentlichen.
+5. **Monitoring**: Logflare / Grafana (Latenz, Kosten, Fehler).
+6. **Playwright E2E-Tests** gegen Staging.
+7. **Go Live** → Feedback einsammeln & iterieren.
+
+---
+
+> **Ergebnis:**
+> Ein DSGVO-konformer, personalisierter Chatbot, der **Basislebensdaten** sammelt, mit **Du/Sie-Logik**, **Mehrpersonen-Unterstützung** und **Widerspruchs-Radar**. Bei Vollständigkeit leitet er den Nutzer höflich per Link (Prototyp: [https://google.com](https://google.com)) ins Folgesystem weiter.
+
+```
+```
