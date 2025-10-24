@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ThemeToggle } from '@/components/theme/ThemeToggle'
 
 interface StyleguideSection {
   id: string
@@ -10,7 +11,9 @@ interface StyleguideSection {
 
 const sections: StyleguideSection[] = [
   { id: 'overview', title: 'Overview', description: 'Design principles and philosophy' },
+  { id: 'tokens', title: 'Design Tokens', description: 'Colors, spacing, typography, and system tokens' },
   { id: 'colors', title: 'Colors', description: 'Color palette and usage guidelines' },
+  { id: 'themes', title: 'Themes', description: 'Dark and light theme system' },
   { id: 'typography', title: 'Typography', description: 'Type scale, fonts, and text styles' },
   { id: 'spacing', title: 'Spacing', description: 'Layout grid, spacing system, and rhythm' },
   { id: 'components', title: 'Components', description: 'UI components and patterns' },
@@ -45,6 +48,7 @@ export default function StyleguideLayout({ children }: StyleguideLayoutProps) {
             <span>Nality Design System</span>
           </div>
           <nav className="nav-tabs">
+            <ThemeToggle />
             <a href="/" className="nav-tab">
               ← Back to App
             </a>

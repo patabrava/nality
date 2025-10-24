@@ -1,6 +1,9 @@
 import StyleguideLayout from '@/components/styleguide/StyleguideLayout'
 import OverviewSection from '@/components/styleguide/sections/OverviewSection'
+import StyleguideTokens from '@/components/styleguide/StyleguideTokens'
+import StyleguideUtilities from '@/components/styleguide/StyleguideUtilities'
 import ColorsSection from '@/components/styleguide/sections/ColorsSection'
+import ThemeSection from '@/components/styleguide/sections/ThemeSection'
 import TypographySection from '@/components/styleguide/sections/TypographySection'
 import SpacingSection from '@/components/styleguide/sections/SpacingSection'
 import ComponentsSection from '@/components/styleguide/sections/ComponentsSection'
@@ -19,16 +22,57 @@ export const metadata = {
 export default function StyleguidePage() {
   return (
     <StyleguideLayout>
-      <OverviewSection />
-      <ColorsSection />
-      <TypographySection />
-      <SpacingSection />
-      <ComponentsSection />
-      <FormsSection />
-      <NavigationSection />
-      <LayoutSection />
-      <AnimationsSection />
-      <AccessibilitySection />
+      <div id="overview">
+        <OverviewSection />
+      </div>
+      
+      <div id="tokens">
+        <StyleguideTokens />
+      </div>
+      
+      <div id="utilities">
+        <StyleguideUtilities />
+      </div>
+      
+      <div id="colors">
+        <ColorsSection />
+      </div>
+      
+      <div id="themes">
+        <ThemeSection />
+      </div>
+      
+      <div id="typography">
+        <TypographySection />
+      </div>
+      
+      <div id="spacing">
+        <SpacingSection />
+      </div>
+      
+      <div id="components">
+        <ComponentsSection />
+      </div>
+      
+      <div id="forms">
+        <FormsSection />
+      </div>
+      
+      <div id="navigation">
+        <NavigationSection />
+      </div>
+      
+      <div id="layout">
+        <LayoutSection />
+      </div>
+      
+      <div id="animations">
+        <AnimationsSection />
+      </div>
+      
+      <div id="accessibility">
+        <AccessibilitySection />
+      </div>
     </StyleguideLayout>
   )
 }

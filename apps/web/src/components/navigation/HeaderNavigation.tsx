@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useRouter } from 'next/navigation'
+import { ThemeToggleCompact } from '@/components/theme/ThemeToggle'
 
 const tabs = [
   { id: 'dashboard', label: 'Dashboard', route: '/dash' },
@@ -67,6 +68,7 @@ export function HeaderNavigation() {
         
         {/* User Profile */}
         <div className="header-user">
+          <ThemeToggleCompact />
           <button 
             className="user-avatar-btn"
             aria-label="Access user profile"
@@ -102,6 +104,11 @@ export function HeaderNavigation() {
             <span className="tab-label">{tab.label}</span>
           </button>
         ))}
+        
+        {/* Theme Toggle in Mobile Menu */}
+        <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <ThemeToggleCompact />
+        </div>
       </nav>
       
       {/* Mobile Menu Backdrop */}

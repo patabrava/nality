@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import "../styles/tokens.css";
+import "../styles/utilities.css";
 import "./globals.css";
 import "../styles/timeline.css";
 import "../styles/landing.css";
+import { ThemeProvider, ThemeScript } from "@/components/theme/ThemeProvider";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -61,15 +64,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <link 
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" 
           rel="stylesheet" 
         />
+        <meta name="theme-color" content="#000000" />
+        <ThemeScript />
       </head>
       <body className={`${roboto.variable} antialiased`}>
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

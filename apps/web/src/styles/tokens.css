@@ -1,0 +1,415 @@
+/**
+ * CSS Token Architecture - Central Design System
+ * Generated from TypeScript design tokens with improved organization
+ * Replaces scattered token definitions across globals.css, landing.css, timeline.css
+ */
+
+/* ===== ROOT TOKENS ===== */
+:root {
+  /* Color System - Material Design 3 Dark Theme */
+  --md-sys-color-primary: #6750a4;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #eaddff;
+  --md-sys-color-on-primary-container: #21005d;
+  
+  --md-sys-color-secondary: #625b71;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e8def8;
+  --md-sys-color-on-secondary-container: #1d192b;
+  
+  --md-sys-color-tertiary: #7d5260;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #ffd8e4;
+  --md-sys-color-on-tertiary-container: #31111d;
+  
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: #0d0d0d;
+  --md-sys-color-on-surface: #e6e1e5;
+  --md-sys-color-surface-variant: #1a1a1a;
+  --md-sys-color-on-surface-variant: #cab6cc;
+  --md-sys-color-surface-dim: #111111;
+  --md-sys-color-surface-bright: #1f1f1f;
+  
+  /* Surface Container Hierarchy */
+  --md-sys-color-surface-container-lowest: #0a0a0a;
+  --md-sys-color-surface-container-low: #131313;
+  --md-sys-color-surface-container: #1a1a1a;
+  --md-sys-color-surface-container-high: #262626;
+  --md-sys-color-surface-container-highest: #333333;
+  
+  /* Outline Colors */
+  --md-sys-color-outline: #79747e;
+  --md-sys-color-outline-variant: #49454f;
+  
+  /* Inverse Colors */
+  --md-sys-color-inverse-surface: #e6e1e5;
+  --md-sys-color-inverse-on-surface: #0d0d0d;
+  --md-sys-color-inverse-primary: #6750a4;
+  
+  /* Utility Colors */
+  --md-sys-color-warning: #ffc107;
+  --md-sys-color-on-warning: #1c1c1c;
+  --md-sys-color-success: #4caf50;
+  --md-sys-color-on-success: #ffffff;
+  --md-sys-color-info: #2196f3;
+  --md-sys-color-on-info: #ffffff;
+  
+  /* Spacing System - 4px base unit */
+  --md-sys-spacing-xs: 4px;
+  --md-sys-spacing-sm: 8px;
+  --md-sys-spacing-md: 12px;
+  --md-sys-spacing-lg: 16px;
+  --md-sys-spacing-xl: 20px;
+  --md-sys-spacing-2xl: 24px;
+  --md-sys-spacing-3xl: 32px;
+  --md-sys-spacing-4xl: 40px;
+  --md-sys-spacing-5xl: 48px;
+  --md-sys-spacing-6xl: 56px;
+  --md-sys-spacing-7xl: 64px;
+  --md-sys-spacing-8xl: 80px;
+  --md-sys-spacing-9xl: 96px;
+  
+  /* Container Spacing */
+  --md-sys-container-padding-mobile: 16px;
+  --md-sys-container-padding-tablet: 24px;
+  --md-sys-container-padding-desktop: 32px;
+  --md-sys-container-padding-wide: 48px;
+  
+  /* Section Spacing */
+  --md-sys-section-spacing-mobile: 48px;
+  --md-sys-section-spacing-tablet: 64px;
+  --md-sys-section-spacing-desktop: 80px;
+  
+  /* Typography System */
+  --md-sys-typography-font-family-primary: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --md-sys-typography-font-family-mono: 'Roboto Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+  --md-sys-typography-font-family-system: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  
+  --md-sys-typography-font-weight-light: 300;
+  --md-sys-typography-font-weight-regular: 400;
+  --md-sys-typography-font-weight-medium: 500;
+  --md-sys-typography-font-weight-semibold: 600;
+  --md-sys-typography-font-weight-bold: 700;
+  
+  --md-sys-typography-line-height-tight: 1.1;
+  --md-sys-typography-line-height-snug: 1.2;
+  --md-sys-typography-line-height-normal: 1.3;
+  --md-sys-typography-line-height-relaxed: 1.4;
+  --md-sys-typography-line-height-loose: 1.5;
+  
+  /* Border Radius System */
+  --md-sys-border-radius-xs: 4px;
+  --md-sys-border-radius-sm: 6px;
+  --md-sys-border-radius-md: 8px;
+  --md-sys-border-radius-lg: 12px;
+  --md-sys-border-radius-xl: 16px;
+  --md-sys-border-radius-2xl: 20px;
+  --md-sys-border-radius-3xl: 24px;
+  --md-sys-border-radius-full: 50%;
+  
+  /* Shadow System */
+  --md-sys-shadow-elevation1: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --md-sys-shadow-elevation2: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --md-sys-shadow-elevation3: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --md-sys-shadow-elevation4: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --md-sys-shadow-elevation5: 0 12px 32px rgba(0, 0, 0, 0.2);
+  
+  --md-sys-shadow-focus-ring: 0 0 0 2px var(--md-sys-color-primary);
+  --md-sys-shadow-glow: 0 0 12px var(--md-sys-color-primary);
+  
+  /* Animation System */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  
+  --md-sys-motion-easing-linear: linear;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  
+  /* Breakpoint System */
+  --md-sys-breakpoint-xs: 320px;
+  --md-sys-breakpoint-sm: 480px;
+  --md-sys-breakpoint-md: 768px;
+  --md-sys-breakpoint-lg: 1024px;
+  --md-sys-breakpoint-xl: 1280px;
+  --md-sys-breakpoint-2xl: 1440px;
+  
+  /* Z-Index System */
+  --md-sys-z-index-base: 0;
+  --md-sys-z-index-raised: 1;
+  --md-sys-z-index-overlay: 2;
+  --md-sys-z-index-dropdown: 10;
+  --md-sys-z-index-tooltip: 20;
+  --md-sys-z-index-modal: 30;
+  --md-sys-z-index-notification: 40;
+  
+  /* Component Tokens */
+  --md-sys-component-button-height-small: 32px;
+  --md-sys-component-button-height-medium: 40px;
+  --md-sys-component-button-height-large: 48px;
+  
+  --md-sys-component-input-height: 40px;
+  --md-sys-component-input-padding: 12px 16px;
+  --md-sys-component-input-border-width: 1px;
+  
+  --md-sys-component-nav-height: 48px;
+  --md-sys-component-nav-padding: 0 24px;
+  
+  /* Timeline Specific Tokens */
+  --md-sys-timeline-spine-offset-mobile: 24px;
+  --md-sys-timeline-spine-offset-mobile-large: 28px;
+  --md-sys-timeline-spine-offset-desktop: 50%;
+  
+  --md-sys-timeline-item-margin-mobile: 32px;
+  --md-sys-timeline-item-margin-mobile-large: 40px;
+  --md-sys-timeline-item-margin-tablet: 48px;
+  --md-sys-timeline-item-margin-desktop: 64px;
+  
+  --md-sys-timeline-node-size-mobile: 12px;
+  --md-sys-timeline-node-size-mobile-large: 16px;
+  --md-sys-timeline-node-size-desktop: 16px;
+  --md-sys-timeline-node-size-large: 20px;
+  
+  --md-sys-timeline-card-clearance-desktop: 32px;
+  --md-sys-timeline-card-clearance-large: 40px;
+  --md-sys-timeline-card-clearance-ultra-wide: 48px;
+  
+  /* Landing Page Specific Tokens */
+  --md-sys-landing-hero-min-height: 500px;
+  --md-sys-landing-section-margin-mobile: 32px;
+  --md-sys-landing-section-margin-tablet: 48px;
+  --md-sys-landing-section-margin-desktop: 64px;
+  
+  --md-sys-landing-container-max-width: 1200px;
+  --md-sys-landing-card-max-width-small: 300px;
+  --md-sys-landing-card-max-width-medium: 320px;
+  --md-sys-landing-card-max-width-large: 420px;
+}
+
+/* ===== RESPONSIVE FONT SIZES ===== */
+:root {
+  --md-sys-typography-font-size-xs: clamp(0.625rem, 2vw, 0.75rem);
+  --md-sys-typography-font-size-sm: clamp(0.75rem, 3vw, 0.875rem);
+  --md-sys-typography-font-size-base: clamp(0.875rem, 3vw, 1rem);
+  --md-sys-typography-font-size-lg: clamp(1rem, 4vw, 1.125rem);
+  --md-sys-typography-font-size-xl: clamp(1.125rem, 4vw, 1.25rem);
+  --md-sys-typography-font-size-2xl: clamp(1.25rem, 5vw, 1.5rem);
+  --md-sys-typography-font-size-3xl: clamp(1.5rem, 6vw, 2rem);
+  --md-sys-typography-font-size-4xl: clamp(2rem, 8vw, 2.5rem);
+  --md-sys-typography-font-size-5xl: clamp(2.5rem, 10vw, 3rem);
+}
+
+/* ===== UTILITY TOKEN CLASSES ===== */
+
+/* Spacing Utilities */
+.space-xs { gap: var(--md-sys-spacing-xs); }
+.space-sm { gap: var(--md-sys-spacing-sm); }
+.space-md { gap: var(--md-sys-spacing-md); }
+.space-lg { gap: var(--md-sys-spacing-lg); }
+.space-xl { gap: var(--md-sys-spacing-xl); }
+.space-2xl { gap: var(--md-sys-spacing-2xl); }
+.space-3xl { gap: var(--md-sys-spacing-3xl); }
+
+/* Padding Utilities */
+.p-xs { padding: var(--md-sys-spacing-xs); }
+.p-sm { padding: var(--md-sys-spacing-sm); }
+.p-md { padding: var(--md-sys-spacing-md); }
+.p-lg { padding: var(--md-sys-spacing-lg); }
+.p-xl { padding: var(--md-sys-spacing-xl); }
+.p-2xl { padding: var(--md-sys-spacing-2xl); }
+.p-3xl { padding: var(--md-sys-spacing-3xl); }
+
+/* Margin Utilities */
+.m-xs { margin: var(--md-sys-spacing-xs); }
+.m-sm { margin: var(--md-sys-spacing-sm); }
+.m-md { margin: var(--md-sys-spacing-md); }
+.m-lg { margin: var(--md-sys-spacing-lg); }
+.m-xl { margin: var(--md-sys-spacing-xl); }
+.m-2xl { margin: var(--md-sys-spacing-2xl); }
+.m-3xl { margin: var(--md-sys-spacing-3xl); }
+
+/* Border Radius Utilities */
+.rounded-xs { border-radius: var(--md-sys-border-radius-xs); }
+.rounded-sm { border-radius: var(--md-sys-border-radius-sm); }
+.rounded-md { border-radius: var(--md-sys-border-radius-md); }
+.rounded-lg { border-radius: var(--md-sys-border-radius-lg); }
+.rounded-xl { border-radius: var(--md-sys-border-radius-xl); }
+.rounded-2xl { border-radius: var(--md-sys-border-radius-2xl); }
+.rounded-full { border-radius: var(--md-sys-border-radius-full); }
+
+/* Shadow Utilities */
+.shadow-1 { box-shadow: var(--md-sys-shadow-elevation1); }
+.shadow-2 { box-shadow: var(--md-sys-shadow-elevation2); }
+.shadow-3 { box-shadow: var(--md-sys-shadow-elevation3); }
+.shadow-4 { box-shadow: var(--md-sys-shadow-elevation4); }
+.shadow-5 { box-shadow: var(--md-sys-shadow-elevation5); }
+
+/* Typography Utilities */
+.text-xs { font-size: var(--md-sys-typography-font-size-xs); }
+.text-sm { font-size: var(--md-sys-typography-font-size-sm); }
+.text-base { font-size: var(--md-sys-typography-font-size-base); }
+.text-lg { font-size: var(--md-sys-typography-font-size-lg); }
+.text-xl { font-size: var(--md-sys-typography-font-size-xl); }
+.text-2xl { font-size: var(--md-sys-typography-font-size-2xl); }
+.text-3xl { font-size: var(--md-sys-typography-font-size-3xl); }
+.text-4xl { font-size: var(--md-sys-typography-font-size-4xl); }
+
+.font-light { font-weight: var(--md-sys-typography-font-weight-light); }
+.font-regular { font-weight: var(--md-sys-typography-font-weight-regular); }
+.font-medium { font-weight: var(--md-sys-typography-font-weight-medium); }
+.font-semibold { font-weight: var(--md-sys-typography-font-weight-semibold); }
+.font-bold { font-weight: var(--md-sys-typography-font-weight-bold); }
+
+.leading-tight { line-height: var(--md-sys-typography-line-height-tight); }
+.leading-snug { line-height: var(--md-sys-typography-line-height-snug); }
+.leading-normal { line-height: var(--md-sys-typography-line-height-normal); }
+.leading-relaxed { line-height: var(--md-sys-typography-line-height-relaxed); }
+.leading-loose { line-height: var(--md-sys-typography-line-height-loose); }
+
+/* Color Utilities */
+.text-primary { color: var(--md-sys-color-primary); }
+.text-on-primary { color: var(--md-sys-color-on-primary); }
+.text-secondary { color: var(--md-sys-color-secondary); }
+.text-tertiary { color: var(--md-sys-color-tertiary); }
+.text-error { color: var(--md-sys-color-error); }
+.text-on-surface { color: var(--md-sys-color-on-surface); }
+.text-on-surface-variant { color: var(--md-sys-color-on-surface-variant); }
+
+.bg-primary { background-color: var(--md-sys-color-primary); }
+.bg-surface { background-color: var(--md-sys-color-surface); }
+.bg-surface-variant { background-color: var(--md-sys-color-surface-variant); }
+.bg-surface-container { background-color: var(--md-sys-color-surface-container); }
+.bg-surface-container-high { background-color: var(--md-sys-color-surface-container-high); }
+.bg-surface-container-highest { background-color: var(--md-sys-color-surface-container-highest); }
+
+/* Transition Utilities */
+.transition-fast { 
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard); 
+}
+.transition-medium { 
+  transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); 
+}
+.transition-slow { 
+  transition: all var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard); 
+}
+
+/* Layout Utilities */
+.container-mobile { 
+  max-width: 100%; 
+  padding-left: var(--md-sys-container-padding-mobile); 
+  padding-right: var(--md-sys-container-padding-mobile); 
+}
+.container-tablet { 
+  max-width: var(--md-sys-breakpoint-md); 
+  padding-left: var(--md-sys-container-padding-tablet); 
+  padding-right: var(--md-sys-container-padding-tablet); 
+}
+.container-desktop { 
+  max-width: var(--md-sys-breakpoint-lg); 
+  padding-left: var(--md-sys-container-padding-desktop); 
+  padding-right: var(--md-sys-container-padding-desktop); 
+}
+
+/* Component Utilities */
+.button-small { 
+  height: var(--md-sys-component-button-height-small); 
+  border-radius: var(--md-sys-border-radius-sm); 
+}
+.button-medium { 
+  height: var(--md-sys-component-button-height-medium); 
+  border-radius: var(--md-sys-border-radius-md); 
+}
+.button-large { 
+  height: var(--md-sys-component-button-height-large); 
+  border-radius: var(--md-sys-border-radius-lg); 
+}
+
+.input-base { 
+  height: var(--md-sys-component-input-height); 
+  padding: var(--md-sys-component-input-padding); 
+  border-radius: var(--md-sys-border-radius-md); 
+  border: var(--md-sys-component-input-border-width) solid var(--md-sys-color-outline-variant); 
+}
+
+/* Focus Utilities */
+.focus-ring:focus-visible { 
+  outline: 2px solid var(--md-sys-color-primary); 
+  outline-offset: 2px; 
+}
+
+.focus-glow:focus-visible { 
+  box-shadow: var(--md-sys-shadow-focus-ring), var(--md-sys-shadow-glow); 
+}
+
+/* Responsive Utilities */
+@media (max-width: 767px) {
+  .mobile-only { display: block; }
+  .tablet-up { display: none; }
+  .desktop-up { display: none; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mobile-only { display: none; }
+  .tablet-only { display: block; }
+  .tablet-up { display: block; }
+  .desktop-up { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .mobile-only { display: none; }
+  .tablet-only { display: none; }
+  .tablet-up { display: block; }
+  .desktop-only { display: block; }
+  .desktop-up { display: block; }
+}
+
+/* ===== ACCESSIBILITY TOKENS ===== */
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  :root {
+    --md-sys-color-outline: var(--md-sys-color-on-surface);
+    --md-sys-color-outline-variant: var(--md-sys-color-on-surface);
+    --md-sys-shadow-elevation1: 0 0 0 1px var(--md-sys-color-outline);
+    --md-sys-shadow-elevation2: 0 0 0 2px var(--md-sys-color-outline);
+    --md-sys-shadow-elevation3: 0 0 0 2px var(--md-sys-color-outline);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --md-sys-motion-duration-short1: 0.01ms;
+    --md-sys-motion-duration-short2: 0.01ms;
+    --md-sys-motion-duration-short3: 0.01ms;
+    --md-sys-motion-duration-short4: 0.01ms;
+    --md-sys-motion-duration-medium1: 0.01ms;
+    --md-sys-motion-duration-medium2: 0.01ms;
+    --md-sys-motion-duration-medium3: 0.01ms;
+    --md-sys-motion-duration-medium4: 0.01ms;
+    --md-sys-motion-duration-long1: 0.01ms;
+    --md-sys-motion-duration-long2: 0.01ms;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

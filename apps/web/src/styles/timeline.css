@@ -1,15 +1,16 @@
 /* ===== TIMELINE COMPONENTS - PHASE 1 FOUNDATION RESET ===== */
 /* MONOCODE Implementation: Observable, Explicit, Transparent, Progressive */
 /* SPARK_OF_THOUGHT: Mobile-first foundation with systematic progressive enhancement */
+/* Uses centralized design tokens from tokens.css */
 
 /* Observable Implementation: Clean container hierarchy with clear behavior patterns */
 .timeline-section {
   /* Foundation: Simple container with clear boundaries */
-  background: var(--tl-bg, #ffffff);
-  border-radius: 8px;
-  padding: 16px;
-  margin: 8px 0;
-  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+  background: var(--tl-bg, var(--md-sys-color-surface));
+  border-radius: var(--md-sys-border-radius-md);
+  padding: var(--md-sys-spacing-lg);
+  margin: var(--md-sys-spacing-sm) 0;
+  border: 1px solid var(--md-sys-color-outline-variant);
   
   /* Dependency Transparency: Container queries for responsive behavior */
   container-type: inline-size;
@@ -26,7 +27,7 @@
   /* Progressive Construction: Start with simple full-height container */
   position: relative;
   height: 100vh;
-  background: var(--tl-bg, #ffffff);
+  background: var(--tl-bg, var(--md-sys-color-surface));
   overflow: hidden;
   
   /* Observable Implementation: No complex styling until proven necessary */
@@ -40,8 +41,8 @@
 
 /* Header-aware timeline viewport - preserves working code while adding header support */
 .full-timeline-viewport.with-header {
-  /* Adjust height to account for 48px header */
-  height: calc(100vh - 48px);
+  /* Adjust height to account for header using component token */
+  height: calc(100vh - var(--md-sys-component-nav-height));
 }
 
 .timeline-scroll-zone {
@@ -49,7 +50,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 8px;
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-sm);
   
   /* Explicit Error Handling: Ensure smooth scrolling */
   scroll-behavior: smooth;
@@ -63,7 +64,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 24px 0;
+  padding: var(--md-sys-spacing-2xl) 0;
   
   /* Observable Implementation: Clear container behavior */
   min-height: 200px;
@@ -84,15 +85,15 @@
 .timeline-spine {
   /* Foundation: Simple left-aligned spine for mobile */
   position: absolute;
-  left: 24px;
+  left: var(--md-sys-timeline-spine-offset-mobile);
   top: 0;
   width: 2px;
   height: 100%;
   
   /* Observable Implementation: Clear visual indicator */
-  background: var(--md-sys-color-outline, #79747e);
+  background: var(--md-sys-color-outline);
   border-radius: 1px;
-  z-index: 1;
+  z-index: var(--md-sys-z-index-raised);
   
   /* Progressive Construction: Start with solid color, enhance later */
   opacity: 0.6;
@@ -104,8 +105,8 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  margin-bottom: 32px;
-  padding-left: 56px;
+  margin-bottom: var(--md-sys-timeline-item-margin-mobile);
+  padding-left: var(--md-sys-spacing-7xl);
   
   /* Observable Implementation: Clear layout behavior */
   min-height: 40px;
@@ -113,12 +114,12 @@
   box-sizing: border-box;
   
   /* Explicit Error Handling: Establish stacking context for proper z-index layering */
-  z-index: 2;
+  z-index: var(--md-sys-z-index-overlay);
   
   /* Progressive Construction: Simple fade-in animation */
   opacity: 0;
-  animation: fadeInUp 0.4s ease-out forwards;
-  animation-delay: calc(var(--item-index, 0) * 0.1s);
+  animation: fadeInUp var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard) forwards;
+  animation-delay: calc(var(--item-index, 0) * var(--md-sys-motion-duration-short2));
 }
 
 .timeline-event-item {
@@ -137,21 +138,21 @@
 /* PHASE 1: Mobile-First Event Nodes - Simple positioning */
 .timeline-event-node {
   /* Foundation: Simple circular node */
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--md-sys-color-primary, #6750a4);
-  border: 2px solid var(--tl-bg, #ffffff);
+  width: var(--md-sys-timeline-node-size-mobile);
+  height: var(--md-sys-timeline-node-size-mobile);
+  border-radius: var(--md-sys-border-radius-full);
+  background: var(--md-sys-color-primary);
+  border: 2px solid var(--tl-bg, var(--md-sys-color-surface));
   
   /* Observable Implementation: Clear positioning relative to spine */
   position: absolute;
-  left: 24px;
-  top: 8px;
+  left: var(--md-sys-timeline-spine-offset-mobile);
+  top: var(--md-sys-spacing-sm);
   transform: translateX(-50%);
-  z-index: 2;
+  z-index: var(--md-sys-z-index-overlay);
   
   /* Progressive Construction: Simple hover effect */
-  transition: transform 0.2s ease-out;
+  transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .timeline-event-node:hover {
@@ -161,21 +162,22 @@
 /* PHASE 1: Mobile-First Event Cards - Responsive width with safety margins */
 .timeline-event-card {
   /* Foundation: Simple card with mobile-optimized spacing */
-  background: var(--tl-surface-elevated, #ffffff);
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--tl-surface-elevated, var(--md-sys-color-surface-container));
+  border-radius: var(--md-sys-border-radius-lg);
+  padding: var(--md-sys-spacing-lg);
   
   /* Explicit Error Handling: Responsive width with safety margins */
   width: 100%;
-  max-width: calc(100vw - 120px);
+  max-width: calc(100vw - var(--md-sys-spacing-8xl));
   min-width: 200px;
   
   /* Observable Implementation: Clear visual hierarchy */
-  border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--md-sys-shadow-elevation1);
   
   /* Progressive Construction: Simple transitions */
-  transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
+  transition: box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), 
+              transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   
   /* Dependency Transparency: Container for internal responsive behavior */
   container-type: inline-size;
@@ -188,25 +190,13 @@
 }
 
 .timeline-event-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--md-sys-shadow-elevation2);
   transform: translateY(-1px);
 }
 
 /* PHASE 1: Simplified mobile layout - no alternating positions yet */
 .timeline-item .timeline-event-card {
   margin: 0;
-}
-
-/* PHASE 1: Simple animations foundation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* ===== PHASE 2: MOBILE OPTIMIZATION ===== */

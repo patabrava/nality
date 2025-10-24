@@ -1,0 +1,485 @@
+/**
+ * Consolidated Utilities CSS
+ * 
+ * This file consolidates duplicate utility patterns found across landing.css, 
+ * timeline.css, and globals.css following CODE_EXPANSION principles.
+ * 
+ * Key consolidations:
+ * 1. Duplicate keyframe animations (fadeInUp)
+ * 2. Transform hover utilities
+ * 3. Layout utilities (flex patterns)
+ * 4. Position utilities (centering patterns)
+ * 5. Component state utilities
+ * 
+ * Design: Preserves all existing functionality while providing centralized utilities
+ */
+
+/* ============================================================================
+   KEYFRAME ANIMATIONS - Consolidating duplicates
+   ============================================================================ */
+
+/* Standard fadeInUp animation - use when 20px offset is appropriate */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Landing page fadeInUp variant - uses design token for larger offset */
+@keyframes fadeInUpLanding {
+  from {
+    opacity: 0;
+    transform: translateY(var(--md-sys-spacing-2xl));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Float animation (from landing.css) */
+@keyframes float {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+/* Slide down animation (from landing.css) */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Additional utility animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-30px); }
+  70% { transform: translateY(-15px); }
+  90% { transform: translateY(-4px); }
+}
+
+/* ============================================================================
+   LAYOUT UTILITIES - Flex patterns
+   ============================================================================ */
+
+/* Basic flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+/* Justify content utilities */
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Align items utilities */
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.items-center { align-items: center; }
+.items-baseline { align-items: baseline; }
+.items-stretch { align-items: stretch; }
+
+/* Flex item utilities */
+.flex-1 { flex: 1 1 0%; }
+.flex-auto { flex: 1 1 auto; }
+.flex-initial { flex: 0 1 auto; }
+.flex-none { flex: none; }
+
+/* Grid utilities */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+/* ============================================================================
+   POSITION UTILITIES - Consolidating centering patterns
+   ============================================================================ */
+
+/* Position utilities */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* Centering utilities */
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.absolute-center-x {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.absolute-center-y {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Fill parent */
+.fill-parent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* ============================================================================
+   TRANSFORM UTILITIES - Hover effects and transforms
+   ============================================================================ */
+
+/* Transform centering */
+.transform-center-x { transform: translateX(-50%); }
+.transform-center-y { transform: translateY(-50%); }
+.transform-center { transform: translate(-50%, -50%); }
+
+/* Scale utilities */
+.scale-0 { transform: scale(0); }
+.scale-95 { transform: scale(0.95); }
+.scale-100 { transform: scale(1); }
+.scale-105 { transform: scale(1.05); }
+.scale-110 { transform: scale(1.1); }
+.scale-125 { transform: scale(1.25); }
+
+/* Translate utilities */
+.translate-y-1 { transform: translateY(-1px); }
+.translate-y-2 { transform: translateY(-2px); }
+.translate-y-4 { transform: translateY(-4px); }
+.translate-x-half { transform: translateX(-50%); }
+.translate-y-half { transform: translateY(-50%); }
+
+/* ============================================================================
+   HOVER UTILITIES - Standardized interaction states
+   ============================================================================ */
+
+/* Hover lift effects */
+.hover-lift-1:hover {
+  transform: translateY(-1px);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.hover-lift-2:hover {
+  transform: translateY(-2px);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.hover-lift-4:hover {
+  transform: translateY(-4px);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* Hover scale effects */
+.hover-scale-105:hover {
+  transform: scale(1.05);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.hover-scale-110:hover {
+  transform: scale(1.1);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* Combined hover effects */
+.hover-lift-scale:hover {
+  transform: translateY(-2px) scale(1.02);
+  transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* Hover opacity */
+.hover-opacity-80:hover {
+  opacity: 0.8;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.hover-opacity-90:hover {
+  opacity: 0.9;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* Hover shadow */
+.hover-shadow-2:hover {
+  box-shadow: var(--md-sys-shadow-elevation2);
+  transition: box-shadow var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.hover-shadow-3:hover {
+  box-shadow: var(--md-sys-shadow-elevation3);
+  transition: box-shadow var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* ============================================================================
+   FOCUS UTILITIES - Accessibility-focused interaction states
+   ============================================================================ */
+
+/* Focus ring utilities */
+.focus-ring:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.focus-ring-inset:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* Focus shadow */
+.focus-shadow:focus {
+  box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.3);
+  transition: box-shadow var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+}
+
+/* ============================================================================
+   ACTIVE UTILITIES - Press state effects
+   ============================================================================ */
+
+/* Active scale */
+.active-scale-95:active {
+  transform: scale(0.95);
+  transition: transform var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+}
+
+.active-scale-98:active {
+  transform: scale(0.98);
+  transition: transform var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+}
+
+/* Active opacity */
+.active-opacity-70:active {
+  opacity: 0.7;
+  transition: opacity var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+}
+
+/* ============================================================================
+   DISABLED UTILITIES - Accessibility states
+   ============================================================================ */
+
+.disabled-opacity:disabled,
+.disabled-opacity[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.disabled-grayscale:disabled,
+.disabled-grayscale[aria-disabled="true"] {
+  filter: grayscale(100%);
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   TRANSITION UTILITIES - Standardized transitions
+   ============================================================================ */
+
+.transition-fast { transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard); }
+.transition-medium { transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); }
+.transition-slow { transition: all var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-standard); }
+
+.transition-transform { transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard); }
+.transition-opacity { transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard); }
+.transition-colors { 
+  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard),
+              border-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard),
+              color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.transition-shadow { transition: box-shadow var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard); }
+
+/* ============================================================================
+   ANIMATION UTILITIES - Predefined animations
+   ============================================================================ */
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard) forwards;
+}
+
+.animate-float {
+  animation: float var(--md-sys-motion-duration-long4) var(--md-sys-motion-easing-standard) infinite alternate;
+}
+
+.animate-pulse {
+  animation: pulse var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard) infinite;
+}
+
+.animate-bounce {
+  animation: bounce var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard) forwards;
+}
+
+/* ============================================================================
+   DISPLAY UTILITIES - Common display patterns
+   ============================================================================ */
+
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+.inline-flex { display: inline-flex; }
+.table { display: table; }
+.table-cell { display: table-cell; }
+.hidden { display: none; }
+
+/* ============================================================================
+   OVERFLOW UTILITIES
+   ============================================================================ */
+
+.overflow-auto { overflow: auto; }
+.overflow-hidden { overflow: hidden; }
+.overflow-visible { overflow: visible; }
+.overflow-scroll { overflow: scroll; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* ============================================================================
+   CURSOR UTILITIES
+   ============================================================================ */
+
+.cursor-pointer { cursor: pointer; }
+.cursor-default { cursor: default; }
+.cursor-text { cursor: text; }
+.cursor-move { cursor: move; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* ============================================================================
+   INTERACTION UTILITIES - Combined patterns
+   ============================================================================ */
+
+/* Interactive button-like elements */
+.interactive-element {
+  transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  cursor: pointer;
+}
+
+.interactive-element:hover {
+  transform: translateY(-1px);
+}
+
+.interactive-element:active {
+  transform: scale(0.98);
+}
+
+.interactive-element:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Card interactive */
+.interactive-card {
+  transition: box-shadow var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard),
+              transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.interactive-card:hover {
+  box-shadow: var(--md-sys-shadow-elevation3);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITIES - Mobile-first approach
+   ============================================================================ */
+
+/* Mobile (default) */
+.mobile-only { display: block; }
+.tablet-up { display: none; }
+.desktop-up { display: none; }
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .mobile-only { display: none; }
+  .tablet-only { display: block; }
+  .tablet-up { display: block; }
+  .desktop-up { display: none; }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .mobile-only { display: none; }
+  .tablet-only { display: none; }
+  .tablet-up { display: block; }
+  .desktop-only { display: block; }
+  .desktop-up { display: block; }
+}
+
+/* ============================================================================
+   PRINT UTILITIES
+   ============================================================================ */
+
+@media print {
+  .print-hidden { display: none !important; }
+  .print-block { display: block !important; }
+  .print-inline { display: inline !important; }
+}
+
+/* ============================================================================
+   ACCESSIBILITY UTILITIES
+   ============================================================================ */
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+.focus-visible:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .motion-reduce {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Apply to all animations by default */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

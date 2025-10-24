@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import { ThemeToggleCompact } from '@/components/theme/ThemeToggle'
 
 interface HeaderProps {
   onNavigate?: (section: string) => void
@@ -69,6 +70,9 @@ export default function Header({ onNavigate }: HeaderProps) {
 
           {/* Desktop User Section */}
           <div className="header-user">
+            {/* Theme Toggle */}
+            <ThemeToggleCompact />
+            
             {isAuthenticated ? (
               <button className="user-avatar-btn" onClick={handleStartStory}>
                 <div className="user-avatar">
@@ -178,6 +182,11 @@ export default function Header({ onNavigate }: HeaderProps) {
                 </button>
               </>
             )}
+            
+            {/* Theme Toggle in Mobile Menu */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <ThemeToggleCompact />
+            </div>
           </nav>
         </>
       )}
