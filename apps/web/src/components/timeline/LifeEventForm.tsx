@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType } from '@nality/schema'
+import { EnhancedTopicDropdown } from './EnhancedTopicDropdown'
+import { TopicService } from '@/services/topicService'
 
 // ──────────────────────
 // Component Props
@@ -214,7 +216,8 @@ export function LifeEventForm({
         start_date: formState.start_date,
         end_date: formState.is_ongoing ? '' : formState.end_date || '',
         is_ongoing: formState.is_ongoing,
-        category: formState.category as LifeEventCategoryType,
+        // CODE_EXPANSION: Map topic back to category for database compatibility
+        category: (TopicService.mapTopicToCategory(formState.category) || formState.category) as LifeEventCategoryType,
         location: formState.location.trim() || '',
         importance: formState.importance,
         tags: formState.tags
@@ -405,17 +408,11 @@ export function LifeEventForm({
         {/* Category and Location */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {renderFormField('Category',
-            <select
+            <EnhancedTopicDropdown
               value={formState.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
+              onChange={(value) => handleInputChange('category', value)}
               className="form-select"
-            >
-              {CATEGORY_OPTIONS.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            />
           )}
 
           {renderFormField('Location',

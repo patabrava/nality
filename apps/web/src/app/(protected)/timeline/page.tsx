@@ -1,15 +1,20 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function TimelineRedirectPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    console.log('[MONOCODE] Timeline redirect: Navigating from /timeline to /dash/timeline')
-    router.push('/dash/timeline')
-  }, [router])
+    // Preserve any query parameters during the redirect
+    const queryString = searchParams.toString()
+    const redirectUrl = queryString ? `/dash/timeline?${queryString}` : '/dash/timeline'
+    
+    console.log('[MONOCODE] Timeline redirect: Navigating from /timeline to', redirectUrl)
+    router.push(redirectUrl)
+  }, [router, searchParams])
 
   return (
     <div className="flex items-center justify-center min-h-screen">

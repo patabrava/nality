@@ -4,6 +4,10 @@ import { useState, useMemo } from 'react'
 import { useLifeEvents } from '@/hooks/useLifeEvents'
 import { LifeEventCard } from '@/components/timeline/LifeEventCard'
 import { LifeEventForm } from '@/components/timeline/LifeEventForm'
+import { TimelineFilters } from '@/components/timeline/TimelineFilters'
+import { FilterChips } from '@/components/timeline/FilterChips'
+import { useTimelineFilters } from '@/hooks/useTimelineFilters'
+import { filterEvents, getFilterStats } from '@/utils/timelineFilters'
 import type { TimelineEvent, LifeEventFormData } from '@nality/schema'
 
 /**
@@ -24,6 +28,9 @@ export function TimelineModule() {
     deleteEvent
   } = useLifeEvents()
 
+  // CODE_EXPANSION: Add filtering system while preserving existing functionality
+  const filters = useTimelineFilters()
+
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
 
@@ -39,17 +46,34 @@ export function TimelineModule() {
   })
 
   // ──────────────────────
-  // Timeline Data Processing
+  // Timeline Data Processing - Enhanced with Filtering
   // ──────────────────────
 
+  // Apply filters to events
+  const filteredEvents = useMemo(() => {
+    const filterState = {
+      topics: filters.topics,
+      keywords: filters.keywords,
+      dateRange: filters.dateRange,
+      sortBy: filters.sortBy,
+      isVisible: filters.isVisible
+    }
+    return filterEvents(events, filterState)
+  }, [events, filters.topics, filters.keywords, filters.dateRange, filters.sortBy, filters.isVisible])
+
+  // Get filter statistics
+  const filterStats = useMemo(() => {
+    return getFilterStats(events, filteredEvents)
+  }, [events, filteredEvents])
+
   const timelineData = useMemo(() => {
-    console.log('[TimelineModule] Processing timeline data, events:', events.length)
+    console.log('[TimelineModule] Processing timeline data, events:', filteredEvents.length)
     
     // Group events by decade for timeline structure
     const eventsByDecade = new Map<number, TimelineEvent[]>()
     const decades = new Set<number>()
     
-    events.forEach(event => {
+    filteredEvents.forEach(event => {
       const year = new Date(event.start_date).getFullYear()
       const decade = Math.floor(year / 10) * 10
       
@@ -117,7 +141,7 @@ export function TimelineModule() {
     })
 
     return timelineItems
-  }, [events])
+  }, [filteredEvents])
 
   // ──────────────────────
   // Event Handlers
@@ -255,86 +279,133 @@ export function TimelineModule() {
     )
   }
 
-  const renderEmptyState = () => (
-    <div 
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        padding: 'clamp(24px, 6vw, 48px) clamp(12px, 3vw, 24px)',
-        textAlign: 'center',
-        maxWidth: '100%',
-        boxSizing: 'border-box'
-      }}
-    >
+  const renderEmptyState = () => {
+    // Show different empty states based on whether filters are active
+    const hasFilters = filterStats.hasFilters
+    
+    return (
       <div 
         style={{
-          fontSize: 'clamp(2.5rem, 8vw, 4rem)',
-          marginBottom: 'clamp(12px, 3vw, 24px)',
-          opacity: 0.6
-        }}
-      >
-        📖
-      </div>
-      <h2 
-        style={{
-          fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
-          fontWeight: 600,
-          color: 'var(--md-sys-color-on-surface)',
-          marginBottom: 'clamp(8px, 2vw, 16px)',
-          fontFamily: 'Roboto, system-ui, sans-serif',
-          margin: '0 0 clamp(8px, 2vw, 16px) 0'
-        }}
-      >
-        Your story starts here
-      </h2>
-      <p 
-        style={{
-          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
-          color: 'var(--md-sys-color-on-surface-variant)',
-          maxWidth: 'clamp(280px, 80vw, 400px)',
-          lineHeight: 1.5,
-          marginBottom: 'clamp(16px, 4vw, 32px)',
-          margin: '0 0 clamp(16px, 4vw, 32px) 0'
-        }}
-      >
-        Begin documenting your life's journey. Share your first memory, achievement, or milestone.
-      </p>
-      <button
-        onClick={() => setShowForm(true)}
-        style={{
-          padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 32px)',
-          background: 'var(--md-sys-color-primary)',
-          color: 'var(--md-sys-color-on-primary)',
-          border: 'none',
-          borderRadius: 'clamp(16px, 4vw, 20px)',
-          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
-          fontWeight: 600,
-          cursor: 'pointer',
-          transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
-          fontFamily: 'Roboto, system-ui, sans-serif',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          gap: 'clamp(6px, 1.5vw, 8px)',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-          minHeight: 'clamp(40px, 10vw, 48px)'
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 255, 255, 0.2)'
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.transform = 'translateY(0) scale(1)'
-          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)'
+          justifyContent: 'center',
+          height: '100%',
+          padding: 'clamp(24px, 6vw, 48px) clamp(12px, 3vw, 24px)',
+          textAlign: 'center',
+          maxWidth: '100%',
+          boxSizing: 'border-box'
         }}
       >
-        <ChatbotIcon />
-        Add Your First Memory
-      </button>
-    </div>
-  )
+        <div 
+          style={{
+            fontSize: 'clamp(2.5rem, 8vw, 4rem)',
+            marginBottom: 'clamp(12px, 3vw, 24px)',
+            opacity: 0.6
+          }}
+        >
+          {hasFilters ? '🔍' : '📖'}
+        </div>
+        <h2 
+          style={{
+            fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
+            fontWeight: 600,
+            color: 'var(--md-sys-color-on-surface)',
+            marginBottom: 'clamp(8px, 2vw, 16px)',
+            fontFamily: 'Roboto, system-ui, sans-serif',
+            margin: '0 0 clamp(8px, 2vw, 16px) 0'
+          }}
+        >
+          {hasFilters ? 'No matching events' : 'Your story starts here'}
+        </h2>
+        <p 
+          style={{
+            fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+            color: 'var(--md-sys-color-on-surface-variant)',
+            maxWidth: 'clamp(280px, 80vw, 400px)',
+            lineHeight: 1.5,
+            marginBottom: 'clamp(16px, 4vw, 32px)',
+            margin: '0 0 clamp(16px, 4vw, 32px) 0'
+          }}
+        >
+          {hasFilters 
+            ? 'Try adjusting your filters or create a new event that matches your criteria.'
+            : 'Begin documenting your life\'s journey. Share your first memory, achievement, or milestone.'
+          }
+        </p>
+        {hasFilters ? (
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={filters.clearFilters}
+              style={{
+                padding: 'clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 20px)',
+                background: 'var(--md-sys-color-secondary-container)',
+                color: 'var(--md-sys-color-on-secondary-container)',
+                border: '1px solid var(--md-sys-color-outline-variant)',
+                borderRadius: 'clamp(14px, 3.5vw, 16px)',
+                fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
+                fontFamily: 'Roboto, system-ui, sans-serif'
+              }}
+            >
+              Clear Filters
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              style={{
+                padding: 'clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 20px)',
+                background: 'var(--md-sys-color-primary)',
+                color: 'var(--md-sys-color-on-primary)',
+                border: 'none',
+                borderRadius: 'clamp(14px, 3.5vw, 16px)',
+                fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
+                fontFamily: 'Roboto, system-ui, sans-serif'
+              }}
+            >
+              Add New Event
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowForm(true)}
+            style={{
+              padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 32px)',
+              background: 'var(--md-sys-color-primary)',
+              color: 'var(--md-sys-color-on-primary)',
+              border: 'none',
+              borderRadius: 'clamp(16px, 4vw, 20px)',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
+              fontFamily: 'Roboto, system-ui, sans-serif',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'clamp(6px, 1.5vw, 8px)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              minHeight: 'clamp(40px, 10vw, 48px)'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
+              e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 255, 255, 0.2)'
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)'
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            <ChatbotIcon />
+            Add Your First Memory
+          </button>
+        )}
+      </div>
+    )
+  }
 
   const renderLoadingState = () => (
     <div className="timeline-list">
@@ -580,6 +651,31 @@ export function TimelineModule() {
         >
           
         </h1>
+        
+        {/* Filter results summary - CODE_EXPANSION: Add filter feedback */}
+        {filterStats.hasFilters && (
+          <div 
+            style={{
+              fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+              color: 'var(--md-sys-color-on-surface-variant)',
+              marginTop: 'clamp(4px, 1vw, 8px)',
+              fontFamily: 'Roboto, system-ui, sans-serif'
+            }}
+          >
+            Showing {filterStats.filtered} of {filterStats.total} events
+          </div>
+        )}
+      </div>
+
+      {/* Timeline Filters - CODE_EXPANSION: Add filtering without affecting existing layout */}
+      <div 
+        style={{
+          padding: '0 clamp(12px, 4vw, 32px)',
+          flexShrink: 0
+        }}
+      >
+        <TimelineFilters key={`filters-${filters.topics.join(',')}-${filters.keywords}-${filters.dateRange.start || ''}-${filters.dateRange.end || ''}-${filters.sortBy}-${filters.isVisible}`} />
+        <FilterChips key={`${filters.topics.join(',')}-${filters.keywords}-${filters.dateRange.start || ''}-${filters.dateRange.end || ''}-${filters.sortBy}`} />
       </div>
 
       {/* Responsive Timeline Content - Progressive Construction */}
@@ -599,8 +695,10 @@ export function TimelineModule() {
           renderLoadingState()
         ) : events.length === 0 ? (
           renderEmptyState()
+        ) : filteredEvents.length === 0 ? (
+          renderEmptyState()
         ) : (
-          <div className="timeline-list">
+          <div className="timeline-list" key={`timeline-${filteredEvents.length}-${filters.topics.join(',')}-${filters.keywords}-${filters.sortBy}`}>
             {/* Timeline spine - Dependency Transparency */}
             <div className="timeline-spine" />
 
