@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { convertOnboardingToEvents } from '@/lib/events/onboarding-mapper';
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
+export async function POST() {
   console.log("🔄 Convert Onboarding API endpoint hit");
   
   try {
@@ -12,11 +12,17 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user?.id) {
+      console.error("❌ No authenticated user found");
       return Response.json({ error: "Authentication required" }, { status: 401 });
     }
 
+    console.log("🔄 Converting onboarding for user:", user.id);
+
+    // Use service client to bypass RLS for inserts (user already validated)
+    const serviceClient = await createServiceClient();
+    
     // Convert onboarding answers to life events
-    const result = await convertOnboardingToEvents(user.id, supabase);
+    const result = await convertOnboardingToEvents(user.id, serviceClient);
     
     console.log("✅ Onboarding conversion result:", result);
     

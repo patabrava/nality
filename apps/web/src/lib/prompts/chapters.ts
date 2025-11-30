@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import type { ChapterId } from '@nality/schema';
 
+// In development, don't cache to allow prompt changes without restart
+const isDev = process.env.NODE_ENV === 'development';
 const promptCache: Map<string, string> = new Map();
 
 function resolveChapterPromptPath(chapterId: ChapterId): string | null {
@@ -28,8 +30,8 @@ function resolveChapterPromptPath(chapterId: ChapterId): string | null {
 }
 
 export function getChapterSystemPrompt(chapterId: ChapterId): string {
-  // Check cache first
-  if (promptCache.has(chapterId)) {
+  // In development, skip cache to allow hot-reloading of prompts
+  if (!isDev && promptCache.has(chapterId)) {
     return promptCache.get(chapterId)!;
   }
 
@@ -64,8 +66,17 @@ export function buildChapterSystemPrompt(chapterId: ChapterId): string {
     'OUTPUT_CONSTRAINTS:',
     '- Respond in plain text only.',
     '- Ask one question at a time.',
-    '- After gathering a memory, summarize it and ask for confirmation before saving.',
+    '- After gathering a memory, confirm with the user, then output the [SAVE_MEMORY] block.',
     '- Respond in the same language the user is using.',
+    '',
+    'CRITICAL: When saving a memory, you MUST output this exact format:',
+    '',
+    '[SAVE_MEMORY]',
+    'Title: [A brief descriptive title for this memory]',
+    'Date: [YYYY-MM-DD or just YYYY if only year is known]', 
+    'Description: [The details of this memory in 1-3 sentences]',
+    '',
+    'The [SAVE_MEMORY] block triggers automatic saving. Include ALL three fields.',
   ].join('\n');
 
   return outputConstraints + '\n\n' + getChapterSystemPrompt(chapterId);

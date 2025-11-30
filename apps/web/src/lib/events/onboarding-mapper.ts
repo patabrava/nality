@@ -9,6 +9,7 @@ interface OnboardingAnswer {
   id: string;
   user_id: string;
   question_topic: string;
+  question_text?: string;
   answer_text: string;
   created_at: string;
 }
@@ -54,7 +55,11 @@ const TOPIC_MAPPINGS: Record<string, {
   },
   'siblings': {
     category: 'family',
-    titleTemplate: (answer) => answer.toLowerCase().includes('no') ? 'Only Child' : 'Siblings',
+    titleTemplate: (answer) => {
+      const lower = answer.toLowerCase();
+      if (lower.includes('kein') || lower.includes('no') || lower === '0') return 'Only Child';
+      return `Siblings: ${answer.slice(0, 50)}`;
+    },
     importance: 6,
   },
   'childhood_home': {
@@ -64,7 +69,7 @@ const TOPIC_MAPPINGS: Record<string, {
   },
   'education': {
     category: 'education',
-    titleTemplate: () => 'Education Journey',
+    titleTemplate: (answer) => `Education: ${answer.slice(0, 50)}`,
     importance: 7,
   },
   'first_school': {
@@ -74,7 +79,7 @@ const TOPIC_MAPPINGS: Record<string, {
   },
   'career_start': {
     category: 'career',
-    titleTemplate: () => 'Career Beginning',
+    titleTemplate: (answer) => `Career: ${answer.slice(0, 50)}`,
     importance: 7,
   },
   'first_job': {
@@ -89,21 +94,70 @@ const TOPIC_MAPPINGS: Record<string, {
   },
   'partner': {
     category: 'relationship',
-    titleTemplate: () => 'Life Partner',
+    titleTemplate: (answer) => `Partner: ${answer.slice(0, 50)}`,
     importance: 8,
   },
   'children': {
     category: 'family',
-    titleTemplate: (answer) => answer.toLowerCase().includes('no') ? 'Life Without Children' : 'Parenthood',
+    titleTemplate: (answer) => {
+      const lower = answer.toLowerCase();
+      if (lower.includes('kein') || lower.includes('no') || lower === '0') return 'No Children';
+      return `Children: ${answer.slice(0, 50)}`;
+    },
     importance: 9,
   },
+  'influences': {
+    category: 'personal',
+    titleTemplate: (answer) => `Literary Influences: ${answer.slice(0, 50)}`,
+    importance: 5,
+  },
+  'role_models': {
+    category: 'family',
+    titleTemplate: (answer) => `Role Model: ${answer.slice(0, 50)}`,
+    importance: 6,
+  },
+  'important_places': {
+    category: 'travel',
+    titleTemplate: (answer) => `Important Places: ${answer.slice(0, 50)}`,
+    importance: 6,
+  },
 };
+
+/**
+ * Infer topic from question text when topic is generic "identity"
+ */
+function inferTopicFromQuestion(questionText: string): string | null {
+  if (!questionText) return null;
+  const q = questionText.toLowerCase();
+  
+  if (q.includes('geburtsdatum') || q.includes('geboren')) return 'birth_date';
+  if (q.includes('geburtsort')) return 'birth_place';
+  if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'siblings';
+  if (q.includes('kinder')) return 'children';
+  if (q.includes('eltern') || q.includes('mutter') || q.includes('vater')) return 'parents';
+  if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe')) return 'partner';
+  if (q.includes('orte') || q.includes('stadt') || q.includes('region')) return 'important_places';
+  if (q.includes('schule') || q.includes('grundschule')) return 'education';
+  if (q.includes('autor') || q.includes('geprägt')) return 'influences';
+  if (q.includes('bewunder') || q.includes('person')) return 'role_models';
+  
+  return null;
+}
 
 /**
  * Map an onboarding answer to a potential life event
  */
 export function mapAnswerToEvent(answer: OnboardingAnswer): MappedEvent | null {
-  const topic = answer.question_topic?.toLowerCase() || '';
+  let topic = answer.question_topic?.toLowerCase() || '';
+  
+  // If topic is generic "identity", try to infer from question text
+  if (topic === 'identity' && answer.question_text) {
+    const inferred = inferTopicFromQuestion(answer.question_text);
+    if (inferred) {
+      topic = inferred;
+      console.log(`[onboarding-mapper] Inferred topic "${inferred}" from question text`);
+    }
+  }
   
   // Find matching topic
   const mapping = Object.entries(TOPIC_MAPPINGS).find(([key]) => 

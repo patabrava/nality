@@ -71,14 +71,33 @@ export default function ChatInterface({
     return completionPatterns.some(pattern => pattern.test(t));
   }
 
-  function handleCompletionRedirect(content: string) {
+  async function handleCompletionRedirect(content: string) {
     if (hasRedirected) return;
     if (isCompletionMessage(content)) {
-      console.log('🎯 Onboarding completion detected. Redirecting to /dash …');
+      console.log('🎯 Onboarding completion detected. Converting answers to life events...');
       setHasRedirected(true);
+      
+      // Convert onboarding answers to life events before redirecting
+      try {
+        const response = await fetch('/api/events/convert-onboarding', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Onboarding answers converted to life events:', result);
+        } else {
+          console.error('❌ Failed to convert onboarding answers:', await response.text());
+        }
+      } catch (error) {
+        console.error('❌ Error converting onboarding answers:', error);
+      }
+      
+      // Redirect to dashboard
       setTimeout(() => {
         router.push('/dash');
-      }, 900);
+      }, 500);
     }
   }
 

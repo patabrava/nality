@@ -94,16 +94,26 @@ export async function POST(req: Request) {
 
         // Insert only if we have an answer text
         if (answerText && answerText.trim().length > 0) {
-          // Map question content to topic categories
+          // Map question content to specific topic keys for the mapper
           const inferQuestionTopic = (questionText: string | null): string => {
-            if (!questionText) return 'identity'; // fallback
+            if (!questionText) return 'identity';
             const q = questionText.toLowerCase();
             
-            if (q.includes('ansprechen') || q.includes('name') || q.includes('titel')) return 'identity';
-            if (q.includes('geschwister') || q.includes('familie') || q.includes('eltern')) return 'family';
-            if (q.includes('schule') || q.includes('studium') || q.includes('bildung') || q.includes('abschluss')) return 'education';
-            if (q.includes('beruf') || q.includes('arbeit') || q.includes('rolle') || q.includes('job')) return 'career';
-            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('person') || q.includes('geprägt')) return 'influences';
+            // Specific topics that map to life events
+            if (q.includes('geburtsdatum') || q.includes('geboren') || q.includes('birth')) return 'birth_date';
+            if (q.includes('geburtsort') || q.includes('birthplace')) return 'birth_place';
+            if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'siblings';
+            if (q.includes('kinder') || q.includes('children')) return 'children';
+            if (q.includes('eltern') || q.includes('mutter') || q.includes('vater') || q.includes('parents')) return 'parents';
+            if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe') || q.includes('marriage')) return 'partner';
+            if (q.includes('orte') || q.includes('stadt') || q.includes('region') || q.includes('places')) return 'important_places';
+            if (q.includes('schule') || q.includes('grundschule') || q.includes('gymnasium')) return 'education';
+            if (q.includes('studium') || q.includes('universität') || q.includes('university')) return 'education';
+            if (q.includes('beruf') || q.includes('arbeit') || q.includes('job') || q.includes('career')) return 'career_start';
+            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('geprägt')) return 'influences';
+            if (q.includes('bewunder') || q.includes('person') || q.includes('admire')) return 'role_models';
+            if (q.includes('name') || q.includes('titel') || q.includes('ansprechen')) return 'full_name';
+            if (q.includes('stil') || q.includes('style')) return 'language_style';
             
             return 'identity'; // default fallback
           };

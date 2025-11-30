@@ -25,6 +25,8 @@ const SAVE_PATTERNS = [
   /memory saved/i,
   /added to your timeline/i,
   /i'd title it/i,
+  /\[SAVE_MEMORY\]/i,
+  /title:\s*.+/i,
 ];
 
 /**
@@ -36,6 +38,7 @@ export function isEventExtractionMessage(content: string): boolean {
 
 /**
  * Extract event data from AI message
+ * Supports multiple formats including structured [SAVE_MEMORY] blocks
  */
 export function extractEventFromMessage(
   content: string, 
@@ -45,16 +48,53 @@ export function extractEventFromMessage(
     return null;
   }
 
+  // Try structured format first: [SAVE_MEMORY] followed by Title: ... Date: ... Description: ...
+  // This handles both inline and multiline formats
+  const hasSaveMemory = /\[SAVE_MEMORY\]/i.test(content);
+  
+  if (hasSaveMemory) {
+    // Extract title - can be on same line or next line after [SAVE_MEMORY]
+    const titleMatch = content.match(
+      /(?:\[SAVE_MEMORY\]\s*)?(?:Title|Titel)\s*:\s*(.+?)(?:\n|(?=Date|Datum|Description|Beschreibung)|$)/i
+    );
+    
+    if (titleMatch && titleMatch[1]) {
+      const title = titleMatch[1].trim();
+      
+      // Extract date from structured format
+      const dateMatch = content.match(
+        /(?:Date|Datum)\s*:\s*([^\n]+)/i
+      );
+      
+      // Extract description from structured format
+      const descMatch = content.match(
+        /(?:Description|Beschreibung)\s*:\s*([\s\S]*?)(?:\[|$)/i
+      );
+      
+      console.log("📦 Structured extraction found - Title:", title, "Date:", dateMatch?.[1], "Desc length:", descMatch?.[1]?.length);
+      
+      return {
+        title: title.substring(0, 200),
+        description: descMatch?.[1]?.trim()?.substring(0, 500) || '',
+        suggestedDate: parseDateString(dateMatch?.[1]?.trim()),
+        category,
+        confidence: 0.95
+      };
+    }
+  }
+
   // Try to extract title from quotes or after "title it"
   const titleMatch = content.match(
     /(?:title(?:d)? it|i'd call it|save (?:this )?as)[:\s]*["']([^"']+)["']/i
+  ) || content.match(
+    /(?:title(?:d)? it|i'd call it)[:\s]*([^"'\n.!?]+)/i
   ) || content.match(
     /["']([^"']{10,100})["']/
   );
 
   // Try to extract date references
   const dateMatch = content.match(
-    /(?:from|in|around|circa|dated?)\s+(\d{4}|\w+\s+\d{4}|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/i
+    /(?:from|in|around|circa|dated?|im Jahr|um|ca\.)\s+(\d{4}|\w+\s+\d{4}|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/i
   );
 
   // If we found a title, create the extracted event
@@ -66,14 +106,30 @@ export function extractEventFromMessage(
       .replace(/would you like me to save this.*$/i, '')
       .replace(/shall i save this.*$/i, '')
       .replace(/i'd title it.*$/i, '')
+      .replace(/\[SAVE_MEMORY\][\s\S]*$/i, '')
       .trim();
 
     return {
-      title,
+      title: title.substring(0, 200),
       description: description.length > 500 ? description.slice(0, 500) + '...' : description,
       suggestedDate: parseDateString(dateMatch?.[1]),
       category,
       confidence: 0.8
+    };
+  }
+
+  // Last resort: Extract any meaningful sentence as a title
+  const fallbackMatch = content.match(
+    /(?:memory|erinnerung|moment|ereignis)[^.!?]*?[:\s]+([A-Z][^.!?]{10,80})/i
+  );
+  
+  if (fallbackMatch && fallbackMatch[1]) {
+    return {
+      title: fallbackMatch[1].trim().substring(0, 200),
+      description: content.substring(0, 500),
+      suggestedDate: parseDateString(dateMatch?.[1]),
+      category,
+      confidence: 0.5
     };
   }
 

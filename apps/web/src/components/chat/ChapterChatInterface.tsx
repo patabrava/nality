@@ -14,6 +14,7 @@ interface ChapterChatInterfaceProps {
 // Check if AI message indicates event saving
 function isSaveMessage(content: string): boolean {
   const patterns = [
+    /\[SAVE_MEMORY\]/i,              // Primary structured format
     /would you like me to save this/i,
     /shall i save this/i,
     /i('ll| will) save this/i,
@@ -22,6 +23,7 @@ function isSaveMessage(content: string): boolean {
     /memory saved/i,
     /added to your timeline/i,
     /i'd title it/i,
+    /Title:\s*.+/i,                  // Structured format detection
   ];
   return patterns.some(p => p.test(content));
 }
