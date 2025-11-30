@@ -9,8 +9,7 @@ const tabs = [
   { id: 'dashboard', label: 'Dashboard', route: '/dash', icon: 'house' },
   { id: 'timeline', label: 'Timeline', route: '/dash/timeline', icon: 'timeline' },
   { id: 'chat', label: 'Chat', route: '/dash/chat', icon: 'chat' },
-  { id: 'contact', label: 'Contact', route: '/dash/contact', icon: 'user' },
-  { id: 'view', label: 'View', route: '/dash/view', icon: 'settings' }
+  { id: 'contact', label: 'Contact', route: '/dash/contact', icon: 'user' }
 ] as const
 
 export function TabNavigation() {

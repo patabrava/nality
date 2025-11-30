@@ -54,7 +54,10 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   console.log('[TimelineModule] Component mounted', { 
     eventsCount: events.length, 
     loading, 
-    showForm, 
+    showForm,
+    showChat,
+    chapterId,
+    chapter: chapter?.name,
     editingEvent: editingEvent?.id,
     hasHeaderNavigation // Debug output for header detection
   })
@@ -367,7 +370,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               Clear Filters
             </button>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
               style={{
                 padding: 'clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 20px)',
                 background: 'var(--md-sys-color-primary)',
@@ -386,7 +389,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           </div>
         ) : (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
             style={{
               padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 32px)',
               background: 'var(--md-sys-color-primary)',

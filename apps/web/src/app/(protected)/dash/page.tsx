@@ -1,7 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { CHAPTERS_ORDERED } from '@/lib/chapters'
+import { supabase } from '@/lib/supabase/client'
+import { useAuth } from '@/hooks/useAuth'
 
 // Dashboard tile component
 interface DashboardTileProps {
@@ -70,17 +73,76 @@ function DashboardTile({ title, content, isInteractive = false, slogan, onClick 
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const [chapterStats, setChapterStats] = useState<Record<string, number>>({})
+  const [totalEvents, setTotalEvents] = useState(0)
+  
   console.log('📊 Dashboard page mounted')
+
+  // Fetch chapter stats
+  useEffect(() => {
+    async function fetchStats() {
+      if (!user?.id) return
+      
+      try {
+        // Get event counts per category
+        const { data, error } = await supabase
+          .from('life_event')
+          .select('category')
+          .eq('user_id', user.id)
+        
+        if (error) {
+          console.error('Failed to fetch stats:', error)
+          return
+        }
+        
+        // Count events per chapter
+        const stats: Record<string, number> = {}
+        let total = 0
+        
+        CHAPTERS_ORDERED.forEach(chapter => {
+          const count = data?.filter(e => 
+            chapter.categories.includes(e.category as any)
+          ).length || 0
+          stats[chapter.id] = count
+          total += count
+        })
+        
+        setChapterStats(stats)
+        setTotalEvents(total)
+        console.log('📊 Chapter stats:', stats, 'Total:', total)
+      } catch (err) {
+        console.error('Error fetching stats:', err)
+      }
+    }
+    
+    fetchStats()
+  }, [user?.id])
 
   const handleChapterClick = (chapterId: string) => {
     console.log(`📖 Navigating to chapter: ${chapterId}`)
     router.push(`/dash/${chapterId}`)
   }
 
-  // Build tiles from chapters config
+  // Build tiles from chapters config with stats
   const chapterTiles = CHAPTERS_ORDERED.map(chapter => ({
     title: chapter.name,
-    content: <span style={{ fontSize: '2.5rem' }}>{chapter.icon}</span>,
+    content: (
+      <div style={{ textAlign: 'center' }}>
+        <span style={{ fontSize: '2.5rem', display: 'block' }}>{chapter.icon}</span>
+        {(chapterStats[chapter.id] ?? 0) > 0 && (
+          <span style={{ 
+            fontSize: '0.7rem', 
+            color: 'var(--md-sys-color-primary)',
+            fontWeight: 600,
+            marginTop: '4px',
+            display: 'block'
+          }}>
+            {chapterStats[chapter.id]} {chapterStats[chapter.id] === 1 ? 'memory' : 'memories'}
+          </span>
+        )}
+      </div>
+    ),
     isInteractive: true,
     slogan: chapter.subtitle,
     onClick: () => handleChapterClick(chapter.id)
@@ -92,14 +154,16 @@ export default function DashboardPage() {
       title: "Your Story",
       content: (
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--md-sys-color-primary)' }}>
-            {CHAPTERS_ORDERED.length}
+          <p style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--md-sys-color-primary)', margin: 0 }}>
+            {totalEvents}
           </p>
-          <p style={{ fontSize: '0.75rem', opacity: 0.75 }}>Life Chapters</p>
+          <p style={{ fontSize: '0.75rem', opacity: 0.75, margin: '4px 0 0' }}>
+            {totalEvents === 1 ? 'Memory' : 'Memories'} Captured
+          </p>
         </div>
       ),
       isInteractive: false,
-      slogan: "Every memory counts",
+      slogan: `Across ${CHAPTERS_ORDERED.length} life chapters`,
       onClick: undefined as (() => void) | undefined
     }
   ]
