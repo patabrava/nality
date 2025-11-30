@@ -112,16 +112,21 @@ export default function ChatInterface({
       // Mark session as complete
       await markComplete();
       
-      // Mark user as onboarding complete
+      // Mark user as onboarding complete (use upsert to handle missing row)
       if (userId) {
-        await supabase
+        const { error: upsertError } = await supabase
           .from('users')
-          .update({ 
+          .upsert({ 
+            id: userId,
             onboarding_complete: true,
             onboarding_completed_at: new Date().toISOString()
-          })
-          .eq('id', userId);
-        console.log('✅ User marked as onboarding complete');
+          }, { onConflict: 'id' });
+        
+        if (upsertError) {
+          console.error('❌ Error marking user as onboarding complete:', upsertError);
+        } else {
+          console.log('✅ User marked as onboarding complete');
+        }
       }
       
       // Convert onboarding answers to life events before redirecting
