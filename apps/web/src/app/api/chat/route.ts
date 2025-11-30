@@ -49,10 +49,34 @@ export async function POST(req: Request) {
     }
 
     // Clean message format - remove parts property and ensure proper structure
-    const cleanMessages = messages.map((message: { role: string; content: string }) => ({
+    let cleanMessages = messages.map((message: { role: string; content: string }) => ({
       role: message.role,
       content: sanitizeContent(message.content)
     })) as CoreMessage[];
+    
+    // If sessionId is provided and client only sent 1-2 messages, load full history from DB
+    // This handles the case where useChat's internal state doesn't have the full history
+    if (sessionId && cleanMessages.length <= 2) {
+      console.log('📂 Client sent few messages, loading full history from session:', sessionId);
+      try {
+        const serviceClient = await createServiceClient();
+        const { data: dbMessages, error: dbError } = await serviceClient
+          .from('chat_messages')
+          .select('role, content')
+          .eq('session_id', sessionId)
+          .order('created_at', { ascending: true });
+        
+        if (!dbError && dbMessages && dbMessages.length > cleanMessages.length) {
+          console.log(`📂 Loaded ${dbMessages.length} messages from DB (client had ${cleanMessages.length})`);
+          cleanMessages = dbMessages.map(m => ({
+            role: m.role as 'user' | 'assistant',
+            content: sanitizeContent(m.content)
+          }));
+        }
+      } catch (dbErr) {
+        console.warn('⚠️ Could not load messages from DB, using client messages:', dbErr);
+      }
+    }
     
     console.log(" Cleaned + sanitized messages for AI SDK:", JSON.stringify(cleanMessages, null, 2));
 

@@ -30,7 +30,8 @@ function resolvePromptPath(filename: string): string | null {
 }
 
 export function getOnboardingSystemPrompt(): string {
-  if (cachedPrompt) return cachedPrompt;
+  // In development, always read fresh prompt to pick up changes
+  if (cachedPrompt && process.env.NODE_ENV === 'production') return cachedPrompt;
 
   // Priority 1: New TXT format (onboarding.txt)
   const txtPath = resolvePromptPath('onboarding.txt');

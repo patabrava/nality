@@ -28,11 +28,72 @@ interface MappedEvent {
 }
 
 // Map question topics to categories and event templates
+// These match the topics from inferQuestionTopic: identity, family, education, career, influences
 const TOPIC_MAPPINGS: Record<string, {
   category: LifeEventCategoryType;
   titleTemplate: (answer: string) => string;
   importance: number;
 }> = {
+  // Primary topics from inferQuestionTopic
+  'identity': {
+    category: 'personal',
+    titleTemplate: (answer) => {
+      // Try to extract meaningful info from identity answers
+      const lower = answer.toLowerCase();
+      if (lower.includes('geboren') || lower.match(/\d{4}/)) {
+        const year = answer.match(/\d{4}/)?.[0];
+        return year ? `Born ${year}` : 'Birth Info';
+      }
+      return `Profile: ${answer.slice(0, 40)}`;
+    },
+    importance: 8,
+  },
+  'family': {
+    category: 'family',
+    titleTemplate: (answer) => {
+      const lower = answer.toLowerCase();
+      if (lower.includes('bruder') || lower.includes('schwester') || lower.includes('geschwister')) {
+        return `Siblings: ${answer.slice(0, 40)}`;
+      }
+      if (lower.includes('kind') || lower.includes('children')) {
+        if (lower.includes('kein') || lower.includes('no')) return 'No Children';
+        return `Children: ${answer.slice(0, 40)}`;
+      }
+      return `Family: ${answer.slice(0, 40)}`;
+    },
+    importance: 7,
+  },
+  'education': {
+    category: 'education',
+    titleTemplate: (answer) => {
+      // Extract degree or school name for title
+      const lower = answer.toLowerCase();
+      if (lower.includes('bachelor')) return `Bachelor: ${answer.slice(0, 35)}`;
+      if (lower.includes('master')) return `Master: ${answer.slice(0, 35)}`;
+      if (lower.includes('abitur')) return `Abitur: ${answer.slice(0, 35)}`;
+      if (lower.includes('universit') || lower.includes('uni ')) return `University: ${answer.slice(0, 35)}`;
+      return `Education: ${answer.slice(0, 40)}`;
+    },
+    importance: 7,
+  },
+  'career': {
+    category: 'career',
+    titleTemplate: (answer) => {
+      // Try to extract role or company
+      const lower = answer.toLowerCase();
+      if (lower.includes('head of')) return `Head of: ${answer.slice(0, 35)}`;
+      if (lower.includes('manager')) return `Manager: ${answer.slice(0, 35)}`;
+      if (lower.includes('director')) return `Director: ${answer.slice(0, 35)}`;
+      return `Career: ${answer.slice(0, 40)}`;
+    },
+    importance: 7,
+  },
+  'influences': {
+    category: 'personal',
+    titleTemplate: (answer) => `Influences: ${answer.slice(0, 40)}`,
+    importance: 5,
+  },
+  // Legacy mappings for backwards compatibility
   'birth_date': {
     category: 'personal',
     titleTemplate: () => 'Born',
@@ -43,16 +104,6 @@ const TOPIC_MAPPINGS: Record<string, {
     titleTemplate: (answer) => `Born in ${answer}`,
     importance: 9,
   },
-  'full_name': {
-    category: 'personal',
-    titleTemplate: (answer) => `Named ${answer}`,
-    importance: 8,
-  },
-  'parents': {
-    category: 'family',
-    titleTemplate: () => 'Family Origins',
-    importance: 8,
-  },
   'siblings': {
     category: 'family',
     titleTemplate: (answer) => {
@@ -62,41 +113,6 @@ const TOPIC_MAPPINGS: Record<string, {
     },
     importance: 6,
   },
-  'childhood_home': {
-    category: 'personal',
-    titleTemplate: (answer) => `Childhood in ${answer.split(',')[0] || answer}`,
-    importance: 7,
-  },
-  'education': {
-    category: 'education',
-    titleTemplate: (answer) => `Education: ${answer.slice(0, 50)}`,
-    importance: 7,
-  },
-  'first_school': {
-    category: 'education',
-    titleTemplate: (answer) => `Started School - ${answer}`,
-    importance: 6,
-  },
-  'career_start': {
-    category: 'career',
-    titleTemplate: (answer) => `Career: ${answer.slice(0, 50)}`,
-    importance: 7,
-  },
-  'first_job': {
-    category: 'career',
-    titleTemplate: (answer) => `First Job: ${answer.slice(0, 50)}`,
-    importance: 6,
-  },
-  'marriage': {
-    category: 'relationship',
-    titleTemplate: () => 'Marriage',
-    importance: 9,
-  },
-  'partner': {
-    category: 'relationship',
-    titleTemplate: (answer) => `Partner: ${answer.slice(0, 50)}`,
-    importance: 8,
-  },
   'children': {
     category: 'family',
     titleTemplate: (answer) => {
@@ -105,11 +121,6 @@ const TOPIC_MAPPINGS: Record<string, {
       return `Children: ${answer.slice(0, 50)}`;
     },
     importance: 9,
-  },
-  'influences': {
-    category: 'personal',
-    titleTemplate: (answer) => `Literary Influences: ${answer.slice(0, 50)}`,
-    importance: 5,
   },
   'role_models': {
     category: 'family',

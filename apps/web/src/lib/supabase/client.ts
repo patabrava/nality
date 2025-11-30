@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -12,13 +12,9 @@ if (!supabaseAnonKey) {
   throw new Error('Missing environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY is required')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-})
+// Use createBrowserClient from @supabase/ssr for proper cookie-based session management
+// This ensures client and server share the same session via cookies
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 // Type helper for database operations
 export type Database = Record<string, unknown> // Will be replaced with generated types later
@@ -29,10 +25,18 @@ export async function fetchUserProfile(userId: string) {
     .from('users')
     .select('id, email, onboarding_complete')
     .eq('id', userId)
-    .single()
+    .maybeSingle();
+
   if (error) {
-    console.error('❌ Error fetching user profile:', error)
-    return null
+    // PostgREST returns PGRST116 when no rows match – treat as "needs onboarding" instead of an error
+    if (error.code === 'PGRST116' || error.message?.toLowerCase().includes('no rows')) {
+      console.info('ℹ️ User profile not found yet, treating as not onboarded:', { userId });
+      return null;
+    }
+
+    console.error('❌ Error fetching user profile:', error);
+    return null;
   }
-  return data
-} 
+
+  return data;
+}

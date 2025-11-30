@@ -104,10 +104,16 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
   // Load or create onboarding session on mount
   useEffect(() => {
     if (!userId) {
-      setIsLoading(false);
+      // Keep isLoading TRUE when userId is null - we're waiting for auth
+      // Only reset other states
+      setIsResuming(false);
+      setMessages([]);
+      setSession(null);
       return;
     }
 
+    // userId is now available - load session
+    // isLoading should already be true from initial state
     loadOrCreateSession();
   }, [userId, loadOrCreateSession]);
 
@@ -124,13 +130,19 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     }
 
     try {
+      // Get access token for API auth
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const accessToken = authSession?.access_token;
+      
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: session.id,
           role,
-          content
+          content,
+          userId,
+          accessToken
         })
       });
 
@@ -149,7 +161,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     } catch (err) {
       console.error('❌ Error saving message:', err);
     }
-  }, [session]);
+  }, [session, userId]);
 
   const updateSessionMetadata = useCallback(async (metadata: Partial<OnboardingSession['metadata']>) => {
     if (!session) return;
@@ -181,12 +193,18 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     if (!session) return;
 
     try {
+      // Get access token for API auth
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const accessToken = authSession?.access_token;
+      
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: session.id,
-          markComplete: true
+          markComplete: true,
+          userId,
+          accessToken
         })
       });
 
@@ -199,7 +217,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     } catch (err) {
       console.error('❌ Error marking session complete:', err);
     }
-  }, [session]);
+  }, [session, userId]);
 
   return {
     session,

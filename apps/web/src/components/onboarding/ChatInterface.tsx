@@ -24,7 +24,7 @@ interface DisplayMessage {
 
 export default function ChatInterface({
   placeholder = "Erzähle mir kurz etwas über dich …",
-  initialMessage = "Guten Tag! Bevor wir starten: Möchten Sie mit 'du' oder 'Sie' angesprochen werden? Welchen Namen und ggf. akademischen Titel soll ich verwenden?",
+  initialMessage = "Guten Tag! Wie möchten Sie angesprochen werden – du oder Sie? Und Ihr vollständiger Name?",
   onProgressChange
 }: ChatInterfaceProps) {
   // Sanitize AI output: remove status markers and code fences
@@ -81,10 +81,18 @@ export default function ChatInterface({
   function isCompletionMessage(text: string): boolean {
     if (!text) return false;
     const t = text.toLowerCase();
+
+    // Explicit signal from prompt instructions
+    if (t.includes('[onboarding_complete]')) {
+      return true;
+    }
+
     // Match both German and English completion indicators
     const completionPatterns = [
       /grunddaten\s+sind\s+vollständig/,      // German: "basic data is complete"
       /basisdaten\s+sind\s+(jetzt\s+)?vollständig/, // Alternative German
+      /basisdaten\s+sind\s+erfasst/,          // Wording currently used in UI
+      /deine\s+basisdaten\s+sind\s+erfasst/, // Personalized variant
       /basic\s+data\s+(is|are)\s+complete/,   // English
       /onboarding\s+(is\s+)?complete/,        // Generic
       /all\s+(mandatory\s+)?fields/,          // From new prompt
@@ -216,7 +224,18 @@ export default function ChatInterface({
 
   // Initialize chat - either resume or start fresh
   useEffect(() => {
-    if (sessionLoading || !userId || isInitialized) return;
+    console.log('🔄 ChatInterface init effect:', { 
+      sessionLoading, 
+      userId: userId ? 'set' : 'null', 
+      isInitialized,
+      isResuming,
+      persistedMessagesCount: persistedMessages.length 
+    });
+    
+    if (sessionLoading || !userId || isInitialized) {
+      console.log('⏸️ Skipping init:', { sessionLoading, hasUserId: !!userId, isInitialized });
+      return;
+    }
 
     const initializeChat = async () => {
       console.log('🤖 Initializing chat...', { isResuming, persistedMessagesCount: persistedMessages.length });

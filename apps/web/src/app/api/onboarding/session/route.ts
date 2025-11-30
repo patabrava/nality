@@ -127,6 +127,12 @@ export async function GET(request: Request) {
       session = await createNewSession(serviceClient, effectiveUserId);
     }
     
+    console.log('✅ Returning session response:', { 
+      sessionId: session?.id, 
+      messageCount: messages.length, 
+      isResuming 
+    });
+    
     return NextResponse.json({
       session,
       messages,
@@ -148,16 +154,48 @@ export async function POST(request: Request) {
   
   try {
     const body = await request.json();
-    const { sessionId, role, content, markComplete } = body;
+    const { sessionId, role, content, markComplete, userId: bodyUserId, accessToken } = body;
     
     if (!sessionId) {
       return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
     }
     
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // Get effective user ID using multiple auth methods
+    let effectiveUserId: string | null = null;
     
-    if (authError || !user) {
+    // Try server-side auth first
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.id) {
+      effectiveUserId = user.id;
+      console.log('🔐 POST: Authenticated via server session');
+    }
+    
+    // Try accessToken from body
+    if (!effectiveUserId && accessToken) {
+      const authedClient = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          global: {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        }
+      );
+      const { data: { user: tokenUser } } = await authedClient.auth.getUser();
+      if (tokenUser?.id) {
+        effectiveUserId = tokenUser.id;
+        console.log('🔑 POST: Authenticated via accessToken');
+      }
+    }
+    
+    // Fallback to bodyUserId
+    if (!effectiveUserId && bodyUserId) {
+      effectiveUserId = bodyUserId;
+      console.log('🟡 POST: Using client-provided userId');
+    }
+    
+    if (!effectiveUserId) {
       console.log('⚠️ Onboarding Session API: Unauthorized');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -24,6 +24,8 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [sessionError, setSessionError] = useState<Error | null>(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [createAttempts, setCreateAttempts] = useState(0);
+  const MAX_CREATE_ATTEMPTS = 3;
 
   // Initialize messages hook for current session
   const {
@@ -119,12 +121,15 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
     setCurrentSessionId(sessionId);
   }, []);
 
-  // Auto-create session if needed
+  // Auto-create session if needed (with retry limit to prevent infinite loops)
   useEffect(() => {
-    if (autoCreateSession && !currentSessionId && !isCreatingSession) {
-      createSession({ type: 'general' }).catch(console.error);
+    if (autoCreateSession && !currentSessionId && !isCreatingSession && createAttempts < MAX_CREATE_ATTEMPTS) {
+      setCreateAttempts(prev => prev + 1);
+      createSession({ type: 'general' }).catch((err) => {
+        console.error(`Session creation attempt ${createAttempts + 1}/${MAX_CREATE_ATTEMPTS} failed:`, err);
+      });
     }
-  }, [autoCreateSession, currentSessionId, isCreatingSession, createSession]);
+  }, [autoCreateSession, currentSessionId, isCreatingSession, createSession, createAttempts]);
 
   // Fetch sessions on mount
   useEffect(() => {
