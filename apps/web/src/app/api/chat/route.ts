@@ -1,7 +1,7 @@
 import { streamText, type CoreMessage } from 'ai';
 import { google } from '@ai-sdk/google';
 import { buildOnboardingSystemPrompt } from '@/lib/prompts/onboarding';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 
 export const dynamic = "force-dynamic";
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
 
           const insertPayload = {
             user_id: effectiveUserId,
-            session_id: null, // Not tracked in this flow yet
+            session_id: sessionId || null,
             message_id: null,
             question_topic: inferQuestionTopic(questionText),
             field_key: null,
@@ -142,65 +142,23 @@ export async function POST(req: Request) {
             persona_language_style: null,
           } as any;
 
-          // Prefer user-auth client with accessToken to satisfy RLS; fallback to admin if available
-          const canUseUserToken = !!accessToken && typeof accessToken === 'string' && accessToken.length > 0;
-          const useAdmin = !canUseUserToken && (!user?.id || effectiveUserId !== user?.id);
-          let insertError: any = null;
-
           // Add some observability without leaking PII
           console.log(
             ` 🧾 Preparing insert -> user_id: ${effectiveUserId}, question_present: ${!!questionText}, answer_len: ${answerText.length}`
           );
 
-          if (canUseUserToken) {
-            // Create a user-authenticated client using the provided access token
-            const authed = createSupabaseAdmin(
-              process.env.NEXT_PUBLIC_SUPABASE_URL!,
-              process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-              {
-                global: {
-                  headers: { Authorization: `Bearer ${accessToken}` },
-                },
-              }
-            );
-            const { error } = await authed.from('onboarding_answers').insert(insertPayload);
-            insertError = error;
-            console.log(' 🔒 Used user-authenticated client (JWT) for persistence');
-          } else if (useAdmin) {
-            const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-            if (!serviceKey) {
-              console.error('❌ Missing SUPABASE_SERVICE_ROLE_KEY; cannot persist without server auth');
+          // Always use service client for persistence (bypasses RLS safely since we've verified user)
+          try {
+            const serviceClient = await createServiceClient();
+            const { error: insertError } = await serviceClient.from('onboarding_answers').insert(insertPayload);
+            
+            if (insertError) {
+              console.error('❌ Failed to persist onboarding answer:', insertError);
             } else {
-              const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-              // Non-sensitive diagnostics
-              console.log(' 🔧 Admin persistence diagnostics -> url present:', !!url, 'key length:', serviceKey.length);
-              // Create admin client with explicit headers to avoid any runtime env quirks
-              const admin = createSupabaseAdmin(
-                url,
-                serviceKey,
-                {
-                  global: {
-                    headers: {
-                      apikey: serviceKey,
-                      Authorization: `Bearer ${serviceKey}`,
-                    },
-                  },
-                }
-              );
-              const { error } = await admin.from('onboarding_answers').insert(insertPayload);
-              insertError = error;
-              console.log(' 🔐 Used admin client for persistence');
+              console.log('✅ Onboarding answer persisted via service client');
             }
-          } else {
-            const { error } = await supabase.from('onboarding_answers').insert(insertPayload);
-            insertError = error;
-            console.log(' 🔓 Used user-scoped client for persistence');
-          }
-
-          if (insertError) {
-            console.error('❌ Failed to persist onboarding answer:', insertError);
-          } else {
-            console.log('✅ Onboarding answer persisted');
+          } catch (serviceError) {
+            console.error('❌ Service client error during persistence:', serviceError);
           }
         } else {
           console.log('ℹ️ No user answer found to persist in this request');

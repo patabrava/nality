@@ -3,29 +3,37 @@
 import { ChatInterface } from '@/components/chat/ChatInterface'
 import { useChat } from '@/hooks/useChat'
 import { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import OnboardingChatInterface from '@/components/onboarding/ChatInterface'
 
 /**
  * Chat Module - Real implementation for dashboard
- * Replaces ChatPlaceholder with functional chat interface
- * Follows dashboard module container pattern for consistency
+ * Shows onboarding chat if user hasn't completed onboarding,
+ * otherwise shows general chat for adding memories to life chapters
  */
 export function ChatModule() {
   console.log('[ChatModule] Component mounted')
 
   // Check authentication state
   const { isAuthenticated, loading: authLoading, user } = useAuth()
+  
+  // Check user profile and onboarding status
+  const { 
+    isOnboardingComplete, 
+    isLoading: profileLoading 
+  } = useUserProfile(user?.id)
 
-  // Initialize chat with auto-session creation (only if authenticated)
+  // Initialize chat with auto-session creation (only if authenticated AND onboarding complete)
   const { 
     currentSessionId, 
-    isLoading, 
+    isLoading: chatLoading, 
     error 
   } = useChat({ 
-    autoCreateSession: isAuthenticated // Only auto-create when authenticated
+    autoCreateSession: isAuthenticated && isOnboardingComplete
   })
 
   // Show authentication loading state
-  if (authLoading) {
+  if (authLoading || profileLoading) {
     return (
       <section 
         className="h-full p-8"
@@ -83,6 +91,22 @@ export function ChatModule() {
     )
   }
 
+  // Show onboarding chat if user hasn't completed onboarding
+  if (!isOnboardingComplete) {
+    console.log('[ChatModule] User needs onboarding, showing onboarding chat')
+    return (
+      <section 
+        className="h-full overflow-auto"
+        style={{ 
+          backgroundColor: 'var(--c-primary-invert)',
+        }}
+      >
+        <OnboardingChatInterface />
+      </section>
+    )
+  }
+
+  // Show general chat for users who completed onboarding
   return (
     <section 
       className="h-full p-8"
@@ -92,7 +116,7 @@ export function ChatModule() {
     >
       <div className="max-w-lg mx-auto h-full">
         {/* Loading state */}
-        {isLoading && !currentSessionId && (
+        {chatLoading && !currentSessionId && (
           <div 
             className="flex items-center justify-center h-full"
             style={{ color: 'var(--c-neutral-dark)' }}

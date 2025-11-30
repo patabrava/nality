@@ -157,6 +157,11 @@ export default function DashboardPage() {
     router.push(`/dash/${chapterId}`)
   }
 
+  const handleAddMemory = () => {
+    console.log('🧠 Navigating to chat to add a memory')
+    router.push('/dash/chat')
+  }
+
   // Build tiles from chapters config with stats
   const chapterTiles = CHAPTERS_ORDERED.map(chapter => ({
     title: chapter.name,
@@ -396,6 +401,54 @@ export default function DashboardPage() {
       `}</style>
       
       <div className="h-full p-6" style={{ backgroundColor: 'var(--md-sys-color-background)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginBottom: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            padding: '0.75rem 0',
+            background: 'var(--md-sys-color-background)',
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleAddMemory}
+            aria-label="Add a new memory"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.9rem 1.25rem',
+              borderRadius: '999px',
+              border: '1px solid var(--md-sys-color-primary)',
+              background: 'var(--md-sys-color-primary)',
+              color: 'var(--md-sys-color-on-primary)',
+              fontWeight: 700,
+              letterSpacing: '0.01em',
+              cursor: 'pointer',
+              boxShadow: '0 10px 26px rgba(0, 0, 0, 0.35)',
+              transition: 'transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)'
+              e.currentTarget.style.boxShadow = '0 14px 36px rgba(0, 0, 0, 0.45)'
+              e.currentTarget.style.background = 'var(--md-sys-color-primary-container)'
+              e.currentTarget.style.color = 'var(--md-sys-color-on-primary-container)'
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 10px 26px rgba(0, 0, 0, 0.35)'
+              e.currentTarget.style.background = 'var(--md-sys-color-primary)'
+              e.currentTarget.style.color = 'var(--md-sys-color-on-primary)'
+            }}
+          >
+            <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>+</span>
+            <span>Add memory</span>
+          </button>
+        </div>
         <div className="dashboard-grid">
           {tilesData.map((tile, index) => (
             <DashboardTile
