@@ -3,6 +3,7 @@
 // ──────────────────────
 
 export * from './life-event'
+export * from './chapters'
 
 // Re-export common types for convenience
 export type {

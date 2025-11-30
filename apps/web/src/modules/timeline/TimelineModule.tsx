@@ -8,14 +8,24 @@ import { TimelineFilters } from '@/components/timeline/TimelineFilters'
 import { FilterChips } from '@/components/timeline/FilterChips'
 import { useTimelineFilters } from '@/hooks/useTimelineFilters'
 import { filterEvents, getFilterStats } from '@/utils/timelineFilters'
-import type { TimelineEvent, LifeEventFormData } from '@nality/schema'
+import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType, ChapterId } from '@nality/schema'
+import { ChapterChatInterface } from '@/components/chat/ChapterChatInterface'
+import { getChapterById } from '@/lib/chapters'
+
+/**
+ * Timeline Module Props
+ */
+interface TimelineModuleProps {
+  chapterId?: string;
+  categoryFilter?: LifeEventCategoryType[];
+}
 
 /**
  * Timeline Module Component
  * Full-screen Material Design 3 implementation following MONOCODE principles
  * Observable Implementation with comprehensive state tracking
  */
-export function TimelineModule() {
+export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProps = {}) {
   const {
     events,
     loading,
@@ -26,13 +36,17 @@ export function TimelineModule() {
     createEvent,
     updateEvent,
     deleteEvent
-  } = useLifeEvents()
+  } = useLifeEvents({ categoryFilter })
 
   // CODE_EXPANSION: Add filtering system while preserving existing functionality
   const filters = useTimelineFilters()
 
   const [showForm, setShowForm] = useState(false)
+  const [showChat, setShowChat] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
+  
+  // Get chapter info if we're in a chapter context
+  const chapter = chapterId ? getChapterById(chapterId as ChapterId) : null
 
   // Header navigation detection - CODE_EXPANSION: Preserve working functionality
   const hasHeaderNavigation = process.env.NEXT_PUBLIC_USE_HEADER_NAV === 'true'
@@ -740,7 +754,7 @@ export function TimelineModule() {
 
       {/* Responsive Floating Action Button - Add New Memory - Explicit Error Handling */}
       <button
-        onClick={() => setShowForm(true)}
+        onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
         disabled={creating || updating || deleting}
         style={{
           position: 'fixed',
@@ -838,6 +852,19 @@ export function TimelineModule() {
             </p>
           </div>
         </div>
+      )}
+
+      {/* Chapter Chat Modal */}
+      {showChat && chapter && (
+        <ChapterChatInterface
+          chapter={chapter}
+          onClose={() => setShowChat(false)}
+          onEventCreated={() => {
+            setShowChat(false)
+            // Trigger refetch by refreshing the page (or could use refetch from useLifeEvents)
+            window.location.reload()
+          }}
+        />
       )}
     </div>
   )

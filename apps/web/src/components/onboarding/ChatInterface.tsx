@@ -55,21 +55,29 @@ export default function ChatInterface({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
   
-  // Detect onboarding completion message and redirect to timeline
+  // Detect onboarding completion message and redirect to dashboard
   function isCompletionMessage(text: string): boolean {
     if (!text) return false;
     const t = text.toLowerCase();
-    // Match both du/sie variants; tolerant to additional suffixes
-    return /grunddaten\s+sind\s+vollständig/.test(t);
+    // Match both German and English completion indicators
+    const completionPatterns = [
+      /grunddaten\s+sind\s+vollständig/,      // German: "basic data is complete"
+      /basic\s+data\s+(is|are)\s+complete/,   // English
+      /onboarding\s+(is\s+)?complete/,        // Generic
+      /all\s+(mandatory\s+)?fields/,          // From new prompt
+      /profile\s+is\s+complete/,              // Alternative
+      /ready\s+to\s+explore/,                 // Completion CTA variant
+    ];
+    return completionPatterns.some(pattern => pattern.test(t));
   }
 
   function handleCompletionRedirect(content: string) {
     if (hasRedirected) return;
     if (isCompletionMessage(content)) {
-      console.log('🎯 Onboarding completion detected. Redirecting to /timeline …');
+      console.log('🎯 Onboarding completion detected. Redirecting to /dash …');
       setHasRedirected(true);
       setTimeout(() => {
-        router.push('/timeline');
+        router.push('/dash');
       }, 900);
     }
   }

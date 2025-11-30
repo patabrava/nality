@@ -4,37 +4,24 @@ import type { CoreMessage } from 'ai';
 
 let cachedPrompt: string | null = null;
 
-function resolveYamlPath(): string | null {
+function resolvePromptPath(filename: string): string | null {
   const cwd = process.cwd();
   const candidates = [
-    // Most likely in the Next app workspace
-    path.join(cwd, 'src', 'lib', 'prompts', 'onboarding.yaml'),
-    // Monorepo fallback when cwd is the repo root
-    path.join(cwd, 'nality', 'apps', 'web', 'src', 'lib', 'prompts', 'onboarding.yaml'),
+    // New location: files subdirectory
+    path.join(cwd, 'src', 'lib', 'prompts', 'files', filename),
+    // Monorepo fallback
+    path.join(cwd, 'apps', 'web', 'src', 'lib', 'prompts', 'files', filename),
+    // Legacy location (for backwards compatibility)
+    path.join(cwd, 'src', 'lib', 'prompts', filename),
+    path.join(cwd, 'apps', 'web', 'src', 'lib', 'prompts', filename),
   ];
 
   for (const p of candidates) {
     try {
-      if (fs.existsSync(p)) return p;
-    } catch {
-      // ignore
-    }
-  }
-  return null;
-}
-
-function resolveXmlPath(): string | null {
-  const cwd = process.cwd();
-  const candidates = [
-    // Most likely in the Next app workspace
-    path.join(cwd, 'src', 'lib', 'prompts', 'onboarding.xml'),
-    // Monorepo fallback when cwd is the repo root
-    path.join(cwd, 'nality', 'apps', 'web', 'src', 'lib', 'prompts', 'onboarding.xml'),
-  ];
-
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p)) return p;
+      if (fs.existsSync(p)) {
+        console.log(`[prompts] Found ${filename} at: ${p}`);
+        return p;
+      }
     } catch {
       // ignore
     }
@@ -45,36 +32,45 @@ function resolveXmlPath(): string | null {
 export function getOnboardingSystemPrompt(): string {
   if (cachedPrompt) return cachedPrompt;
 
-  // Prefer YAML
-  const yamlPath = resolveYamlPath();
-  if (yamlPath) {
+  // Priority 1: New TXT format (onboarding.txt)
+  const txtPath = resolvePromptPath('onboarding.txt');
+  if (txtPath) {
     try {
-      cachedPrompt = fs.readFileSync(yamlPath, 'utf-8');
+      cachedPrompt = fs.readFileSync(txtPath, 'utf-8');
+      console.log('[prompts] Loaded onboarding.txt successfully');
       return cachedPrompt;
     } catch (err) {
-      console.error('[onboarding] Failed to read onboarding.yaml:', err);
+      console.error('[prompts] Failed to read onboarding.txt:', err);
     }
   }
 
-  // Fallback to XML
-  const xmlPath = resolveXmlPath();
-  if (xmlPath) {
+  // Priority 2: Legacy YAML format
+  const yamlPath = resolvePromptPath('onboarding.yaml');
+  if (yamlPath) {
     try {
-      cachedPrompt = fs.readFileSync(xmlPath, 'utf-8');
+      cachedPrompt = fs.readFileSync(yamlPath, 'utf-8');
+      console.log('[prompts] Loaded onboarding.yaml (legacy)');
       return cachedPrompt;
     } catch (err) {
-      console.error('[onboarding] Failed to read onboarding.xml:', err);
+      console.error('[prompts] Failed to read onboarding.yaml:', err);
     }
   }
 
   // Final minimal fallback
-  console.warn('[onboarding] Unable to locate onboarding.yaml/xml. Falling back to minimal system prompt.');
-  cachedPrompt = [
-    'Systemrolle: empathischer, datenschutzbewusster Biografie-Onboarding-Assistent (DE).',
-    'Bitte halte dich an knappe, klare Rückfragen, sammle nur grundlegende Lebensdaten (Identität, Familie, Bildung, Karriere, Einflüsse, Sprachstil).',
-    'Verwende „du“ oder „Sie“ erst nach Klärung der Präferenz.',
-  ].join('\n');
+  console.warn('[prompts] Falling back to minimal system prompt');
+  cachedPrompt = `You are an empathetic, privacy-aware Biography Onboarding Assistant.
+Your sole scope is to collect, confirm, and lightly validate a user's basic life data and communication preferences.
+
+Stay in scope: Collect only basic life data (identity, family, education, career, influences).
+Ask with focus: Ask one question at a time.
+Be concise and warm.
+Respond in the same language the user is using.`;
   return cachedPrompt;
+}
+
+// Clear cache (useful for development/testing)
+export function clearPromptCache(): void {
+  cachedPrompt = null;
 }
 
 export const ONBOARDING_SYSTEM_PROMPT = getOnboardingSystemPrompt();

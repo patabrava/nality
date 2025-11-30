@@ -34,6 +34,10 @@ interface UseLifeEventsActions {
 
 type UseLifeEventsReturn = UseLifeEventsState & UseLifeEventsActions
 
+interface UseLifeEventsOptions {
+  categoryFilter?: string[] | undefined;
+}
+
 // ──────────────────────
 // Main Hook
 // ──────────────────────
@@ -42,7 +46,8 @@ type UseLifeEventsReturn = UseLifeEventsState & UseLifeEventsActions
  * Hook for managing life events CRUD operations
  * Provides real-time updates and optimistic UI updates
  */
-export function useLifeEvents(): UseLifeEventsReturn {
+export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEventsReturn {
+  const { categoryFilter } = options;
   const { user, isAuthenticated } = useAuth()
   
   const [state, setState] = useState<UseLifeEventsState>({
@@ -127,17 +132,23 @@ export function useLifeEvents(): UseLifeEventsReturn {
     setState(prev => ({ ...prev, loading: true, error: null }))
 
     try {
-      console.log('🔍 Fetching life events for user:', user.id)
+      console.log('🔍 Fetching life events for user:', user.id, categoryFilter ? `(filtered by: ${categoryFilter.join(', ')})` : '')
       
-      // Direct query to life_event table - table existence check not needed since this will fail gracefully
-      const { data, error } = await supabase
+      // Build query with optional category filter
+      let query = supabase
         .from('life_event')
         .select(`
           *,
           media_objects:media_object(*)
         `)
         .eq('user_id', user.id)
-        .order('start_date', { ascending: false })
+      
+      // Apply category filter if provided
+      if (categoryFilter && categoryFilter.length > 0) {
+        query = query.in('category', categoryFilter)
+      }
+      
+      const { data, error } = await query.order('start_date', { ascending: false })
 
       if (error) {
         console.error('❌ Error fetching life events:', error)
@@ -185,7 +196,7 @@ export function useLifeEvents(): UseLifeEventsReturn {
         error: 'An unexpected error occurred while loading events' 
       }))
     }
-  }, [user?.id])
+  }, [user?.id, categoryFilter])
 
   // ──────────────────────
   // CRUD Operations

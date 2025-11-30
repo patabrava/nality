@@ -1,171 +1,110 @@
 'use client'
 
-import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { CHAPTERS_ORDERED } from '@/lib/chapters'
 
-// Dashboard tile data structure for content management
-interface TileData {
-  title: string
-  content: React.ReactNode
-  isInteractive: boolean
-  svgPath?: string
-  slogan?: string
-  onClick?: () => void
-}
-
-// Simple dashboard tile component that reuses timeline card styling
+// Dashboard tile component
 interface DashboardTileProps {
   title: string
   content: React.ReactNode
   isInteractive?: boolean
-  svgPath?: string
   slogan?: string
-  onClick?: () => void
+  onClick?: (() => void) | undefined
 }
 
-function DashboardTile({ title, content, isInteractive = false, svgPath, slogan, onClick }: DashboardTileProps) {
-  const tileClasses = [
-    'timeline-event-card',
-    'standard-text-card',
-    'dashboard-tile', // Add custom class for grid-specific overrides
-    svgPath ? 'feature-card' : 'view-hero', // Conditional class based on icon presence
-    isInteractive ? 'cursor-pointer interactive-tile' : 'static-tile'
-  ].filter(Boolean).join(' ')
-
-  const handleClick = () => {
-    if (isInteractive && onClick) {
-      onClick()
-    }
-  }
-
+function DashboardTile({ title, content, isInteractive = false, slogan, onClick }: DashboardTileProps) {
   return (
-    <div className={tileClasses} onClick={handleClick}>
-      <div className="card-content-container">
-        <div className="card-main-content">
-          <div className="card-primary-info">
-            {/* SVG Icon for Picture Chapters */}
-            {svgPath && (
-              <div className="flex justify-center mb-4">
-                <Image
-                  src={svgPath}
-                  alt={title}
-                  width={56}
-                  height={56}
-                  className="opacity-90"
-                  onError={(e) => {
-                    console.warn(`Failed to load SVG: ${svgPath}`)
-                    e.currentTarget.style.display = 'none'
-                  }}
-                />
-              </div>
-            )}
-            
-            <h3 className="card-title text-center mb-2">
-              {title}
-            </h3>
-            
-            {/* Slogan for Picture Chapters */}
-            {slogan && (
-              <p className="text-sm text-center mb-3 opacity-75" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
-                {slogan}
-              </p>
-            )}
-            
-            {/* Content container - conditional display based on tile type */}
-            <div className="flex items-center justify-center mt-2">
-              {content}
-            </div>
-          </div>
-        </div>
+    <div 
+      className={`dashboard-tile ${isInteractive ? 'interactive' : ''}`}
+      onClick={isInteractive ? onClick : undefined}
+      style={{
+        background: 'var(--md-sys-color-surface-container)',
+        border: '1px solid var(--md-sys-color-outline-variant)',
+        borderRadius: '0',
+        aspectRatio: '1',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1.5rem',
+        cursor: isInteractive ? 'pointer' : 'default',
+        transition: 'all 0.25s ease',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
+      }}
+      onMouseOver={(e) => {
+        if (isInteractive) {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.6)'
+          e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)'
+        }
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.4)'
+        e.currentTarget.style.borderColor = 'var(--md-sys-color-outline-variant)'
+      }}
+    >
+      <div style={{ textAlign: 'center' }}>
+        {content}
+        <h3 style={{
+          fontSize: '1.125rem',
+          fontWeight: 700,
+          color: 'var(--md-sys-color-on-surface)',
+          margin: '0.5rem 0',
+        }}>
+          {title}
+        </h3>
+        {slogan && (
+          <p style={{
+            fontSize: '0.8rem',
+            color: 'var(--md-sys-color-on-surface-variant)',
+            margin: 0,
+          }}>
+            {slogan}
+          </p>
+        )}
       </div>
     </div>
   )
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   console.log('📊 Dashboard page mounted')
 
-  const handleChapterClick = (chapterNum: number, theme: string) => {
-    console.log(`Picture Chapter ${chapterNum} clicked: ${theme}`)
-    // Add navigation logic here
+  const handleChapterClick = (chapterId: string) => {
+    console.log(`📖 Navigating to chapter: ${chapterId}`)
+    router.push(`/dash/${chapterId}`)
   }
 
-  // Demo content data following the life journey themes
-  const tilesData: TileData[] = [
-    // Row 1
+  // Build tiles from chapters config
+  const chapterTiles = CHAPTERS_ORDERED.map(chapter => ({
+    title: chapter.name,
+    content: <span style={{ fontSize: '2.5rem' }}>{chapter.icon}</span>,
+    isInteractive: true,
+    slogan: chapter.subtitle,
+    onClick: () => handleChapterClick(chapter.id)
+  }))
+
+  // Add stats tiles
+  const statsTiles = [
     {
-      title: "Family Roots",
-      content: <p className="text-2xl font-bold">1</p>,
-      isInteractive: true,
-      svgPath: "/family_roots.svg",
-      slogan: "Where Your Story Begins",
-      onClick: () => handleChapterClick(1, "Family Roots & Origins")
-    },
-    {
-      title: "Childhood Memories", 
-      content: <p className="text-2xl font-bold">2</p>,
-      isInteractive: true,
-      svgPath: "/childhood.svg",
-      slogan: "First Steps, First Dreams",
-      onClick: () => handleChapterClick(2, "Childhood")
-    },
-    {
-      title: "Life Events",
+      title: "Your Story",
       content: (
-        <div className="text-center">
-          <p className="text-lg font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>247</p>
-          <p className="text-xs opacity-75">Memories Captured</p>
-          <p className="text-xs opacity-60">Across 6 Decades</p>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--md-sys-color-primary)' }}>
+            {CHAPTERS_ORDERED.length}
+          </p>
+          <p style={{ fontSize: '0.75rem', opacity: 0.75 }}>Life Chapters</p>
         </div>
       ),
-      isInteractive: false
-    },
-    {
-      title: "Learning Journey",
-      content: <p className="text-2xl font-bold">3</p>,
-      isInteractive: true,
-      svgPath: "/education.svg", 
-      slogan: "Knowledge That Shaped You",
-      onClick: () => handleChapterClick(3, "Education & Learning")
-    },
-    // Row 2  
-    {
-      title: "Career Milestones",
-      content: <p className="text-2xl font-bold">4</p>,
-      isInteractive: true,
-      svgPath: "/career_growth.svg",
-      slogan: "Professional Achievements", 
-      onClick: () => handleChapterClick(4, "Career & Professional Growth")
-    },
-    {
-      title: "Your Story Matters",
-      content: (
-        <div className="text-center">
-          <p className="text-sm font-medium mb-1">Every Memory</p>
-          <p className="text-sm font-bold">Counts</p>
-          <p className="text-xs opacity-60 mt-1">Keep Adding Chapters</p>
-        </div>
-      ),
-      isInteractive: false
-    },
-    {
-      title: "Love & Partnership",
-      content: <p className="text-2xl font-bold">5</p>,
-      isInteractive: true,
-      svgPath: "/marriage_partnership.svg",
-      slogan: "Shared Life Adventures",
-      onClick: () => handleChapterClick(5, "Marriage & Partnership")
-    },
-    {
-      title: "AI Assistant Ready",
-      content: (
-        <div className="text-center">
-          <p className="text-lg font-bold" style={{ color: 'var(--md-sys-color-primary)' }}>Chat Now</p>
-          <p className="text-xs opacity-75 mt-1">Add More Memories</p>
-        </div>
-      ),
-      isInteractive: false
+      isInteractive: false,
+      slogan: "Every memory counts",
+      onClick: undefined as (() => void) | undefined
     }
   ]
+
+  const tilesData = [...chapterTiles, ...statsTiles]
 
   return (
     <>
@@ -367,9 +306,8 @@ export default function DashboardPage() {
               title={tile.title}
               content={tile.content}
               isInteractive={tile.isInteractive}
-              {...(tile.svgPath && { svgPath: tile.svgPath })}
-              {...(tile.slogan && { slogan: tile.slogan })}
-              {...(tile.onClick && { onClick: tile.onClick })}
+              slogan={tile.slogan}
+              onClick={tile.onClick}
             />
           ))}
         </div>
