@@ -43,7 +43,6 @@ export function ChatInterface({
     currentSessionId,
     messages,
     sendMessage,
-    isLoading,
     isSending,
     error
   } = useChat({
@@ -159,7 +158,7 @@ export function ChatInterface({
           gap: '12px',
         }}
       >
-        {displayMessages.length === 0 && !isLoading && (
+        {displayMessages.length === 0 && (
           <div
             style={{
               alignSelf: 'flex-start',
@@ -200,20 +199,6 @@ export function ChatInterface({
           </div>
         ))}
         
-        {isLoading && (
-          <div 
-            style={{
-              alignSelf: 'flex-start',
-              padding: '12px 16px',
-              background: 'var(--md-sys-color-surface-container-high)',
-              borderRadius: '20px 20px 20px 4px',
-              color: 'var(--md-sys-color-on-surface-variant)',
-            }}
-          >
-            <span style={{ opacity: 0.7 }}>Thinking...</span>
-          </div>
-        )}
-        
         <div ref={messagesEndRef} />
       </div>
 
@@ -248,7 +233,7 @@ export function ChatInterface({
         />
         <button
           type="submit"
-          disabled={isLoading || isSending || isDisabled || !input.trim()}
+          disabled={isSending || isDisabled || !input.trim()}
           style={{
             padding: '12px 24px',
             borderRadius: '24px',
@@ -256,8 +241,8 @@ export function ChatInterface({
             background: 'var(--md-sys-color-primary)',
             color: 'var(--md-sys-color-on-primary)',
             fontWeight: 600,
-            cursor: isLoading || isSending || isDisabled || !input.trim() ? 'not-allowed' : 'pointer',
-            opacity: isLoading || isSending || isDisabled || !input.trim() ? 0.5 : 1,
+            cursor: isSending || isDisabled || !input.trim() ? 'not-allowed' : 'pointer',
+            opacity: isSending || isDisabled || !input.trim() ? 0.5 : 1,
             transition: 'all 0.2s',
           }}
         >

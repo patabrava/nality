@@ -32,28 +32,9 @@ export function ChatModule() {
     autoCreateSession: isAuthenticated && isOnboardingComplete
   })
 
-  // Show authentication loading state
+  // Defer rendering until auth/profile state resolves to avoid flicker
   if (authLoading || profileLoading) {
-    return (
-      <section 
-        className="h-full p-8"
-        style={{ 
-          backgroundColor: 'var(--c-primary-invert)',
-        }}
-      >
-        <div className="max-w-lg mx-auto h-full">
-          <div 
-            className="flex items-center justify-center h-full"
-            style={{ color: 'var(--c-neutral-dark)' }}
-          >
-            <div className="text-center space-y-4">
-              <div className="text-3xl">🔐</div>
-              <p>Checking authentication...</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
+    return null
   }
 
   // Show authentication error
@@ -124,27 +105,6 @@ export function ChatModule() {
         height: '80vh',
         maxHeight: '700px',
       }}>
-        {/* Loading state */}
-        {chatLoading && !currentSessionId && (
-          <div 
-            style={{
-              width: '100%',
-              height: '100%',
-              background: 'var(--md-sys-color-surface)',
-              borderRadius: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-            }}
-          >
-            <div style={{ textAlign: 'center', color: 'var(--md-sys-color-on-surface-variant)' }}>
-              <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🤖</span>
-              <p style={{ fontSize: '1rem', marginBottom: '8px' }}>Chat wird initialisiert...</p>
-            </div>
-          </div>
-        )}
-
         {/* Error state */}
         {error && !currentSessionId && (
           <div 
