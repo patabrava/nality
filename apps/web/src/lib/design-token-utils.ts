@@ -277,7 +277,7 @@ export function createCardStyles(config: {
   // Base styles
   styles.backgroundColor = colors.surfaceContainer;
   styles.border = `1px solid ${colors.outlineVariant}`;
-  styles.borderRadius = config.radius ? borderRadius[config.radius] : borderRadius.card.desktop;
+  styles.borderRadius = config.radius ? (borderRadius[config.radius] as string) : '20px';
   styles.boxSizing = 'border-box';
   styles.position = 'relative';
   
@@ -486,7 +486,7 @@ export function getCurrentTheme(): Record<string, string> {
   // Extract all CSS custom properties
   for (let i = 0; i < rootElement.style.length; i++) {
     const property = rootElement.style[i];
-    if (property.startsWith('--md-sys-')) {
+    if (property && property.startsWith('--md-sys-')) {
       theme[property] = computedStyles.getPropertyValue(property).trim();
     }
   }
