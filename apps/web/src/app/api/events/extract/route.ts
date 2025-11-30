@@ -80,7 +80,9 @@ export async function POST(req: Request) {
 
     // Create the life event using service client (bypasses RLS since we've validated user)
     const serviceClient = await createServiceClient();
+    console.log("📦 Service client created, inserting life event for user:", effectiveUserId);
     const result = await createLifeEventFromExtraction(extraction, effectiveUserId, serviceClient);
+    console.log("📦 Insert result:", result);
 
     if (!result.success) {
       return Response.json({ 

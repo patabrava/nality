@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   console.log(" Chat API endpoint hit");
   
   try {
-    const { messages, userId: bodyUserId, accessToken } = await req.json();
+    const { messages, userId: bodyUserId, accessToken, sessionId } = await req.json();
     console.log(" Received messages:", JSON.stringify(messages, null, 2));
     if (bodyUserId) {
       console.log(` ℹ️ Received userId from client body: ${bodyUserId}`);
@@ -34,6 +34,9 @@ export async function POST(req: Request) {
     }
     if (accessToken) {
       console.log(' 🔑 Received accessToken in request body (length):', String(accessToken).length);
+    }
+    if (sessionId) {
+      console.log(' 📂 Received sessionId:', sessionId);
     }
 
     // Validate messages array
@@ -94,28 +97,35 @@ export async function POST(req: Request) {
 
         // Insert only if we have an answer text
         if (answerText && answerText.trim().length > 0) {
-          // Map question content to specific topic keys for the mapper
+          // Map question content to valid onboarding_topic enum values
+          // Valid values: 'identity', 'family', 'education', 'career', 'influences'
           const inferQuestionTopic = (questionText: string | null): string => {
             if (!questionText) return 'identity';
             const q = questionText.toLowerCase();
             
-            // Specific topics that map to life events
-            if (q.includes('geburtsdatum') || q.includes('geboren') || q.includes('birth')) return 'birth_date';
-            if (q.includes('geburtsort') || q.includes('birthplace')) return 'birth_place';
-            if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'siblings';
-            if (q.includes('kinder') || q.includes('children')) return 'children';
-            if (q.includes('eltern') || q.includes('mutter') || q.includes('vater') || q.includes('parents')) return 'parents';
-            if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe') || q.includes('marriage')) return 'partner';
-            if (q.includes('orte') || q.includes('stadt') || q.includes('region') || q.includes('places')) return 'important_places';
+            // Family-related topics
+            if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'family';
+            if (q.includes('kinder') || q.includes('children')) return 'family';
+            if (q.includes('eltern') || q.includes('mutter') || q.includes('vater') || q.includes('parents')) return 'family';
+            if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe') || q.includes('marriage')) return 'family';
+            if (q.includes('familie')) return 'family';
+            
+            // Education-related topics
             if (q.includes('schule') || q.includes('grundschule') || q.includes('gymnasium')) return 'education';
             if (q.includes('studium') || q.includes('universität') || q.includes('university')) return 'education';
-            if (q.includes('beruf') || q.includes('arbeit') || q.includes('job') || q.includes('career')) return 'career_start';
-            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('geprägt')) return 'influences';
-            if (q.includes('bewunder') || q.includes('person') || q.includes('admire')) return 'role_models';
-            if (q.includes('name') || q.includes('titel') || q.includes('ansprechen')) return 'full_name';
-            if (q.includes('stil') || q.includes('style')) return 'language_style';
+            if (q.includes('abschluss') || q.includes('abitur') || q.includes('bildung')) return 'education';
             
-            return 'identity'; // default fallback
+            // Career-related topics
+            if (q.includes('beruf') || q.includes('arbeit') || q.includes('job') || q.includes('career')) return 'career';
+            if (q.includes('rolle') || q.includes('position') || q.includes('firma') || q.includes('unternehmen')) return 'career';
+            
+            // Influences-related topics
+            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('geprägt')) return 'influences';
+            if (q.includes('bewunder') || q.includes('person') || q.includes('admire') || q.includes('vorbild')) return 'influences';
+            if (q.includes('werte') || q.includes('motto') || q.includes('values')) return 'influences';
+            
+            // Identity is the default for: name, address preference, birth date/place, style
+            return 'identity';
           };
 
           const insertPayload = {

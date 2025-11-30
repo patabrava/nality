@@ -124,22 +124,34 @@ const TOPIC_MAPPINGS: Record<string, {
 };
 
 /**
- * Infer topic from question text when topic is generic "identity"
+ * Infer specific topic from question text for event mapping
+ * Returns a specific topic key that maps to TOPIC_MAPPINGS
  */
 function inferTopicFromQuestion(questionText: string): string | null {
   if (!questionText) return null;
   const q = questionText.toLowerCase();
   
+  // Birth-related
   if (q.includes('geburtsdatum') || q.includes('geboren')) return 'birth_date';
   if (q.includes('geburtsort')) return 'birth_place';
+  
+  // Family-related
   if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'siblings';
   if (q.includes('kinder')) return 'children';
   if (q.includes('eltern') || q.includes('mutter') || q.includes('vater')) return 'parents';
   if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe')) return 'partner';
-  if (q.includes('orte') || q.includes('stadt') || q.includes('region')) return 'important_places';
+  
+  // Education-related
   if (q.includes('schule') || q.includes('grundschule')) return 'education';
+  if (q.includes('studium') || q.includes('universität')) return 'education';
+  
+  // Career-related
+  if (q.includes('beruf') || q.includes('arbeit') || q.includes('rolle')) return 'career_start';
+  
+  // Influences-related
   if (q.includes('autor') || q.includes('geprägt')) return 'influences';
-  if (q.includes('bewunder') || q.includes('person')) return 'role_models';
+  if (q.includes('bewunder') || q.includes('person') || q.includes('vorbild')) return 'role_models';
+  if (q.includes('orte') || q.includes('stadt') || q.includes('region')) return 'important_places';
   
   return null;
 }

@@ -79,6 +79,39 @@ export default function DashboardPage() {
   
   console.log('📊 Dashboard page mounted')
 
+  // Auto-convert any unconverted onboarding answers on dashboard load
+  useEffect(() => {
+    async function convertOnboardingAnswers() {
+      if (!user?.id) return
+      
+      try {
+        // Get access token for API auth
+        const { data: { session } } = await supabase.auth.getSession()
+        const accessToken = session?.access_token
+        
+        console.log('🔄 Checking for unconverted onboarding answers...')
+        const response = await fetch('/api/events/convert-onboarding', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, accessToken }),
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.created > 0) {
+            console.log('✅ Auto-converted onboarding answers:', result)
+          } else {
+            console.log('📋 No new answers to convert')
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error auto-converting onboarding answers:', error)
+      }
+    }
+    
+    convertOnboardingAnswers()
+  }, [user?.id])
+
   // Fetch chapter stats
   useEffect(() => {
     async function fetchStats() {
@@ -101,8 +134,8 @@ export default function DashboardPage() {
         let total = 0
         
         CHAPTERS_ORDERED.forEach(chapter => {
-          const count = data?.filter(e => 
-            chapter.categories.includes(e.category as any)
+          const count = data?.filter((e: { category: string }) => 
+            chapter.categories.includes(e.category as typeof chapter.categories[number])
           ).length || 0
           stats[chapter.id] = count
           total += count

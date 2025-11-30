@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useChat } from '@ai-sdk/react';
 import { Bot, User, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 
 interface ChatInterfaceProps {
   placeholder?: string;
   initialMessage?: string;
+  onProgressChange?: (progress: number) => void;
 }
 
-interface ChatMessage {
+interface DisplayMessage {
   id: string;
   type: 'bot' | 'user';
   content: string;
@@ -22,7 +24,8 @@ interface ChatMessage {
 
 export default function ChatInterface({
   placeholder = "Erzähle mir kurz etwas über dich …",
-  initialMessage = "Guten Tag! Bevor wir starten: Möchten Sie mit 'du' oder 'Sie' angesprochen werden? Welchen Namen und ggf. akademischen Titel soll ich verwenden?"
+  initialMessage = "Guten Tag! Bevor wir starten: Möchten Sie mit 'du' oder 'Sie' angesprochen werden? Welchen Namen und ggf. akademischen Titel soll ich verwenden?",
+  onProgressChange
 }: ChatInterfaceProps) {
   // Sanitize AI output: remove status markers and code fences
   function sanitizeAIContent(raw: string): string {
@@ -44,7 +47,7 @@ export default function ChatInterface({
     return text;
   }
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>([]);
   const [showTyping, setShowTyping] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -55,6 +58,25 @@ export default function ChatInterface({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
   
+  // Session persistence hook
+  const {
+    session,
+    messages: persistedMessages,
+    isLoading: sessionLoading,
+    isResuming,
+    saveMessage,
+    markComplete
+  } = useOnboardingSession(userId);
+  
+  // Notify parent of progress changes (for progress bar)
+  useEffect(() => {
+    if (onProgressChange && displayMessages.length > 0) {
+      // Estimate progress based on message count (rough estimate)
+      const estimatedProgress = Math.min(Math.floor((displayMessages.length / 30) * 100), 95);
+      onProgressChange(estimatedProgress);
+    }
+  }, [displayMessages.length, onProgressChange]);
+  
   // Detect onboarding completion message and redirect to dashboard
   function isCompletionMessage(text: string): boolean {
     if (!text) return false;
@@ -62,26 +84,44 @@ export default function ChatInterface({
     // Match both German and English completion indicators
     const completionPatterns = [
       /grunddaten\s+sind\s+vollständig/,      // German: "basic data is complete"
+      /basisdaten\s+sind\s+(jetzt\s+)?vollständig/, // Alternative German
       /basic\s+data\s+(is|are)\s+complete/,   // English
       /onboarding\s+(is\s+)?complete/,        // Generic
       /all\s+(mandatory\s+)?fields/,          // From new prompt
       /profile\s+is\s+complete/,              // Alternative
       /ready\s+to\s+explore/,                 // Completion CTA variant
+      /weiterführende\s+biografiearbeit/,     // From prompt completion message
     ];
     return completionPatterns.some(pattern => pattern.test(t));
   }
 
-  async function handleCompletionRedirect(content: string) {
+  const handleCompletionRedirect = useCallback(async (content: string) => {
     if (hasRedirected) return;
     if (isCompletionMessage(content)) {
       console.log('🎯 Onboarding completion detected. Converting answers to life events...');
       setHasRedirected(true);
+      
+      // Mark session as complete
+      await markComplete();
+      
+      // Mark user as onboarding complete
+      if (userId) {
+        await supabase
+          .from('users')
+          .update({ 
+            onboarding_complete: true,
+            onboarding_completed_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+        console.log('✅ User marked as onboarding complete');
+      }
       
       // Convert onboarding answers to life events before redirecting
       try {
         const response = await fetch('/api/events/convert-onboarding', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, accessToken }),
         });
         
         if (response.ok) {
@@ -99,24 +139,33 @@ export default function ChatInterface({
         router.push('/dash');
       }, 500);
     }
-  }
+  }, [hasRedirected, markComplete, userId, router]);
 
   const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    body: { userId, accessToken },
-    onFinish: (message) => {
+    body: { userId, accessToken, sessionId: session?.id },
+    onFinish: async (message) => {
       console.log('Message exchange completed');
-      // Add AI response to our messages
-      const aiMessage: ChatMessage = {
+      const sanitizedContent = sanitizeAIContent(message.content);
+      
+      // Save AI message to database
+      if (session) {
+        await saveMessage('assistant', sanitizedContent);
+      }
+      
+      // Add AI response to display messages
+      const aiMessage: DisplayMessage = {
         id: `ai-${Date.now()}`,
         type: 'bot',
-        content: sanitizeAIContent(message.content),
+        content: sanitizedContent,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setDisplayMessages(prev => [...prev, aiMessage]);
       setIsSubmitting(false);
-      handleCompletionRedirect(aiMessage.content);
+      
+      // Check for completion
+      handleCompletionRedirect(sanitizedContent);
     },
     onError: (error) => {
       console.error('Chat error:', error);
@@ -124,7 +173,7 @@ export default function ChatInterface({
     }
   });
 
-  // Initialize chat with welcome message
+  // Initialize auth state
   useEffect(() => {
     // Resolve current user ID for persistence bridging
     (async () => {
@@ -153,48 +202,80 @@ export default function ChatInterface({
       }
     })();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event: unknown, session: { access_token?: string; user?: { id: string } } | null) => {
       const token = session?.access_token ?? null;
       setAccessToken(token);
       setUserId(session?.user?.id ?? null);
       console.log('🔄 Auth state changed. userId:', session?.user?.id ?? 'null', 'tokenLen:', token ? String(token).length : 0);
     });
 
-    console.log('🤖 Initializing chat with welcome message');
-    
-    const initializeChat = () => {
-      setShowTyping(true);
-      setIsSubmitting(false); // Ensure we're not stuck in submitting state
-      
-      // Simulate typing delay
-      setTimeout(() => {
-        setShowTyping(false);
-        
-        const botMessage: ChatMessage = {
-          id: `bot-welcome`,
-          type: 'bot',
-          content: initialMessage,
-          timestamp: new Date()
-        };
-        
-        setMessages([botMessage]);
-        setIsInitialized(true);
-        console.log('💬 Welcome message added');
-      }, 1500);
-    };
-
-    if (!isInitialized) {
-      initializeChat();
-    }
     return () => {
       sub?.subscription?.unsubscribe?.();
     };
-  }, [initialMessage, isInitialized]);
+  }, []);
+
+  // Initialize chat - either resume or start fresh
+  useEffect(() => {
+    if (sessionLoading || !userId || isInitialized) return;
+
+    const initializeChat = async () => {
+      console.log('🤖 Initializing chat...', { isResuming, persistedMessagesCount: persistedMessages.length });
+      
+      if (isResuming && persistedMessages.length > 0) {
+        // Resume from persisted messages
+        console.log('📂 Resuming from', persistedMessages.length, 'persisted messages');
+        
+        const restoredMessages: DisplayMessage[] = persistedMessages.map((msg, index) => ({
+          id: msg.id || `restored-${index}`,
+          type: msg.role === 'assistant' ? 'bot' : 'user',
+          content: msg.content,
+          timestamp: new Date(msg.created_at)
+        }));
+        
+        // Add a "Welcome back" message at the start if resuming
+        const welcomeBackMessage: DisplayMessage = {
+          id: 'welcome-back',
+          type: 'bot',
+          content: 'Willkommen zurück! Lass uns dort weitermachen, wo wir aufgehört haben.',
+          timestamp: new Date()
+        };
+        
+        setDisplayMessages([welcomeBackMessage, ...restoredMessages]);
+        setIsInitialized(true);
+        console.log('✅ Chat resumed with', restoredMessages.length, 'messages');
+      } else {
+        // Start fresh with welcome message
+        setShowTyping(true);
+        
+        setTimeout(async () => {
+          setShowTyping(false);
+          
+          const botMessage: DisplayMessage = {
+            id: 'bot-welcome',
+            type: 'bot',
+            content: initialMessage,
+            timestamp: new Date()
+          };
+          
+          // Save welcome message to database
+          if (session) {
+            await saveMessage('assistant', initialMessage);
+          }
+          
+          setDisplayMessages([botMessage]);
+          setIsInitialized(true);
+          console.log('💬 Welcome message added');
+        }, 1500);
+      }
+    };
+
+    initializeChat();
+  }, [sessionLoading, userId, isInitialized, isResuming, persistedMessages, session, saveMessage, initialMessage]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, showTyping]);
+  }, [displayMessages, showTyping]);
 
   // Handle form submission with safety timeout
   const handleSubmitResponse = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -210,15 +291,20 @@ export default function ChatInterface({
       setIsSubmitting(false);
     }, 10000); // 10 second timeout
     
-    // Add user message to our messages
-    const userMessage: ChatMessage = {
+    // Add user message to our display messages
+    const userMessage: DisplayMessage = {
       id: `user-${Date.now()}`,
       type: 'user',
       content: input,
       timestamp: new Date()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    // Save user message to database
+    if (session) {
+      saveMessage('user', input);
+    }
+    
+    setDisplayMessages(prev => [...prev, userMessage]);
     
     // Submit to AI
     try {
@@ -230,48 +316,158 @@ export default function ChatInterface({
     }
   };
 
+  // Show loading state while session is being loaded
+  if (sessionLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '400px',
+        background: 'var(--md-sys-color-surface)',
+        gap: '16px'
+      }}>
+        <motion.div
+          style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--md-sys-color-surface-container-high)',
+            borderTopColor: 'var(--md-sys-color-primary)',
+            borderRadius: '50%'
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        />
+        <p style={{ color: 'var(--md-sys-color-on-surface-variant)', fontSize: '0.875rem' }}>
+          Lade Gespräch...
+        </p>
+      </div>
+    );
+  }
+
+  // Calculate progress based on message count
+  const progressPercent = Math.min(Math.floor((displayMessages.length / 30) * 100), 95);
+
   return (
     <>
-      {/* Chat Header */}
+      {/* Chat Header with Progress */}
       <div 
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 24px',
-          paddingBottom: '16px',
+          background: 'var(--md-sys-color-surface-container)',
           borderBottom: '1px solid var(--md-sys-color-outline-variant)',
-          background: 'var(--md-sys-color-surface-container)'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img
-            src="/ChatGPT%20Image%2023.%20Aug.%202025%2C%2014_54_47.png"
-            alt="Nality logo"
-            style={{ width: '40px', height: '40px', display: 'block' }}
-          />
-          <div>
-            <h3 
+        {/* Header Content */}
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 24px',
+            paddingBottom: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img
+              src="/ChatGPT%20Image%2023.%20Aug.%202025%2C%2014_54_47.png"
+              alt="Nality logo"
+              style={{ width: '40px', height: '40px', display: 'block' }}
+            />
+            <div>
+              <h3 
+                style={{
+                  margin: 0,
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  color: 'var(--md-sys-color-on-surface)',
+                  lineHeight: 1.2
+                }}
+              >
+                Biografie-Assistent 
+                {isResuming && (
+                  <span style={{ 
+                    fontSize: '0.7rem', 
+                    marginLeft: '8px',
+                    padding: '2px 8px',
+                    background: 'var(--md-sys-color-primary-container)',
+                    color: 'var(--md-sys-color-on-primary-container)',
+                    borderRadius: '12px',
+                    fontWeight: 500
+                  }}>
+                    Fortgesetzt
+                  </span>
+                )}
+              </h3>
+              <p 
+                style={{
+                  margin: 0,
+                  fontSize: '0.875rem',
+                  color: 'var(--md-sys-color-on-surface-variant)',
+                  lineHeight: 1.2
+                }}
+              >
+                Fast wie ein Gespräch unter Freunden.
+              </p>
+            </div>
+          </div>
+          
+          {/* Progress Percentage */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 12px',
+            background: 'var(--md-sys-color-surface-container-high)',
+            borderRadius: '20px',
+          }}>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'var(--md-sys-color-on-surface-variant)',
+            }}>
+              Fortschritt
+            </span>
+            <span style={{
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: 'var(--md-sys-color-primary)',
+            }}>
+              {progressPercent}%
+            </span>
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div style={{
+          padding: '0 24px 12px 24px',
+        }}>
+          <div style={{
+            height: '6px',
+            background: 'var(--md-sys-color-surface-container-highest)',
+            borderRadius: '3px',
+            overflow: 'hidden',
+          }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercent}%` }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
               style={{
-                margin: 0,
-                fontSize: '1.125rem',
-                fontWeight: 600,
-                color: 'var(--md-sys-color-on-surface)',
-                lineHeight: 1.2
+                height: '100%',
+                background: 'linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                borderRadius: '3px',
               }}
-            >
-              Biografie-Assistent 
-            </h3>
-            <p 
-              style={{
-                margin: 0,
-                fontSize: '0.875rem',
-                color: 'var(--md-sys-color-on-surface-variant)',
-                lineHeight: 1.2
-              }}
-            >
-              Fast wie ein Gespräch unter Freunden.
-            </p>
+            />
+          </div>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: '4px',
+            fontSize: '0.7rem',
+            color: 'var(--md-sys-color-on-surface-variant)',
+          }}>
+            <span>Start</span>
+            <span>~{Math.floor(displayMessages.length / 2)} Fragen beantwortet</span>
+            <span>Fertig</span>
           </div>
         </div>
       </div>
@@ -316,7 +512,7 @@ export default function ChatInterface({
           }}
         >
           <AnimatePresence mode="wait">
-            {messages.map((message) => (
+            {displayMessages.map((message: DisplayMessage) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -467,7 +663,7 @@ export default function ChatInterface({
         </div>
 
         {/* Response Input Area */}
-        {!showTyping && messages.length > 0 && !isSubmitting && (
+        {!showTyping && displayMessages.length > 0 && !isSubmitting && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -595,14 +791,32 @@ export default function ChatInterface({
         {/* Continue Later Button */}
         <div style={{ 
           padding: '16px 24px', 
-          borderTop: !showTyping && messages.length > 0 && !isSubmitting ? 'none' : '1px solid var(--md-sys-color-outline-variant)',
-          borderBottomLeftRadius: !showTyping && messages.length > 0 && !isSubmitting ? '0px' : '16px',
-          borderBottomRightRadius: !showTyping && messages.length > 0 && !isSubmitting ? '0px' : '16px',
+          borderTop: !showTyping && displayMessages.length > 0 && !isSubmitting ? 'none' : '1px solid var(--md-sys-color-outline-variant)',
+          borderBottomLeftRadius: !showTyping && displayMessages.length > 0 && !isSubmitting ? '0px' : '16px',
+          borderBottomRightRadius: !showTyping && displayMessages.length > 0 && !isSubmitting ? '0px' : '16px',
           background: 'var(--md-sys-color-surface-container)'
         }}>
           <button
             type="button"
-            onClick={() => router.push('/timeline')}
+            onClick={async () => {
+              // Convert any existing onboarding answers to life events before leaving
+              console.log('📤 Continue Later clicked - converting partial answers...');
+              try {
+                const response = await fetch('/api/events/convert-onboarding', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ userId, accessToken }),
+                });
+                if (response.ok) {
+                  const result = await response.json();
+                  console.log('✅ Partial conversion result:', result);
+                }
+              } catch (error) {
+                console.error('❌ Error converting partial answers:', error);
+              }
+              // Navigate to dashboard
+              router.push('/dash');
+            }}
             style={{
               width: '100%',
               padding: '12px 24px',
