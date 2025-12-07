@@ -370,56 +370,17 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             >
               Clear Filters
             </button>
-            <button
+            <AddMemoryButton
               onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
-              style={{
-                padding: 'clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 20px)',
-                background: 'var(--md-sys-color-primary)',
-                color: 'var(--md-sys-color-on-primary)',
-                border: 'none',
-                borderRadius: 'clamp(14px, 3.5vw, 16px)',
-                fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
-                fontFamily: 'Roboto, system-ui, sans-serif'
-              }}
-            >
-              Add New Event
-            </button>
+              aria-label="Add new event"
+            />
           </div>
         ) : (
-          <button
+          <AddMemoryButton
             onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
-            style={{
-              padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 32px)',
-              background: 'var(--md-sys-color-primary)',
-              color: 'var(--md-sys-color-on-primary)',
-              border: 'none',
-              borderRadius: 'clamp(16px, 4vw, 20px)',
-              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
-              fontFamily: 'Roboto, system-ui, sans-serif',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'clamp(6px, 1.5vw, 8px)',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              minHeight: 'clamp(40px, 10vw, 48px)'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 255, 255, 0.2)'
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)'
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)'
-            }}
-          >
-            <ChatbotIcon />
-            Add Your First Memory
-          </button>
+            label="Add Your First Memory"
+            aria-label="Add your first memory"
+          />
         )}
       </div>
     )
@@ -761,8 +722,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
         onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
         disabled={creating || updating || deleting}
         aria-label="Add new memory"
-        label="Add memory"
-        icon={<ChatbotIcon />}
         styleOverrides={{
           position: 'fixed',
           bottom: 'clamp(16px, 4vw, 24px)',
@@ -841,30 +800,3 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   )
 }
 
-// ──────────────────────
-// Icon Components - Material Design 3
-// ──────────────────────
-
-function ChatbotIcon() {
-  return (
-    <svg 
-      viewBox="0 0 24 24" 
-      style={{ 
-        width: 'clamp(16px, 4vw, 20px)', 
-        height: 'clamp(16px, 4vw, 20px)' 
-      }}
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      {/* Robot head/chatbot icon */}
-      <rect x="3" y="8" width="18" height="10" rx="2" />
-      <circle cx="8" cy="12" r="1.5" />
-      <circle cx="16" cy="12" r="1.5" />
-      <path d="M9 16h6" />
-      <path d="M12 2v6" />
-      <path d="M7 8V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" />
-    </svg>
-  )
-}

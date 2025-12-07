@@ -94,6 +94,15 @@ export async function GET(request: Request) {
     let messages: Record<string, unknown>[] = [];
     let isResuming = false;
     
+    // Check if user has already completed onboarding
+    const { data: userData } = await serviceClient
+      .from('users')
+      .select('onboarding_complete')
+      .eq('id', effectiveUserId)
+      .single();
+    
+    const userOnboardingComplete = userData?.onboarding_complete === true;
+    
     if (existingSessions && existingSessions.length > 0) {
       const existing = existingSessions[0];
       
@@ -116,8 +125,13 @@ export async function GET(request: Request) {
           messages = existingMessages || [];
           console.log(`📨 Loaded ${messages.length} existing messages`);
         }
+      } else if (userOnboardingComplete) {
+        // User already completed onboarding, return the completed session without creating new
+        console.log('📂 User already completed onboarding, returning completed session');
+        session = existing;
+        isResuming = false;
       } else {
-        // Previous session was complete, create new one
+        // Previous session was complete but user not marked complete, create new one
         console.log('📂 Previous session complete, creating new one');
         session = await createNewSession(serviceClient, effectiveUserId);
       }
@@ -217,8 +231,24 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to mark complete' }, { status: 500 });
       }
       
+      // Also mark user as onboarding complete (using service client to bypass RLS)
+      const { error: userUpdateError } = await serviceClient
+        .from('users')
+        .update({
+          onboarding_complete: true,
+          onboarding_completed_at: new Date().toISOString()
+        })
+        .eq('id', effectiveUserId);
+      
+      if (userUpdateError) {
+        console.error('❌ Error marking user onboarding complete:', userUpdateError);
+        // Don't fail the request, session is already marked complete
+      } else {
+        console.log('✅ User marked as onboarding complete:', effectiveUserId);
+      }
+      
       console.log('✅ Session marked complete:', sessionId);
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, userUpdated: !userUpdateError });
     }
     
     // Save message
