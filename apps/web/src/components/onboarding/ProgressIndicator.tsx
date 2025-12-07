@@ -6,16 +6,18 @@ interface ProgressIndicatorProps {
   progress: number; // 0-100
   questionsAnswered?: number;
   totalQuestions?: number;
+  currentQuestion?: number;
 }
 
-// Define the mandatory questions from onboarding.txt
+// Seven core onboarding questions (see onboarding.txt)
 const ONBOARDING_SECTIONS = [
-  { id: 'identity', label: 'Identität', questions: 3 },
-  { id: 'influences', label: 'Einflüsse', questions: 2 },
-  { id: 'family', label: 'Familie', questions: 2 },
-  { id: 'education', label: 'Bildung', questions: 4 },
-  { id: 'career', label: 'Karriere', questions: 3 },
-  { id: 'values', label: 'Werte', questions: 2 },
+  { id: 'identity', label: 'Identität & Stimme', questions: 1 },
+  { id: 'origins', label: 'Anfänge & Herkunft', questions: 1 },
+  { id: 'family', label: 'Familienbild', questions: 1 },
+  { id: 'education', label: 'Bildungsweg', questions: 1 },
+  { id: 'career', label: 'Beruf & Berufung', questions: 1 },
+  { id: 'influences', label: 'Prägende Stimmen', questions: 1 },
+  { id: 'values', label: 'Werte & Motto', questions: 1 },
 ];
 
 const TOTAL_QUESTIONS = ONBOARDING_SECTIONS.reduce((sum, s) => sum + s.questions, 0);
@@ -23,10 +25,15 @@ const TOTAL_QUESTIONS = ONBOARDING_SECTIONS.reduce((sum, s) => sum + s.questions
 export default function ProgressIndicator({ 
   progress, 
   questionsAnswered = 0,
-  totalQuestions = TOTAL_QUESTIONS 
+  totalQuestions = TOTAL_QUESTIONS,
+  currentQuestion = 1,
 }: ProgressIndicatorProps) {
-  // Calculate which section we're in based on progress
-  const currentSectionIndex = Math.floor((progress / 100) * ONBOARDING_SECTIONS.length);
+  const clampedTotal = Math.max(totalQuestions, TOTAL_QUESTIONS);
+  const clampedAnswered = Math.min(Math.max(questionsAnswered, 0), clampedTotal);
+  const currentSectionIndex = Math.min(
+    Math.max(currentQuestion - 1, 0),
+    ONBOARDING_SECTIONS.length - 1
+  );
   
   return (
     <div style={{
@@ -86,8 +93,8 @@ export default function ProgressIndicator({
         gap: '8px'
       }}>
         {ONBOARDING_SECTIONS.map((section, index) => {
-          const isComplete = index < currentSectionIndex;
-          const isCurrent = index === currentSectionIndex;
+          const isComplete = index < clampedAnswered;
+          const isCurrent = clampedAnswered < clampedTotal && !isComplete && index === currentSectionIndex;
           
           return (
             <div

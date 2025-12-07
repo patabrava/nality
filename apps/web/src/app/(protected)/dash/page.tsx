@@ -7,6 +7,8 @@ import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
 
+const DASHBOARD_CHAPTERS = CHAPTERS_ORDERED.filter(chapter => chapter.id !== 'moments')
+
 // Dashboard tile component
 interface DashboardTileProps {
   title: string
@@ -134,7 +136,7 @@ export default function DashboardPage() {
         const stats: Record<string, number> = {}
         let total = 0
         
-        CHAPTERS_ORDERED.forEach(chapter => {
+        DASHBOARD_CHAPTERS.forEach(chapter => {
           const count = data?.filter((e: { category: string }) => 
             chapter.categories.includes(e.category as typeof chapter.categories[number])
           ).length || 0
@@ -164,7 +166,7 @@ export default function DashboardPage() {
   }
 
   // Build tiles from chapters config with stats
-  const chapterTiles = CHAPTERS_ORDERED.map(chapter => ({
+  const chapterTiles = DASHBOARD_CHAPTERS.map(chapter => ({
     title: chapter.name,
     content: (
       <div style={{ textAlign: 'center' }}>
@@ -202,7 +204,7 @@ export default function DashboardPage() {
         </div>
       ),
       isInteractive: false,
-      slogan: `Across ${CHAPTERS_ORDERED.length} life chapters`,
+      slogan: `Across ${DASHBOARD_CHAPTERS.length} life chapters`,
       onClick: undefined as (() => void) | undefined
     }
   ]
@@ -215,11 +217,13 @@ export default function DashboardPage() {
       <style jsx>{`
         .dashboard-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 2rem;
-          max-width: 1200px;
+          max-width: 1024px;
           margin: 0 auto;
           padding: 2rem;
+          align-items: stretch;
+          justify-items: stretch;
         }
         
         .dashboard-tile {
@@ -228,6 +232,8 @@ export default function DashboardPage() {
           max-width: none !important;
           min-width: 0 !important;
           aspect-ratio: 1;
+          height: 100%;
+          position: relative;
           
           /* Reset timeline-specific margins */
           margin: 0 !important;
@@ -366,7 +372,7 @@ export default function DashboardPage() {
         /* Responsive grid behavior */
         @media (max-width: 1024px) {
           .dashboard-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1.5rem;
             padding: 1.5rem;
           }
