@@ -11,6 +11,7 @@ import { filterEvents, getFilterStats } from '@/utils/timelineFilters'
 import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType, ChapterId } from '@nality/schema'
 import { ChapterChatInterface } from '@/components/chat/ChapterChatInterface'
 import { getChapterById } from '@/lib/chapters'
+import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
 
 /**
  * Timeline Module Props
@@ -756,52 +757,19 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       </div>
 
       {/* Responsive Floating Action Button - Add New Memory - Explicit Error Handling */}
-      <button
+      <AddMemoryButton
         onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
         disabled={creating || updating || deleting}
-        style={{
+        aria-label="Add new memory"
+        label="Add memory"
+        icon={<ChatbotIcon />}
+        styleOverrides={{
           position: 'fixed',
           bottom: 'clamp(16px, 4vw, 24px)',
           right: 'clamp(16px, 4vw, 24px)',
-          width: 'clamp(140px, 35vw, 180px)',
-          height: 'clamp(48px, 12vw, 56px)',
-          background: 'var(--md-sys-color-primary)',
-          color: 'var(--md-sys-color-on-primary)',
-          border: 'none',
-          borderRadius: 'clamp(24px, 6vw, 28px)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 'clamp(8px, 2vw, 12px)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)',
-          transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized)',
-          zIndex: 100,
-          backdropFilter: 'blur(10px)',
-          padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px)'
+          zIndex: 100
         }}
-        onMouseOver={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)'
-          }
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.transform = 'scale(1) translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2)'
-        }}
-        aria-label="Add new memory"
-      >
-        <ChatbotIcon />
-        <span style={{
-          fontSize: 'clamp(12px, 3vw, 14px)',
-          fontWeight: '500',
-          whiteSpace: 'nowrap',
-          lineHeight: 1
-        }}>
-          Add Memory
-        </span>
-      </button>
+      />
 
       {/* Loading overlay - Graceful Fallbacks */}
       {(creating || updating || deleting) && (

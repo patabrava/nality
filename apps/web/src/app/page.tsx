@@ -1,6 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 
 // Import landing page components
 import Header from '@/components/landing/Header'
@@ -18,11 +21,28 @@ import Footer from '@/components/landing/Footer'
 export const dynamic = 'force-dynamic'
 
 export default function Home() {
+  const router = useRouter()
+  const { user, loading: authLoading, isAuthenticated } = useAuth()
+  const { isLoading: profileLoading, isOnboardingComplete } = useUserProfile(user?.id)
   const [mounted, setMounted] = useState(false)
+  const shouldRedirect = useMemo(() => isAuthenticated && mounted, [isAuthenticated, mounted])
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Client-side guard to avoid landing page for returning users
+  useEffect(() => {
+    if (!shouldRedirect) return
+
+    if (authLoading || profileLoading) return
+
+    if (isOnboardingComplete) {
+      router.replace('/dash')
+    } else {
+      router.replace('/onboarding')
+    }
+  }, [shouldRedirect, authLoading, profileLoading, isOnboardingComplete, router])
 
   const handleNavigation = (section: string) => {
     // Track navigation analytics
@@ -42,7 +62,8 @@ export default function Home() {
     console.log('Sample book clicked')
   }
 
-  if (!mounted) {
+  // Avoid flicker while deciding redirect
+  if (!mounted || (shouldRedirect && (authLoading || profileLoading))) {
     return null // Prevent hydration mismatch
   }
 

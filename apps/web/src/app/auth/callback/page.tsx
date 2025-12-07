@@ -27,7 +27,7 @@ export default function AuthCallback() {
           const userId = data.session.user.id
           const profile = await fetchUserProfile(userId)
           if (profile && profile.onboarding_complete) {
-            router.push('/timeline')
+            router.push('/dash')
           } else {
             router.push('/onboarding')
           }

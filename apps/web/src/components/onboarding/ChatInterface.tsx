@@ -24,7 +24,7 @@ interface DisplayMessage {
 
 export default function ChatInterface({
   placeholder = "Erzähle mir kurz etwas über dich …",
-  initialMessage = "Guten Tag! Wie möchten Sie angesprochen werden – du oder Sie? Und Ihr vollständiger Name?",
+  initialMessage = "Guten Tag! Wie möchten Sie angesprochen werden – du oder Sie? Ihr vollständiger Name? Und welcher Stil passt zu Ihnen: **prosa** (erzählend), **fachlich** (strukturiert) oder **locker** (entspannt)?",
   onProgressChange
 }: ChatInterfaceProps) {
   // Sanitize AI output: remove status markers and code fences

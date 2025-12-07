@@ -36,10 +36,26 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Determine onboarding completion to drive redirects
+  let onboardingComplete: boolean | null = null
+  if (user) {
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    if (!profileError) {
+      onboardingComplete = profile?.onboarding_complete ?? null
+    }
+  }
+
+  const path = request.nextUrl.pathname
+
   // Protected routes - redirect to login if not authenticated
   const protectedPaths = ['/dash', '/chat', '/onboarding']
-  const isProtectedPath = protectedPaths.some(path => 
-    request.nextUrl.pathname.startsWith(path)
+  const isProtectedPath = protectedPaths.some(protectedPath =>
+    path.startsWith(protectedPath)
   )
 
   if (isProtectedPath && !user) {
@@ -50,11 +66,19 @@ export async function middleware(request: NextRequest) {
   }
 
   // If user is authenticated and on login page, redirect to dashboard
-  if (user && request.nextUrl.pathname === '/login') {
-    const redirectTo = request.nextUrl.searchParams.get('redirectTo') || '/dash'
+  if (user && path === '/login') {
+    const redirectParam = request.nextUrl.searchParams.get('redirectTo')
+    const redirectTo = onboardingComplete ? (redirectParam || '/dash') : '/onboarding'
     const url = request.nextUrl.clone()
     url.pathname = redirectTo
     url.searchParams.delete('redirectTo')
+    return NextResponse.redirect(url)
+  }
+
+  // If user is authenticated and hits the landing page, send them to the right place
+  if (user && path === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = onboardingComplete ? '/dash' : '/onboarding'
     return NextResponse.redirect(url)
   }
 
@@ -63,13 +87,12 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/',
+    '/login',
+    '/auth/:path*',
+    '/onboarding',
+    '/dash/:path*',
+    '/chat/:path*',
+    '/timeline',
   ],
 }
