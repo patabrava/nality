@@ -1,13 +1,17 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { useRouter } from 'next/navigation'
+import { ProfileCard } from '@/components/profile/ProfileCard'
+import { User, Mail, Calendar, Shield, LogOut, ArrowLeft, Sparkles } from 'lucide-react'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
 export default function ProfilePage() {
   const { user, signOut, loading } = useAuth()
+  const { profile, isLoading: profileLoading } = useUserProfile(user?.id)
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -17,77 +21,126 @@ export default function ProfilePage() {
     }
   }
 
+  const handleEditProfile = () => {
+    // TODO: Navigate to profile edit page or open modal
+    console.log('Edit profile clicked')
+  }
+
   return (
     <>
       <div className="profile-page">
         <div className="profile-container">
+          {/* Header with Avatar */}
           <div className="profile-header">
-            <h1 className="profile-title">Profile</h1>
+            <div className="avatar-container">
+              <div className="avatar">
+                <User size={48} strokeWidth={1.5} />
+              </div>
+              <div className="avatar-badge">
+                <Sparkles size={16} />
+              </div>
+            </div>
+            <h1 className="profile-title">
+              {profile?.full_name || 'Mein Profil'}
+            </h1>
             <p className="profile-subtitle">
-              Manage your Nality account
+              {user?.email || 'Verwalte dein Nality-Konto'}
             </p>
           </div>
 
+          {/* Profile Attributes Card - Values, Influences, Motto */}
+          {!profileLoading && profile && (
+            <div className="profile-attributes-section">
+              <ProfileCard
+                user={{
+                  full_name: profile.full_name,
+                  birth_date: profile.birth_date,
+                  birth_place: profile.birth_place,
+                }}
+                attributes={profile.attributes}
+                onEdit={handleEditProfile}
+              />
+            </div>
+          )}
+
+          {/* Account Information Card */}
           <div className="profile-info-card">
-            <h2 className="card-title">Account Information</h2>
+            <div className="card-header">
+              <Shield size={20} className="card-icon" />
+              <h2 className="card-title">Kontoinformationen</h2>
+            </div>
             
             <div className="account-info-grid">
               <div className="info-field">
-                <label className="info-label">
-                  Email Address
-                </label>
-                <div className="info-value">
-                  {user?.email || 'Not available'}
+                <div className="info-icon">
+                  <Mail size={16} />
+                </div>
+                <div className="info-content">
+                  <label className="info-label">E-Mail-Adresse</label>
+                  <div className="info-value">{user?.email || 'Nicht verfügbar'}</div>
                 </div>
               </div>
 
               <div className="info-field">
-                <label className="info-label">
-                  User ID
-                </label>
-                <div className="info-value info-value-mono">
-                  {user?.id || 'Not available'}
+                <div className="info-icon">
+                  <Calendar size={16} />
+                </div>
+                <div className="info-content">
+                  <label className="info-label">Konto erstellt</label>
+                  <div className="info-value">
+                    {user?.created_at 
+                      ? new Date(user.created_at).toLocaleDateString('de-DE', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : 'Nicht verfügbar'
+                    }
+                  </div>
                 </div>
               </div>
 
-              <div className="info-field">
-                <label className="info-label">
-                  Account Created
-                </label>
-                <div className="info-value">
-                  {user?.created_at 
-                    ? new Date(user.created_at).toLocaleDateString()
-                    : 'Not available'
-                  }
+              {profile?.birth_date && (
+                <div className="info-field">
+                  <div className="info-icon">
+                    <Calendar size={16} />
+                  </div>
+                  <div className="info-content">
+                    <label className="info-label">Geburtsdatum</label>
+                    <div className="info-value">
+                      {new Date(profile.birth_date).toLocaleDateString('de-DE', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                      {profile.birth_place && ` in ${profile.birth_place}`}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
+          {/* Actions Card */}
           <div className="profile-actions-card">
-            <h2 className="card-title">Account Actions</h2>
-            
-            <div className="actions-grid">
-              <button
-                onClick={handleSignOut}
-                className="sign-out-button"
-                disabled={loading}
-              >
-                {loading ? 'Signing Out...' : 'Sign Out'}
-              </button>
-              
-              <p className="action-description">
-                You&apos;ll be redirected to the home page after signing out.
-              </p>
-            </div>
+            <button
+              onClick={handleSignOut}
+              className="sign-out-button"
+              disabled={loading}
+            >
+              <LogOut size={18} />
+              {loading ? 'Abmelden...' : 'Abmelden'}
+            </button>
           </div>
 
+          {/* Navigation */}
           <div className="profile-navigation">
             <button
               onClick={() => router.push('/dash')}
               className="back-button"
             >
-              ← Back to Dashboard
+              <ArrowLeft size={18} />
+              Zurück zum Dashboard
             </button>
           </div>
         </div>
@@ -98,101 +151,151 @@ export default function ProfilePage() {
           min-height: 100vh;
           background-color: var(--md-sys-color-background);
           color: var(--md-sys-color-on-background);
-          padding: 24px 16px;
+          padding: 32px 16px;
           font-family: 'Roboto', system-ui, sans-serif;
         }
 
         .profile-container {
-          max-width: 768px;
+          max-width: 640px;
           margin: 0 auto;
           animation: fadeInUp var(--md-sys-motion-duration-long1, 400ms) var(--md-sys-motion-easing-decelerated, cubic-bezier(0, 0, 0, 1));
         }
 
+        /* Header with Avatar */
         .profile-header {
           margin-bottom: 32px;
           text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .avatar-container {
+          position: relative;
+          margin-bottom: 16px;
+        }
+
+        .avatar {
+          width: 96px;
+          height: 96px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-badge {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: var(--md-sys-color-tertiary-container);
+          color: var(--md-sys-color-on-tertiary-container);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 3px solid var(--md-sys-color-background);
         }
 
         .profile-title {
-          font-size: clamp(2rem, 5vw, 3rem);
+          font-size: clamp(1.5rem, 4vw, 2rem);
           font-weight: 700;
           color: var(--md-sys-color-on-background);
-          margin-bottom: 8px;
+          margin: 0 0 4px 0;
           line-height: 1.2;
         }
 
         .profile-subtitle {
-          font-size: 1.125rem;
+          font-size: 0.9375rem;
           color: var(--md-sys-color-on-surface-variant);
           font-weight: 400;
-          opacity: 0.8;
+          margin: 0;
         }
 
-        .profile-info-card,
-        .profile-actions-card {
-          background: var(--md-sys-color-surface-container);
-          border-radius: 16px;
-          padding: 24px;
+        /* Profile Attributes Section */
+        .profile-attributes-section {
           margin-bottom: 24px;
-          border: 1px solid var(--md-sys-color-outline-variant);
-          transition: all var(--md-sys-motion-duration-medium1, 250ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
         }
 
-        .profile-info-card:hover,
-        .profile-actions-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-          border-color: var(--md-sys-color-outline);
+        /* Info Card */
+        .profile-info-card {
+          background: var(--md-sys-color-surface-container);
+          border-radius: 24px;
+          padding: 24px;
+          margin-bottom: 16px;
+          border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .card-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+          color: var(--md-sys-color-on-surface-variant);
         }
 
         .card-title {
-          font-size: 1.5rem;
+          font-size: 1rem;
           font-weight: 600;
           color: var(--md-sys-color-on-surface);
-          margin-bottom: 20px;
-          line-height: 1.3;
+          margin: 0;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .account-info-grid {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 16px;
         }
 
         .info-field {
           display: flex;
-          flex-direction: column;
-          gap: 8px;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .info-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: var(--md-sys-color-surface-container-high);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--md-sys-color-on-surface-variant);
+          flex-shrink: 0;
+        }
+
+        .info-content {
+          flex: 1;
+          min-width: 0;
         }
 
         .info-label {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           font-weight: 500;
           color: var(--md-sys-color-on-surface-variant);
           text-transform: uppercase;
           letter-spacing: 0.5px;
+          margin-bottom: 2px;
         }
 
         .info-value {
-          font-size: 1.125rem;
+          font-size: 0.9375rem;
           color: var(--md-sys-color-on-surface);
           font-weight: 400;
-          padding: 12px 16px;
-          background: var(--md-sys-color-surface-container-high);
-          border-radius: 8px;
-          border: 1px solid var(--md-sys-color-outline-variant);
+          word-break: break-word;
         }
 
-        .info-value-mono {
-          font-family: 'Courier New', monospace;
-          font-size: 0.875rem;
-          color: var(--md-sys-color-on-surface-variant);
-        }
-
-        .actions-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
+        /* Actions Card */
+        .profile-actions-card {
+          margin-bottom: 24px;
         }
 
         .sign-out-button {
@@ -202,7 +305,7 @@ export default function ProfilePage() {
           color: var(--md-sys-color-on-error-container);
           border: none;
           border-radius: 24px;
-          font-size: 1rem;
+          font-size: 0.9375rem;
           font-weight: 600;
           cursor: pointer;
           transition: all var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
@@ -216,7 +319,7 @@ export default function ProfilePage() {
           background-color: var(--md-sys-color-error);
           color: var(--md-sys-color-on-error);
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .sign-out-button:active {
@@ -231,41 +334,38 @@ export default function ProfilePage() {
         }
 
         .sign-out-button:focus-visible {
-          outline: 2px solid var(--md-sys-color-on-surface);
+          outline: 2px solid var(--md-sys-color-error);
           outline-offset: 2px;
         }
 
-        .action-description {
-          font-size: 0.875rem;
-          color: var(--md-sys-color-on-surface-variant);
-          text-align: center;
-          opacity: 0.8;
-        }
-
+        /* Navigation */
         .profile-navigation {
           text-align: center;
-          margin-top: 32px;
         }
 
         .back-button {
           background: transparent;
-          border: none;
-          color: var(--md-sys-color-primary);
-          font-size: 1rem;
+          border: 1px solid var(--md-sys-color-outline-variant);
+          color: var(--md-sys-color-on-surface-variant);
+          font-size: 0.875rem;
+          font-weight: 500;
           cursor: pointer;
-          padding: 8px 16px;
-          border-radius: 8px;
+          padding: 10px 20px;
+          border-radius: 24px;
           transition: all var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
         }
 
         .back-button:hover {
           background: var(--md-sys-color-surface-container-high);
           color: var(--md-sys-color-on-surface);
-          transform: translateX(-2px);
+          border-color: var(--md-sys-color-outline);
         }
 
         .back-button:focus-visible {
-          outline: 2px solid var(--md-sys-color-on-surface);
+          outline: 2px solid var(--md-sys-color-primary);
           outline-offset: 2px;
         }
 
@@ -282,15 +382,25 @@ export default function ProfilePage() {
 
         @media (max-width: 768px) {
           .profile-page {
-            padding: 16px 12px;
+            padding: 24px 16px;
           }
 
           .profile-container {
             max-width: 100%;
           }
 
+          .avatar {
+            width: 80px;
+            height: 80px;
+          }
+
+          .avatar-badge {
+            width: 28px;
+            height: 28px;
+          }
+
           .profile-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
           }
 
           .profile-subtitle {

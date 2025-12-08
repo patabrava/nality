@@ -84,9 +84,38 @@ export async function POST(req: Request) {
       messages: cleanMessages,
       maxTokens: 1000,
       temperature: 0.7,
-      onFinish: ({ text, usage }) => {
+      onFinish: async ({ text, usage }) => {
         console.log(`✅ Chapter chat complete, text length: ${text.length}`);
         console.log("📊 Token usage:", usage);
+        
+        // Check if AI included a [SAVE_MEMORY] block and extract it
+        if (text.includes('[SAVE_MEMORY]')) {
+          try {
+            console.log('📦 Detected [SAVE_MEMORY] block, calling extraction API...');
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+            
+            const extractResponse = await fetch(`${baseUrl}/api/events/extract`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                content: text,
+                source: 'chapter_chat',
+                chapterId,
+                userId: effectiveUserId,
+                accessToken,
+              }),
+            });
+            
+            if (extractResponse.ok) {
+              const extractResult = await extractResponse.json();
+              console.log(`📦 Extraction result: ${extractResult.events?.length || 0} events saved`);
+            } else {
+              console.error('❌ Extraction API error:', await extractResponse.text());
+            }
+          } catch (err) {
+            console.error('❌ Failed to extract memory:', err);
+          }
+        }
       },
       onError: (error) => {
         console.error("❌ StreamText error:", error);

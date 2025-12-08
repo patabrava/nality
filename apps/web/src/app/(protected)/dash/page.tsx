@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import { CHAPTERS_ORDERED } from '@/lib/chapters'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
+import { ProfileCard } from '@/components/profile/ProfileCard'
 
 const DASHBOARD_CHAPTERS = CHAPTERS_ORDERED.filter(chapter => chapter.id !== 'moments')
 
@@ -77,6 +79,7 @@ function DashboardTile({ title, content, isInteractive = false, slogan, onClick 
 export default function DashboardPage() {
   const router = useRouter()
   const { user } = useAuth()
+  const { profile, isLoading: profileLoading } = useUserProfile(user?.id)
   const [chapterStats, setChapterStats] = useState<Record<string, number>>({})
   const [totalEvents, setTotalEvents] = useState(0)
   
@@ -425,6 +428,21 @@ export default function DashboardPage() {
             aria-label="Add a new memory"
           />
         </div>
+        
+        {/* Profile Card - Shows values, influences, motto */}
+        {!profileLoading && profile && (
+          <div style={{ maxWidth: '1024px', margin: '0 auto 2rem', padding: '0 2rem' }}>
+            <ProfileCard
+              user={{
+                full_name: profile.full_name,
+                birth_date: profile.birth_date,
+                birth_place: profile.birth_place,
+              }}
+              attributes={profile.attributes}
+            />
+          </div>
+        )}
+        
         <div className="dashboard-grid">
           {tilesData.map((tile, index) => (
             <DashboardTile

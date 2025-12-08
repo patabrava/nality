@@ -7,6 +7,12 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   console.log("🔄 Convert Onboarding API endpoint hit");
   
+  // Get base URL from request headers (works in both dev and prod)
+  const protocol = req.headers.get('x-forwarded-proto') || 'http';
+  const host = req.headers.get('host') || 'localhost:3000';
+  const baseUrl = `${protocol}://${host}`;
+  console.log("🌐 Base URL:", baseUrl);
+  
   try {
     // Try to get body with userId/accessToken (like chat route does)
     let bodyUserId: string | null = null;
@@ -61,7 +67,11 @@ export async function POST(req: Request) {
     const serviceClient = await createServiceClient();
     
     // Convert onboarding answers to life events
-    const result = await convertOnboardingToEvents(effectiveUserId, serviceClient);
+    const conversionOptions: { baseUrl: string; accessToken?: string } = { baseUrl };
+    if (accessToken) {
+      conversionOptions.accessToken = accessToken;
+    }
+    const result = await convertOnboardingToEvents(effectiveUserId, serviceClient, conversionOptions);
     
     console.log("✅ Onboarding conversion result:", result);
     

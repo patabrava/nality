@@ -3,7 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
-export interface UserProfile {
+// ──────────────────────
+// Types
+// ──────────────────────
+
+/**
+ * User data from the users table
+ */
+export interface UserData {
   id: string;
   email: string | null;
   full_name: string | null;
@@ -14,12 +21,39 @@ export interface UserProfile {
   birth_place: string | null;
 }
 
+/**
+ * Profile attributes from the user_profile table
+ */
+export interface ProfileAttributes {
+  values: string[];
+  motto: string | null;
+  influences: Array<{
+    name: string;
+    type: string;
+    why?: string;
+  }>;
+  role_models: Array<{
+    name: string;
+    relationship?: string;
+    traits?: string[];
+  }>;
+  favorite_authors: string[];
+}
+
+/**
+ * Combined user profile (users + user_profile tables)
+ */
+export interface UserProfile extends UserData {
+  attributes: ProfileAttributes | null;
+}
+
 interface UseUserProfileReturn {
   profile: UserProfile | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
   isOnboardingComplete: boolean;
+  updateAttributes: (updates: Partial<ProfileAttributes>) => Promise<boolean>;
 }
 
 /**
@@ -43,15 +77,23 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
     try {
       console.log('👤 Fetching user profile for:', userId);
       
-      const { data, error: fetchError } = await supabase
+      // Fetch user data from users table
+      const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, email, full_name, onboarding_complete, form_of_address, language_style, birth_date, birth_place')
         .eq('id', userId)
         .single();
 
-      if (fetchError) {
+      // Fetch profile attributes from user_profile table
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profile')
+        .select('values, motto, influences, role_models, favorite_authors')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (userError) {
         // If user doesn't exist in users table, they need onboarding
-        if (fetchError.code === 'PGRST116') {
+        if (userError.code === 'PGRST116') {
           console.log('👤 User not found in users table - needs onboarding');
           setProfile({
             id: userId,
@@ -62,16 +104,36 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
             language_style: null,
             birth_date: null,
             birth_place: null,
+            attributes: null,
           });
         } else {
-          throw new Error(fetchError.message);
+          throw new Error(userError.message);
         }
       } else {
+        // Build combined profile
+        const attributes: ProfileAttributes | null = profileData ? {
+          values: profileData.values || [],
+          motto: profileData.motto || null,
+          influences: profileData.influences || [],
+          role_models: profileData.role_models || [],
+          favorite_authors: profileData.favorite_authors || [],
+        } : null;
+
         console.log('✅ User profile loaded:', { 
-          id: data.id, 
-          onboarding_complete: data.onboarding_complete 
+          id: userData.id, 
+          onboarding_complete: userData.onboarding_complete,
+          hasAttributes: !!attributes,
         });
-        setProfile(data as UserProfile);
+        
+        setProfile({
+          ...userData,
+          attributes,
+        } as UserProfile);
+      }
+
+      // Log profile error separately (not critical)
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.warn('⚠️ Could not fetch profile attributes:', profileError.message);
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch profile');
@@ -81,6 +143,35 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
       setIsLoading(false);
     }
   }, [userId]);
+
+  /**
+   * Update profile attributes in user_profile table
+   */
+  const updateAttributes = useCallback(async (updates: Partial<ProfileAttributes>): Promise<boolean> => {
+    if (!userId) return false;
+
+    try {
+      const { error: updateError } = await supabase
+        .from('user_profile')
+        .upsert({
+          user_id: userId,
+          ...updates,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+
+      if (updateError) {
+        console.error('❌ Failed to update attributes:', updateError);
+        return false;
+      }
+
+      // Refetch to update local state
+      await fetchProfile();
+      return true;
+    } catch (err) {
+      console.error('❌ Error updating attributes:', err);
+      return false;
+    }
+  }, [userId, fetchProfile]);
 
   useEffect(() => {
     fetchProfile();
@@ -92,5 +183,6 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
     error,
     refetch: fetchProfile,
     isOnboardingComplete: profile?.onboarding_complete === true,
+    updateAttributes,
   };
 }
