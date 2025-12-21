@@ -27,6 +27,8 @@ interface ProfileCardProps {
   attributes: ProfileAttributes | null;
   /** Callback when edit button is clicked */
   onEdit?: () => void;
+  /** Callback when navigating to chat for onboarding */
+  onChatNavigate?: () => void;
   /** Whether the card is in compact mode */
   compact?: boolean;
 }
@@ -35,7 +37,7 @@ interface ProfileCardProps {
 // Main Component
 // ──────────────────────
 
-export function ProfileCard({ user, attributes, onEdit, compact = false }: ProfileCardProps) {
+export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact = false }: ProfileCardProps) {
   const hasValues = attributes?.values && attributes.values.length > 0;
   const hasInfluences = attributes?.influences && attributes.influences.length > 0;
   const hasRoleModels = attributes?.role_models && attributes.role_models.length > 0;
@@ -49,16 +51,33 @@ export function ProfileCard({ user, attributes, onEdit, compact = false }: Profi
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden"
+        onClick={onChatNavigate}
         style={{
           background: 'var(--md-sys-color-surface-container-low)',
           borderRadius: '24px',
           padding: compact ? '20px' : '32px',
           border: '1px dashed var(--md-sys-color-outline)',
+          cursor: onChatNavigate ? 'pointer' : 'default',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: '16px',
+          transition: 'all 0.3s ease',
+        }}
+        onMouseOver={(e: React.MouseEvent<HTMLDivElement>) => {
+          if (onChatNavigate) {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
+            e.currentTarget.style.borderColor = 'var(--accent-gold)';
+          }
+        }}
+        onMouseOut={(e: React.MouseEvent<HTMLDivElement>) => {
+          if (onChatNavigate) {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
+            e.currentTarget.style.borderColor = 'var(--md-sys-color-outline)';
+          }
         }}
       >
         <div style={{
@@ -94,15 +113,22 @@ export function ProfileCard({ user, attributes, onEdit, compact = false }: Profi
           </p>
         </div>
 
-        {onEdit && (
+        {(onEdit || onChatNavigate) && (
           <button
-            onClick={onEdit}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onChatNavigate) {
+                onChatNavigate();
+              } else if (onEdit) {
+                onEdit();
+              }
+            }}
             style={{
               marginTop: '8px',
               padding: '10px 24px',
               borderRadius: '100px',
-              background: 'var(--md-sys-color-primary)',
-              color: 'var(--md-sys-color-on-primary)',
+              background: 'var(--accent-gold)',
+              color: '#000',
               border: 'none',
               fontWeight: 600,
               fontSize: '0.9375rem',
@@ -113,16 +139,16 @@ export function ProfileCard({ user, attributes, onEdit, compact = false }: Profi
               boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
             }}
-            onMouseOver={(e) => {
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
               e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
             }}
-            onMouseOut={(e) => {
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
             }}
           >
-            Profil vervollständigen
+            {onChatNavigate ? 'Im Chat vervollständigen' : 'Profil vervollständigen'}
             <Sparkles size={16} />
           </button>
         )}
@@ -221,11 +247,11 @@ export function ProfileCard({ user, attributes, onEdit, compact = false }: Profi
               fontWeight: 500,
               transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => {
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = 'var(--md-sys-color-surface-container-highest)';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }}
-            onMouseOut={(e) => {
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = 'var(--md-sys-color-surface-container-high)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}

@@ -2,184 +2,97 @@
 
 const features = [
   {
-    title: "Smart onboarding",
-    description: "Start with a guided chat that turns your memories into structured events. Edit anytime.",
-    icon: "🤖",
-    screenshot: "onboarding-chat"
+    title: "AI-Powered Memory Assistant",
+    description: "Our intelligent chat guides you through your life story with personalized questions. Voice or text input, automatic structuring, and smart gap detection to ensure nothing important is forgotten.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        <line x1="12" y1="19" x2="12" y2="23" />
+        <line x1="8" y1="23" x2="16" y2="23" />
+      </svg>
+    )
   },
   {
-    title: "A timeline that feels alive",
-    description: "Clean, alternating layout. Drag, categorize, and tag important moments. See photos and clips in context.",
-    icon: "⏰",
-    screenshot: "timeline"
+    title: "Interactive Life Timeline",
+    description: "Beautiful, drag-and-drop timeline with rich media support. Organize by decades, themes, or relationships. Real-time collaboration and automatic backups ensure your story is always safe.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M12 7v5l4 2" />
+      </svg>
+    )
   },
   {
-    title: "Interview, when it matters",
-    description: "Professional interviewers can help you go deeper—especially for elder stories. We'll handle scheduling.",
-    icon: "🎯",
-    screenshot: "media-grid"
+    title: "Expert Interview Service",
+    description: "Professional storytellers and journalists help capture deeper narratives. Seamless booking, HD recording, AI transcription, and integration into your timeline. Perfect for family elders.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <circle cx="19" cy="7" r="2" />
+        <path d="M19 14v7" />
+        <path d="M22 17l-3-3 3-3" />
+      </svg>
+    )
   },
   {
-    title: "Export a beautiful Life Book",
-    description: "One click to a polished PDF designed for printing and sharing.",
-    icon: "📚",
-    screenshot: "pdf-preview"
+    title: "Premium Publishing Suite",
+    description: "Transform your timeline into a stunning hardbound book, digital memoir, or shareable family archive. Custom layouts, professional printing, and secure family sharing options.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+        <path d="M9 10h6" />
+        <path d="M9 14h6" />
+      </svg>
+    )
+  },
+  {
+    title: "Rich Media Library",
+    description: "Upload photos, videos, documents, and audio recordings. Smart organization, facial recognition, and automatic metadata extraction. Cloud storage with family access controls.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+        <circle cx="9" cy="9" r="2" />
+        <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+      </svg>
+    )
+  },
+  {
+    title: "Legacy Preservation Technology",
+    description: "Bank-grade security, automatic backups, and 100-year digital preservation guarantee. Your family's stories will outlast generations with our quantum-resistant encryption.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        <circle cx="12" cy="16" r="1" />
+      </svg>
+    )
   }
 ]
 
 export default function ProductHighlightsSection() {
   return (
-    <section id="features" className="section" style={{ padding: '80px 0' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 
-            style={{
-              fontSize: 'clamp(2rem, 4vw, 2.5rem)',
-              fontWeight: '700',
-              color: 'var(--md-sys-color-on-surface)',
-              marginBottom: '16px'
-            }}
-          >
-            Features designed for your story
-          </h2>
-          <p 
-            style={{
-              fontSize: '1.125rem',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              maxWidth: '600px',
-              margin: '0 auto'
-            }}
-          >
-            Every tool thoughtfully crafted to help you capture, organize, and share your life's most important moments
-          </p>
-        </div>
+    <section className="section">
+      <div className="section-header">
+        <span className="section-label">Technology & Features</span>
+        <h2 className="section-title">Enterprise-grade tools for <span className="serif-text italic text-gold">personal heritage</span></h2>
+        <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
+          Combining AI storytelling, professional services, and preservation technology to create the most comprehensive life documentation platform ever built.
+        </p>
+      </div>
 
-        <div 
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '32px'
-          }}
-        >
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="card"
-              style={{
-                background: 'var(--md-sys-color-surface-container)',
-                borderRadius: '20px',
-                padding: '32px',
-                border: '1px solid var(--md-sys-color-outline-variant)',
-                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              {/* Screenshot placeholder */}
-              <div 
-                style={{
-                  width: '100%',
-                  height: '200px',
-                  background: 'linear-gradient(135deg, var(--md-sys-color-surface-container-low), var(--md-sys-color-surface-container-high))',
-                  borderRadius: '12px',
-                  marginBottom: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid var(--md-sys-color-outline-variant)',
-                  position: 'relative'
-                }}
-              >
-                {/* Mock screenshot content based on feature */}
-                {feature.screenshot === 'timeline' && (
-                  <div style={{ width: '90%', height: '90%', display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px' }}>
-                    <div style={{ height: '24px', background: 'var(--md-sys-color-primary-container)', borderRadius: '4px', display: 'flex', alignItems: 'center', padding: '0 8px', fontSize: '10px', color: 'var(--md-sys-color-on-primary-container)' }}>
-                      🎓 Graduated College - 2020
-                    </div>
-                    <div style={{ height: '24px', background: 'var(--md-sys-color-secondary-container)', borderRadius: '4px', display: 'flex', alignItems: 'center', padding: '0 8px', fontSize: '10px', color: 'var(--md-sys-color-on-secondary-container)' }}>
-                      💼 First Job - 2021
-                    </div>
-                    <div style={{ height: '24px', background: 'var(--md-sys-color-tertiary-container)', borderRadius: '4px', display: 'flex', alignItems: 'center', padding: '0 8px', fontSize: '10px', color: 'var(--md-sys-color-on-tertiary-container)' }}>
-                      ❤️ Got Married - 2023
-                    </div>
-                  </div>
-                )}
-                
-                {feature.screenshot === 'onboarding-chat' && (
-                  <div style={{ width: '90%', height: '90%', display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px' }}>
-                    <div style={{ padding: '8px 12px', background: 'var(--md-sys-color-surface-container-high)', borderRadius: '12px 12px 12px 4px', fontSize: '12px', color: 'var(--md-sys-color-on-surface)', maxWidth: '80%' }}>
-                      Tell me about a moment that shaped who you are today
-                    </div>
-                    <div style={{ padding: '8px 12px', background: 'var(--md-sys-color-primary-container)', borderRadius: '12px 12px 4px 12px', fontSize: '12px', color: 'var(--md-sys-color-on-primary-container)', maxWidth: '80%', marginLeft: 'auto' }}>
-                      When I graduated college, I felt like...
-                    </div>
-                  </div>
-                )}
-
-                {feature.screenshot === 'media-grid' && (
-                  <div style={{ width: '90%', height: '90%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', padding: '16px' }}>
-                    <div style={{ background: 'var(--md-sys-color-primary-container)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>📸</div>
-                    <div style={{ background: 'var(--md-sys-color-secondary-container)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🎥</div>
-                    <div style={{ background: 'var(--md-sys-color-tertiary-container)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🎵</div>
-                    <div style={{ background: 'var(--md-sys-color-surface-container-highest)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', color: 'var(--md-sys-color-on-surface)' }}>+</div>
-                  </div>
-                )}
-
-                {feature.screenshot === 'pdf-preview' && (
-                  <div style={{ width: '90%', height: '90%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <div style={{ 
-                      width: '60px', 
-                      height: '80px', 
-                      background: 'linear-gradient(145deg, #ffffff, #f0f0f0)', 
-                      borderRadius: '4px', 
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#333',
-                      fontSize: '10px',
-                      fontWeight: '600'
-                    }}>
-                      PDF
-                    </div>
-                  </div>
-                )}
-
-                <div 
-                  style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    fontSize: '24px'
-                  }}
-                >
-                  {feature.icon}
-                </div>
-              </div>
-
-              <h3 
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: '600',
-                  color: 'var(--md-sys-color-on-surface)',
-                  marginBottom: '16px'
-                }}
-              >
-                {feature.title}
-              </h3>
-              
-              <p 
-                style={{
-                  fontSize: '1rem',
-                  color: 'var(--md-sys-color-on-surface-variant)',
-                  lineHeight: '1.6'
-                }}
-              >
-                {feature.description}
-              </p>
+      <div className="feature-grid">
+        {features.map((feature, index) => (
+          <div key={index} className="feature-card">
+            <div className="feature-icon">
+              {feature.icon}
             </div>
-          ))}
-        </div>
+            <h3 className="text-2xl font-serif mb-4">{feature.title}</h3>
+            <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+          </div>
+        ))}
       </div>
     </section>
   )

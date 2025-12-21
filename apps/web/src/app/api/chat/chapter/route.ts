@@ -1,5 +1,6 @@
 import { streamText, type CoreMessage } from 'ai';
 import { google } from '@ai-sdk/google';
+import { NextResponse } from 'next/server';
 import { buildChapterSystemPrompt } from '@/lib/prompts/chapters';
 import { createClient } from '@/lib/supabase/server';
 import { isValidChapterId } from '@/lib/chapters';
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
     // Validate chapter ID
     if (!chapterId || !isValidChapterId(chapterId)) {
       console.error("❌ Invalid or missing chapterId:", chapterId);
-      return Response.json(
+      return NextResponse.json(
         { error: "Invalid or missing chapterId" },
         { status: 400 }
       );
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
 
     // Validate messages
     if (!messages || !Array.isArray(messages)) {
-      return Response.json(
+      return NextResponse.json(
         { error: "Invalid messages format" },
         { status: 400 }
       );
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
 
     if (!effectiveUserId) {
       console.error("❌ No user authentication found");
-      return Response.json(
+      return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
                    
     if (!apiKey) {
       console.error("❌ API key not configured");
-      return Response.json(
+      return NextResponse.json(
         { error: "API key not configured" },
         { status: 500 }
       );
@@ -133,7 +134,7 @@ export async function POST(req: Request) {
     console.error("❌ Chapter Chat API error:", error);
     console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
     
-    return Response.json(
+    return NextResponse.json(
       { 
         error: "Something went wrong. Please try again.",
         details: process.env.NODE_ENV === 'development' 

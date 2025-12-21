@@ -46,8 +46,8 @@ export default function DashboardLayout({
     <div 
       className="min-h-screen flex"
       style={{ 
-        backgroundColor: 'var(--c-primary-100)', 
-        color: 'var(--c-primary-invert)' 
+        backgroundColor: 'var(--bg-color)', 
+        color: 'var(--text-color)' 
       }}
     >
       {/* Main content area with error boundary */}

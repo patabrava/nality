@@ -25,7 +25,6 @@ export default function OutcomesGallerySection() {
       className="section" 
       style={{ 
         padding: '80px 0',
-        background: 'var(--md-sys-color-surface-container-low)',
         margin: '0 -24px'
       }}
     >

@@ -23,50 +23,54 @@ interface DashboardTileProps {
 function DashboardTile({ title, content, isInteractive = false, slogan, onClick }: DashboardTileProps) {
   return (
     <div 
-      className={`dashboard-tile ${isInteractive ? 'interactive' : ''}`}
+      className={`dashboard-tile feature-card ${isInteractive ? 'interactive' : ''}`}
       onClick={isInteractive ? onClick : undefined}
       style={{
-        background: 'var(--md-sys-color-surface-container)',
-        border: '1px solid var(--md-sys-color-outline-variant)',
-        borderRadius: '0',
+        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.0) 100%)',
+        border: '1px solid var(--border-color)',
+        borderRadius: '4px',
         aspectRatio: '1',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1.5rem',
+        padding: '3rem',
         cursor: isInteractive ? 'pointer' : 'default',
-        transition: 'all 0.25s ease',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
+        transition: 'transform 0.5s ease, border-color 0.5s ease',
+        backdropFilter: 'blur(20px)',
+        position: 'relative',
+        overflow: 'hidden'
       }}
       onMouseOver={(e) => {
         if (isInteractive) {
-          e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.6)'
-          e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)'
+          e.currentTarget.style.transform = 'translateY(-10px)'
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
         }
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.4)'
-        e.currentTarget.style.borderColor = 'var(--md-sys-color-outline-variant)'
+        e.currentTarget.style.borderColor = 'var(--border-color)'
       }}
     >
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         {content}
         <h3 style={{
-          fontSize: '1.125rem',
-          fontWeight: 700,
-          color: 'var(--md-sys-color-on-surface)',
-          margin: '0.5rem 0',
+          fontFamily: 'var(--font-serif)',
+          fontSize: '1.5rem',
+          fontWeight: 400,
+          color: 'var(--text-color)',
+          margin: '1.5rem 0 1rem',
+          letterSpacing: '-0.01em'
         }}>
           {title}
         </h3>
         {slogan && (
           <p style={{
-            fontSize: '0.8rem',
-            color: 'var(--md-sys-color-on-surface-variant)',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.9rem',
+            color: '#a0a0a0',
             margin: 0,
+            lineHeight: '1.5'
           }}>
             {slogan}
           </p>
@@ -167,20 +171,27 @@ export default function DashboardPage() {
     console.log('🧠 Navigating to chat to add a memory')
     router.push('/dash/chat')
   }
+  
+  const handleChatNavigation = () => {
+    console.log('🗣️ Navigating to chat for profile completion')
+    router.push('/dash/chat')
+  }
 
   // Build tiles from chapters config with stats
   const chapterTiles = DASHBOARD_CHAPTERS.map(chapter => ({
     title: chapter.name,
     content: (
       <div style={{ textAlign: 'center' }}>
-        <span style={{ fontSize: '2.5rem', display: 'block' }}>{chapter.icon}</span>
+        <span className="chapter-icon">{chapter.icon}</span>
         {(chapterStats[chapter.id] ?? 0) > 0 && (
           <span style={{ 
-            fontSize: '0.7rem', 
-            color: 'var(--md-sys-color-primary)',
-            fontWeight: 600,
-            marginTop: '4px',
-            display: 'block'
+            fontSize: '0.8rem', 
+            color: '#a0a0a0',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 400,
+            marginTop: '8px',
+            display: 'block',
+            letterSpacing: '0.5px'
           }}>
             {chapterStats[chapter.id]} {chapterStats[chapter.id] === 1 ? 'memory' : 'memories'}
           </span>
@@ -198,10 +209,16 @@ export default function DashboardPage() {
       title: "Your Story",
       content: (
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--md-sys-color-primary)', margin: 0 }}>
+          <p className="stats-number">
             {totalEvents}
           </p>
-          <p style={{ fontSize: '0.75rem', opacity: 0.75, margin: '4px 0 0' }}>
+          <p style={{ 
+            fontSize: '0.9rem', 
+            color: '#a0a0a0',
+            fontFamily: 'var(--font-sans)',
+            margin: '8px 0 0',
+            letterSpacing: '0.5px'
+          }}>
             {totalEvents === 1 ? 'Memory' : 'Memories'} Captured
           </p>
         </div>
@@ -216,38 +233,84 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* Dashboard-specific CSS to override timeline card styles for Material Design 3 grid layout */}
+      {/* Dashboard-specific CSS with luxury design system */}
       <style jsx>{`
+        .grain-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.04;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        .section-header {
+          text-align: center;
+          margin-bottom: 4rem;
+          padding: 0 5vw;
+          position: relative;
+          z-index: 2;
+        }
+        
+        .section-label {
+          font-family: 'var(--font-sans)';
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          color: var(--accent-gold);
+          margin-bottom: 1.5rem;
+          display: block;
+        }
+        
+        .section-title {
+          font-family: 'var(--font-serif)';
+          font-size: clamp(2.5rem, 4vw, 4rem);
+          font-weight: 400;
+          margin-bottom: 1.5rem;
+          color: var(--text-color);
+          line-height: 1.2;
+          letter-spacing: -0.02em;
+        }
+        
+        .section-subtitle {
+          font-family: 'var(--font-serif-text)';
+          font-style: italic;
+          color: var(--accent-gold);
+        }
+        
         .dashboard-grid {
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 2rem;
-          max-width: 1024px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 2rem;
+          padding: 2rem 5vw;
           align-items: stretch;
           justify-items: stretch;
         }
         
         .dashboard-tile {
-          /* Material Design 3 Card Styling */
+          /* Luxury Card Styling */
           width: auto !important;
           max-width: none !important;
           min-width: 0 !important;
-          aspect-ratio: 1;
+          aspect-ratio: 1.1;
           height: 100%;
           position: relative;
           
-          /* Reset timeline-specific margins */
+          /* Reset margins */
           margin: 0 !important;
           margin-left: 0 !important;
           margin-right: 0 !important;
           
-          /* Material Design 3 Surface Container - Sharp Square Design */
-          background: var(--md-sys-color-surface-container) !important;
-          border: 1px solid var(--md-sys-color-outline-variant) !important;
-          border-radius: 0 !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+          /* Luxury Glass Morphism Design */
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.0) 100%) !important;
+          border: 1px solid var(--border-color) !important;
+          border-radius: 4px !important;
+          backdrop-filter: blur(20px) !important;
           
           /* Center content layout */
           display: flex !important;
@@ -255,129 +318,64 @@ export default function DashboardPage() {
           align-items: center !important;
           justify-content: center !important;
           text-align: center !important;
-          padding: 1.5rem !important;
+          padding: 2rem !important;
           
-          /* Animation foundation */
-          transition: all var(--md-sys-motion-duration-medium1, 250ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1)) !important;
-          will-change: transform, box-shadow !important;
+          /* Elegant animations */
+          transition: transform 0.5s ease, border-color 0.5s ease !important;
+          will-change: transform !important;
         }
         
-        /* Interactive tiles (Picture Chapters) - Enhanced hover effects */
-        .dashboard-tile.interactive-tile:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
-          border-color: var(--md-sys-color-on-surface) !important;
+        /* Interactive tiles (Picture Chapters) - Elegant hover effects */
+        .dashboard-tile.interactive:hover {
+          transform: translateY(-10px) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
         }
         
-        .dashboard-tile.interactive-tile::before {
+        /* Feature card golden accent */
+        .dashboard-tile.feature-card::before {
           content: '';
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
-          height: 4px;
-          background: linear-gradient(90deg, var(--md-sys-color-on-surface), var(--md-sys-color-on-surface-variant));
+          height: 2px;
+          background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-dim));
           transform: scaleX(0);
-          transition: transform var(--md-sys-motion-duration-medium1, 250ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
+          transition: transform 0.3s ease;
+          z-index: 2;
         }
         
-        .dashboard-tile.interactive-tile:hover::before {
+        .dashboard-tile.feature-card.interactive:hover::before {
           transform: scaleX(1);
         }
         
-        /* Static tiles (KPI, slogan, call-to-action) - Enhanced subtle styling */
-        .dashboard-tile.static-tile:hover {
-          transform: none !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-          border-color: var(--md-sys-color-outline-variant) !important;
+        /* Chapter icons styling */
+        .chapter-icon {
+          font-size: 3.5rem;
+          margin-bottom: 1.5rem;
+          color: var(--accent-gold);
+          display: block;
         }
         
-        /* Feature Card Styling - Tiles with icons */
-        .dashboard-tile.feature-card {
-          background: var(--md-sys-color-surface-container) !important;
-          border: 2px solid var(--md-sys-color-outline-variant) !important;
-        }
-        
-        .dashboard-tile.feature-card:hover {
-          border-color: var(--md-sys-color-primary) !important;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
-        }
-        
-        /* View Hero Styling - Tiles without icons (stats, CTAs) */
-        .dashboard-tile.view-hero {
-          background: var(--md-sys-color-primary-container) !important;
-          border: 2px solid var(--md-sys-color-primary) !important;
-          color: var(--md-sys-color-on-primary-container) !important;
-        }
-        
-        .dashboard-tile.view-hero:hover {
-          background: var(--md-sys-color-primary) !important;
-          color: var(--md-sys-color-on-primary) !important;
-          transform: scale(1.02) !important;
-        }
-        
-        .dashboard-tile.view-hero .card-title {
-          color: inherit !important;
-        }
-        
-        /* Card content centering */
-        .dashboard-tile .card-content-container {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          min-height: 0;
-          gap: 0.5rem;
-        }
-        
-        .dashboard-tile .card-main-content {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-        
-        .dashboard-tile .card-primary-info {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-        
-        /* Typography improvements - Enhanced hierarchy */
-        .dashboard-tile .card-title {
-          font-size: 1.125rem !important;
-          font-weight: 700 !important;
-          color: var(--md-sys-color-on-surface) !important;
-          line-height: 1.2 !important;
-          text-align: center !important;
-          margin: 0 !important;
-          word-wrap: break-word;
-          letter-spacing: -0.01em;
-        }
-        
-        /* SVG styling */
-        .dashboard-tile img {
-          opacity: 0.9;
-          transition: opacity var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
-        }
-        
-        .dashboard-tile.interactive-tile:hover img {
-          opacity: 1;
+        /* Stats number styling */
+        .stats-number {
+          font-family: var(--font-serif);
+          font-size: 2.5rem;
+          font-weight: 600;
+          color: var(--accent-gold);
+          margin: 0;
         }
         
         /* Responsive grid behavior */
         @media (max-width: 1024px) {
           .dashboard-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(250px, 1fr));
             gap: 1.5rem;
-            padding: 1.5rem;
+            padding: 2rem 2rem;
+          }
+          
+          .dashboard-tile {
+            padding: 1.5rem !important;
           }
         }
         
@@ -385,7 +383,7 @@ export default function DashboardPage() {
           .dashboard-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
-            padding: 1rem;
+            padding: 1.5rem 1rem;
           }
           
           .dashboard-tile {
@@ -408,30 +406,59 @@ export default function DashboardPage() {
             aspect-ratio: 1.2;
           }
         }
+        
+        /* Floating Add Memory Button */
+        .floating-add-button {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          z-index: 100;
+          background: var(--accent-gold);
+          color: #000;
+          border: none;
+          border-radius: 50%;
+          width: 64px;
+          height: 64px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+          transition: all 0.3s ease;
+        }
+        
+        .floating-add-button:hover {
+          transform: scale(1.1);
+          box-shadow: 0 12px 48px rgba(212, 175, 55, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+          .floating-add-button {
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 56px;
+            height: 56px;
+            font-size: 1.25rem;
+          }
+        }
       `}</style>
       
-      <div className="h-full p-6" style={{ backgroundColor: 'var(--md-sys-color-background)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginBottom: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            padding: '0.75rem 0',
-            background: 'var(--md-sys-color-background)',
-          }}
-        >
-          <AddMemoryButton
-            onClick={handleAddMemory}
-            aria-label="Add a new memory"
-          />
+      <div className="h-full" style={{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)', position: 'relative' }}>
+        <div className="grain-overlay"></div>
+        
+        {/* Section Header - Moved to top */}
+        <div className="section-header">
+          <span className="section-label">Your Journey</span>
+          <h1 className="section-title">
+            Your life, <span className="section-subtitle">beautifully told.</span>
+          </h1>
         </div>
         
         {/* Profile Card - Shows values, influences, motto */}
         {!profileLoading && profile && (
-          <div style={{ maxWidth: '1024px', margin: '0 auto 2rem', padding: '0 2rem' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto 3rem', padding: '0 5vw', position: 'relative', zIndex: 2 }}>
             <ProfileCard
               user={{
                 full_name: profile.full_name,
@@ -439,11 +466,12 @@ export default function DashboardPage() {
                 birth_place: profile.birth_place,
               }}
               attributes={profile.attributes}
+              onChatNavigate={handleChatNavigation}
             />
           </div>
         )}
         
-        <div className="dashboard-grid">
+        <div className="dashboard-grid" style={{ position: 'relative', zIndex: 2 }}>
           {tilesData.map((tile, index) => (
             <DashboardTile
               key={index}
@@ -455,6 +483,16 @@ export default function DashboardPage() {
             />
           ))}
         </div>
+        
+        {/* Floating Add Memory Button */}
+        <button
+          className="floating-add-button"
+          onClick={handleAddMemory}
+          aria-label="Add a new memory"
+          title="Add Memory"
+        >
+          +
+        </button>
       </div>
     </>
   )

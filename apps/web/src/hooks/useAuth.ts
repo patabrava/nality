@@ -157,30 +157,7 @@ export function useAuth() {
     }
   }
 
-  const signInWithApple = async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }))
-    
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      })
-      
-      if (error) {
-        setState(prev => ({ ...prev, loading: false, error }))
-        return { error }
-      }
-      
-      // OAuth will redirect, so we don't set loading to false here
-      return { error: null }
-    } catch (error) {
-      const authError = error as AuthError
-      setState(prev => ({ ...prev, loading: false, error: authError }))
-      return { error: authError }
-    }
-  }
+
 
   const signOut = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }))
@@ -214,7 +191,6 @@ export function useAuth() {
     signInWithPassword,
     signUpWithPassword,
     signInWithGoogle,
-    signInWithApple,
     signOut,
     isAuthenticated: !!state.user
   }

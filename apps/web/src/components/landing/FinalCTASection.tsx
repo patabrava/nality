@@ -23,7 +23,6 @@ export default function FinalCTASection() {
       className="section"
       style={{
         padding: '80px 0',
-        background: 'linear-gradient(135deg, var(--md-sys-color-surface-container), var(--md-sys-color-surface-container-high))',
         margin: '0 -24px',
         borderRadius: '0',
         position: 'relative',
