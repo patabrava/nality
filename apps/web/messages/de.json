@@ -1,0 +1,258 @@
+{
+  "common": {
+    "brand": "Nality",
+    "language": "Sprache",
+    "languageOptions": {
+      "en": "Englisch",
+      "de": "Deutsch"
+    },
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "header": {
+    "nav": {
+      "features": "Funktionen",
+      "howItWorks": "So funktioniert es",
+      "pricing": "Preise",
+      "faq": "FAQ"
+    },
+    "login": "Einloggen",
+    "start": "Meine Geschichte starten",
+    "myTimeline": "Meine Timeline",
+    "mobileMenuAria": "Navigationsmenü umschalten"
+  },
+  "hero": {
+    "title": "Dein Leben, schön erzählt.",
+    "subtitle": "Nality hilft dir, Erinnerungen in eine lebendige Timeline und ein wunderschönes Life Book zu verwandeln – geführt von einem intelligenten Begleiter und, wenn du möchtest, einem echten Interviewer.",
+    "primaryCta": "Meine Geschichte starten",
+    "secondaryCta": "Ein Beispiel-Life-Book ansehen",
+    "trust": "Privacy by Design. Du bestimmst, wer deine Geschichte sieht.",
+    "timelinePreview": {
+      "graduation": "🎓 Hochschulabschluss – 2020",
+      "firstJob": "💼 Erster Job – 2021",
+      "marriage": "❤️ Hochzeit – 2023"
+    },
+    "bookPreview": "Life-Book-Vorschau"
+  },
+  "socialProof": {
+    "title": "Vertrauenswürdig für die Momente, die zählen",
+    "testimonials": [
+      {
+        "text": "Ich habe die Geschichten meiner Mutter an einem Wochenende aufgenommen. Das Buch ist jetzt das Herzstück unserer Familie.",
+        "author": "Sofia R."
+      },
+      {
+        "text": "Die KI-Prompts haben mir geholfen, Dinge zu erinnern, an die ich seit Jahren nicht gedacht hatte.",
+        "author": "David K."
+      },
+      {
+        "text": "Als Journalistin nutze ich Nality, um Interviews zu strukturieren und ein fertiges Erinnerungsstück zu liefern.",
+        "author": "Leila M."
+      }
+    ],
+    "partners": [
+      "Partner 1",
+      "Partner 2",
+      "Partner 3",
+      "Partner 4",
+      "Partner 5"
+    ]
+  },
+  "howItWorks": {
+    "title": "So funktioniert es",
+    "subtitle": "Vier einfache Schritte, um deine Erinnerungen in eine schöne, dauerhafte Geschichte zu verwandeln",
+    "steps": [
+      {
+        "title": "Erzähl uns deine Geschichte",
+        "description": "Sprich frei per Sprache oder Text. Unser Assistent stellt freundliche, präzise Fragen, um Ereignisse, Daten und Details festzuhalten.",
+        "icon": "🗣️"
+      },
+      {
+        "title": "Sieh deiner Timeline beim Wachsen zu",
+        "description": "Momente werden zu einer lebendigen, bearbeitbaren Timeline – mit Platz für Fotos, Videos und Audionotizen.",
+        "icon": "📅"
+      },
+      {
+        "title": "Mehr Tiefe (optional Interview)",
+        "description": "Lieber geführt werden? Buche eine Session mit einem echten Interviewer. Wir kümmern uns um Termin und Transkript.",
+        "icon": "🎤"
+      },
+      {
+        "title": "Life Book sichern und teilen",
+        "description": "Exportiere ein wunderschön gestaltetes PDF, bereit zum Drucken oder Teilen mit der Familie.",
+        "icon": "📖"
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Einfache, flexible Tarife",
+    "subtitle": "Starte kostenlos. Upgrade, wenn du exportieren oder ein Interview buchen möchtest.",
+    "badgePopular": "Am beliebtesten",
+    "yearlyPrefix": "oder",
+    "legalNote": "Preise inkl. MwSt., falls zutreffend. Interviews außerhalb des Pro-Plans werden separat berechnet.",
+    "tiers": [
+      {
+        "name": "Free",
+        "price": "0 €",
+        "period": "",
+        "yearlyPrice": "",
+        "description": "Perfekt für den Einstieg",
+        "features": [
+          "KI-Onboarding-Chat",
+          "Timeline-Bearbeitung",
+          "Bis zu 50 Fotos",
+          "Grundlegende Privatsphäre-Einstellungen"
+        ],
+        "buttonText": "Kostenlos starten",
+        "buttonStyle": "secondary",
+        "popular": false
+      },
+      {
+        "name": "Standard",
+        "price": "8 €",
+        "period": "/ Monat",
+        "yearlyPrice": "60 € / Jahr",
+        "description": "Alles, was du für deine Lebensgeschichte brauchst",
+        "features": [
+          "Alles in Free",
+          "Unbegrenzte Fotos",
+          "Videoclips (≤ 2 Minuten je)",
+          "Erweiterte Kategorien/Tags",
+          "Export als PDF"
+        ],
+        "buttonText": "Standard starten",
+        "buttonStyle": "primary",
+        "popular": true
+      },
+      {
+        "name": "Pro",
+        "price": "29 €",
+        "period": "/ Monat",
+        "yearlyPrice": "",
+        "description": "Professionelles Storytelling mit Interview-Support",
+        "features": [
+          "Alles in Standard",
+          "Interviewer-Buchung und Transkript",
+          "Priorisierter Support",
+          "Individuelle Buch-Themes"
+        ],
+        "buttonText": "Pro starten",
+        "buttonStyle": "primary",
+        "popular": false
+      }
+    ]
+  },
+  "faq": {
+    "title": "Häufige Fragen",
+    "subtitle": "Antworten zu Privatsphäre, Zusammenarbeit und Formaten",
+    "items": [
+      {
+        "question": "Wer kann meine Geschichte sehen?",
+        "answer": "Standardmäßig nur du. Du entscheidest, was du mit wem teilst. Der Zugang ist durch sichere Logins geschützt."
+      },
+      {
+        "question": "Was passiert mit meinen Daten?",
+        "answer": "Deine Daten liegen in einer sicheren Datenbank mit Nutzer-spezifischen Zugriffsrechten. Du kannst sie jederzeit exportieren oder löschen."
+      },
+      {
+        "question": "Brauche ich exakte Daten?",
+        "answer": "Nein – ungefähre Daten sind in Ordnung. Du kannst Details später bearbeiten."
+      },
+      {
+        "question": "Kann ich Videos und Audio hinzufügen?",
+        "answer": "Ja. Kurze Videos (bis ~2 Minuten) und Audionotizen werden unterstützt."
+      },
+      {
+        "question": "Gibt es professionelle Interviewer?",
+        "answer": "Ja. Du kannst jederzeit einen Interviewer buchen. Er hilft dir, reichhaltigere Geschichten festzuhalten."
+      },
+      {
+        "question": "Kann ich ein gedrucktes Buch erstellen?",
+        "answer": "Ja. Exportiere ein hochauflösendes PDF und bring es zu jedem Druckservice. Druck-Partnerschaften folgen."
+      },
+      {
+        "question": "Unterstützt ihr Familien?",
+        "answer": "Ja. Ihr könnt gemeinsam an Timelines arbeiten; geteilte Familienbereiche folgen bald."
+      },
+      {
+        "question": "Was, wenn ich es mir anders überlege?",
+        "answer": "Du kannst jederzeit pausieren oder kündigen. Deine Timeline bleibt im Free-Plan verfügbar."
+      },
+      {
+        "question": "Welche Sprachen unterstützt ihr?",
+        "answer": "Wir unterstützen Englisch und Deutsch; weitere Sprachen folgen."
+      },
+      {
+        "question": "Ist das für Ältere geeignet?",
+        "answer": "Absolut. Geführte Prompts und optionaler Interviewer machen es leicht und angenehm."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Starte deine Geschichte heute",
+    "subtitle": "Es dauert nur wenige Minuten. Du kannst jederzeit zurückkommen und mehr hinzufügen.",
+    "primaryCta": "Meine Geschichte starten",
+    "secondaryCta": "Die Timeline entdecken",
+    "privacyTitle": "Privatsphäre garantiert",
+    "privacyBody": "Deine Geschichten sind standardmäßig privat. Teile nur, was du möchtest, mit wem du möchtest.",
+    "stats": {
+      "stories": {
+        "value": "10T+",
+        "label": "Gespeicherte Geschichten"
+      },
+      "books": {
+        "value": "500+",
+        "label": "Erstellte Bücher"
+      },
+      "rating": {
+        "value": "4,9",
+        "label": "Durchschnittliche Bewertung"
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Nality ist ein moderner Weg, deine Lebensgeschichten zu bewahren.",
+    "product": {
+      "title": "Produkt",
+      "links": [
+        { "name": "Funktionen", "href": "#features" },
+        { "name": "So funktioniert es", "href": "#how-it-works" },
+        { "name": "Preise", "href": "#pricing" },
+        { "name": "Blog", "href": "/blog" }
+      ]
+    },
+    "company": {
+      "title": "Unternehmen",
+      "links": [
+        { "name": "Über uns", "href": "/about" },
+        { "name": "Kontakt", "href": "/contact" },
+        { "name": "Karriere", "href": "/careers" }
+      ]
+    },
+    "legal": {
+      "title": "Rechtliches",
+      "links": [
+        { "name": "AGB", "href": "/terms" },
+        { "name": "Datenschutz", "href": "/privacy" },
+        { "name": "Cookie-Einstellungen", "href": "#cookie-settings" }
+      ]
+    },
+    "social": {
+      "title": "Social",
+      "links": [
+        { "name": "LinkedIn", "href": "https://linkedin.com/company/nality", "icon": "💼" },
+        { "name": "Instagram", "href": "https://instagram.com/nality", "icon": "📷" }
+      ]
+    }
+  },
+  "profile": {
+    "influenceTypes": {
+      "author": "Autor",
+      "philosopher": "Philosoph",
+      "person": "Person",
+      "mentor": "Mentor",
+      "public_figure": "Persönlichkeit",
+      "historical": "Historisch",
+      "other": "Sonstige"
+    }
+  }
+}

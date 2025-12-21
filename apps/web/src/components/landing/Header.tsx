@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { ThemeToggleCompact } from '@/components/theme/ThemeToggle'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface HeaderProps {
   onNavigate?: (section: string) => void
@@ -12,6 +13,7 @@ interface HeaderProps {
 export default function Header({ onNavigate }: HeaderProps) {
   const { isAuthenticated } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { t } = useI18n()
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -46,25 +48,25 @@ export default function Header({ onNavigate }: HeaderProps) {
               className="nav-tab" 
               onClick={() => scrollToSection('features')}
             >
-              <span className="tab-label">Features</span>
+              <span className="tab-label">{t('header.nav.features')}</span>
             </button>
             <button 
               className="nav-tab" 
               onClick={() => scrollToSection('how-it-works')}
             >
-              <span className="tab-label">How it works</span>
+              <span className="tab-label">{t('header.nav.howItWorks')}</span>
             </button>
             <button 
               className="nav-tab" 
               onClick={() => scrollToSection('pricing')}
             >
-              <span className="tab-label">Pricing</span>
+              <span className="tab-label">{t('header.nav.pricing')}</span>
             </button>
             <button 
               className="nav-tab" 
               onClick={() => scrollToSection('faq')}
             >
-              <span className="tab-label">FAQ</span>
+              <span className="tab-label">{t('header.nav.faq')}</span>
             </button>
           </nav>
 
@@ -91,7 +93,7 @@ export default function Header({ onNavigate }: HeaderProps) {
                     minWidth: 'auto'
                   }}
                 >
-                  Log in
+                  {t('header.login')}
                 </Link>
                 <button 
                   onClick={handleStartStory}
@@ -103,7 +105,7 @@ export default function Header({ onNavigate }: HeaderProps) {
                     minWidth: 'auto'
                   }}
                 >
-                  Start My Story
+                  {t('header.start')}
                 </button>
               </div>
             )}
@@ -114,7 +116,7 @@ export default function Header({ onNavigate }: HeaderProps) {
             className="burger-menu-btn"
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
-            aria-label="Toggle navigation menu"
+            aria-label={t('header.mobileMenuAria')}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <span className="burger-line"></span>
@@ -140,7 +142,7 @@ export default function Header({ onNavigate }: HeaderProps) {
                 <div className="mobile-profile-avatar">
                   <span>👤</span>
                 </div>
-                <span className="mobile-profile-label">My Timeline</span>
+                <span className="mobile-profile-label">{t('header.myTimeline')}</span>
               </button>
             )}
             
@@ -148,37 +150,37 @@ export default function Header({ onNavigate }: HeaderProps) {
               className="mobile-tab" 
               onClick={() => scrollToSection('features')}
             >
-              Features
+              {t('header.nav.features')}
             </button>
             <button 
               className="mobile-tab" 
               onClick={() => scrollToSection('how-it-works')}
             >
-              How it works
+              {t('header.nav.howItWorks')}
             </button>
             <button 
               className="mobile-tab" 
               onClick={() => scrollToSection('pricing')}
             >
-              Pricing
+              {t('header.nav.pricing')}
             </button>
             <button 
               className="mobile-tab" 
               onClick={() => scrollToSection('faq')}
             >
-              FAQ
+              {t('header.nav.faq')}
             </button>
             
             {!isAuthenticated && (
               <>
                 <Link href="/login" className="mobile-tab">
-                  Log in
+                  {t('header.login')}
                 </Link>
                 <button 
                   className="mobile-tab active" 
                   onClick={handleStartStory}
                 >
-                  Start My Story
+                  {t('header.start')}
                 </button>
               </>
             )}
@@ -213,7 +215,7 @@ export default function Header({ onNavigate }: HeaderProps) {
           e.target.style.left = '-9999px'
         }}
       >
-        Skip to content
+        {t('common.skipToContent')}
       </a>
     </>
   )

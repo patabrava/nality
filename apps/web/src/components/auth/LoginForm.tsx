@@ -660,7 +660,7 @@ export function LoginForm() {
               <p className="login-subtitle">
                 {isSignUpSuccess 
                   ? `Welcome to Nality! We've sent a confirmation email to `
-                  : `We've sent a magic link to `
+                  : `We've sent an Email Link to `
                 }
                 <span className="email-highlight">{email}</span>
                 {isSignUpSuccess 
@@ -718,7 +718,7 @@ export function LoginForm() {
               className={`auth-method-option ${authMethod === 'magic-link' ? 'active' : ''}`}
               onClick={() => setAuthMethod('magic-link')}
             >
-              Magic Link
+              Email Link
             </button>
           </div>
 
@@ -823,7 +823,7 @@ export function LoginForm() {
               className="submit-button"
             >
               {loading 
-                ? (authMethod === 'magic-link' ? 'Sending Magic Link...' : (isSignUp ? 'Creating Account...' : 'Signing In...'))
+                ? (authMethod === 'magic-link' ? 'Sending Email Link...' : (isSignUp ? 'Creating Account...' : 'Signing In...'))
                 : (authMethod === 'magic-link' ? 'Continue with Email' : (isSignUp ? 'Create Account' : 'Sign In'))
               }
             </button>

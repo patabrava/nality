@@ -1,0 +1,309 @@
+{
+  "common": {
+    "brand": "Nality",
+    "language": "Language",
+    "languageOptions": {
+      "en": "English",
+      "de": "Deutsch"
+    },
+    "skipToContent": "Skip to content"
+  },
+  "header": {
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ"
+    },
+    "login": "Log in",
+    "start": "Start My Story",
+    "myTimeline": "My Timeline",
+    "mobileMenuAria": "Toggle navigation menu"
+  },
+  "hero": {
+    "title": "Your life, beautifully told.",
+    "subtitle": "Nality helps you turn memories into a living timeline and a gorgeous Life Book—guided by an intelligent companion and, if you like, a real interviewer.",
+    "primaryCta": "Start My Story",
+    "secondaryCta": "See a sample Life Book",
+    "trust": "Private by design. You control who sees your story.",
+    "timelinePreview": {
+      "graduation": "🎓 College Graduation - 2020",
+      "firstJob": "💼 First Job - 2021",
+      "marriage": "❤️ Marriage - 2023"
+    },
+    "bookPreview": "Life Book Preview"
+  },
+  "socialProof": {
+    "title": "Trusted for the moments that matter",
+    "testimonials": [
+      {
+        "text": "I recorded my mother's stories over a weekend. The book we printed is now the centerpiece of our family.",
+        "author": "Sofia R."
+      },
+      {
+        "text": "The AI prompts helped me remember things I hadn't thought about in years.",
+        "author": "David K."
+      },
+      {
+        "text": "As a journalist, I use Nality to structure interviews and deliver a finished keepsake.",
+        "author": "Leila M."
+      }
+    ],
+    "partners": [
+      "Partner 1",
+      "Partner 2",
+      "Partner 3",
+      "Partner 4",
+      "Partner 5"
+    ]
+  },
+  "outcomes": {
+    "title": "A keepsake you can hold",
+    "subtitle": "Nality turns your timeline into a polished, print-ready PDF. Choose cover styles and share digitally or order prints.",
+    "zoomHint": "Click to zoom",
+    "ctaText": "See your story come to life in print",
+    "ctaButton": "View sample book",
+    "gallery": [
+      { "title": "Book Cover", "description": "Hardcover Life Book on a table", "mockContent": "📖\nLife Book\nCover" },
+      { "title": "Book Spread 1", "description": "Open book spread showing photos and captions", "mockContent": "📷\nChapter 1\nEarly Years" },
+      { "title": "Book Spread 2", "description": "Two-page Life Book spread with a large image and caption", "mockContent": "🎓\nChapter 3\nEducation" }
+    ]
+  },
+  "productHighlights": {
+    "title": "Features designed for your story",
+    "subtitle": "Every tool thoughtfully crafted to help you capture, organize, and share your life's most important moments",
+    "features": [
+      {
+        "title": "Smart onboarding",
+        "description": "Start with a guided chat that turns your memories into structured events. Edit anytime.",
+        "icon": "🤖",
+        "screenshot": "onboarding-chat"
+      },
+      {
+        "title": "A timeline that feels alive",
+        "description": "Clean, alternating layout. Drag, categorize, and tag important moments. See photos and clips in context.",
+        "icon": "⏰",
+        "screenshot": "timeline"
+      },
+      {
+        "title": "Interview, when it matters",
+        "description": "Professional interviewers can help you go deeper—especially for elder stories. We'll handle scheduling.",
+        "icon": "🎯",
+        "screenshot": "media-grid"
+      },
+      {
+        "title": "Export a beautiful Life Book",
+        "description": "One click to a polished PDF designed for printing and sharing.",
+        "icon": "📚",
+        "screenshot": "pdf-preview"
+      }
+    ],
+    "timelineSamples": {
+      "graduation": "🎓 Graduated College - 2020",
+      "firstJob": "💼 First Job - 2021",
+      "marriage": "❤️ Got Married - 2023"
+    },
+    "chatSamples": {
+      "prompt": "Tell me about a moment that shaped who you are today",
+      "response": "When I graduated college, I felt like..."
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "Four simple steps to transform your memories into a beautiful, lasting story",
+    "steps": [
+      {
+        "title": "Tell us your story",
+        "description": "Chat naturally by voice or text. Our assistant asks friendly, specific questions to capture events, dates, and details.",
+        "icon": "🗣️"
+      },
+      {
+        "title": "See your timeline grow",
+        "description": "Moments become a living, editable timeline—with space for photos, videos, and audio notes.",
+        "icon": "📅"
+      },
+      {
+        "title": "Add depth (optional interview)",
+        "description": "Prefer a guided conversation? Book a session with a real interviewer. We handle scheduling and transcripts.",
+        "icon": "🎤"
+      },
+      {
+        "title": "Save and share your Life Book",
+        "description": "Export a beautifully designed PDF that's ready to print or share with family.",
+        "icon": "📖"
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Simple, flexible plans",
+    "subtitle": "Start free. Upgrade when you're ready to export or book an interview.",
+    "badgePopular": "Most Popular",
+    "yearlyPrefix": "or",
+    "legalNote": "Prices include VAT where applicable. Interview sessions are billed separately if outside Pro plan.",
+    "tiers": [
+      {
+        "name": "Free",
+        "price": "€0",
+        "period": "",
+        "yearlyPrice": "",
+        "description": "Perfect for getting started",
+        "features": [
+          "AI onboarding chat",
+          "Timeline editing",
+          "Up to 50 photos",
+          "Basic privacy controls"
+        ],
+        "buttonText": "Start Free",
+        "buttonStyle": "secondary",
+        "popular": false
+      },
+      {
+        "name": "Standard",
+        "price": "€8",
+        "period": "/ month",
+        "yearlyPrice": "€60 / year",
+        "description": "Everything you need for your life story",
+        "features": [
+          "Everything in Free",
+          "Unlimited photos",
+          "Video clips (≤ 2 minutes each)",
+          "Advanced categories/tags",
+          "Export to PDF"
+        ],
+        "buttonText": "Start Standard",
+        "buttonStyle": "primary",
+        "popular": true
+      },
+      {
+        "name": "Pro",
+        "price": "€29",
+        "period": "/ month",
+        "yearlyPrice": "",
+        "description": "Professional storytelling with interview support",
+        "features": [
+          "Everything in Standard",
+          "Interviewer booking and transcript",
+          "Priority support",
+          "Custom book themes"
+        ],
+        "buttonText": "Start Pro",
+        "buttonStyle": "primary",
+        "popular": false
+      }
+    ]
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know about preserving your life story",
+    "items": [
+      {
+        "question": "Who can see my story?",
+        "answer": "Only you by default. You choose what to share and with whom. Access is protected by secure logins."
+      },
+      {
+        "question": "What happens to my data?",
+        "answer": "Your data lives in a secure database with per-user access controls. You can export or delete it anytime."
+      },
+      {
+        "question": "Do I need to know exact dates?",
+        "answer": "No—approximate dates are fine. You can edit details later."
+      },
+      {
+        "question": "Can I add videos and audio?",
+        "answer": "Yes. Short videos (up to ~2 minutes each) and audio notes are supported."
+      },
+      {
+        "question": "Is there a way to involve a professional interviewer?",
+        "answer": "Yes. You can book an interviewer at any time. They will help you capture richer stories."
+      },
+      {
+        "question": "Can I print a physical book?",
+        "answer": "Yes. Export a high-resolution PDF and take it to any print service. Print partnerships are coming soon."
+      },
+      {
+        "question": "Do you support families?",
+        "answer": "Yes. You can collaborate on timelines, and we'll soon support shared family spaces."
+      },
+      {
+        "question": "What if I change my mind?",
+        "answer": "You can pause or cancel anytime. Your timeline remains available on the Free plan."
+      },
+      {
+        "question": "What languages are supported?",
+        "answer": "We support English and German; more languages are on the roadmap."
+      },
+      {
+        "question": "Is this suitable for elders?",
+        "answer": "Absolutely. The guided prompts and optional interviewer help make it easy and enjoyable."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Start your story today",
+    "subtitle": "It takes just a few minutes to begin. You can always come back to add more.",
+    "primaryCta": "Start My Story",
+    "secondaryCta": "Explore the Timeline",
+    "privacyTitle": "Privacy guaranteed",
+    "privacyBody": "Your stories are private by default. Share only what you choose, with whom you choose.",
+    "stats": {
+      "stories": {
+        "value": "10K+",
+        "label": "Stories preserved"
+      },
+      "books": {
+        "value": "500+",
+        "label": "Books created"
+      },
+      "rating": {
+        "value": "4.9",
+        "label": "Average rating"
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Nality is a modern way to preserve your life stories.",
+    "product": {
+      "title": "Product",
+      "links": [
+        { "name": "Features", "href": "#features" },
+        { "name": "How it works", "href": "#how-it-works" },
+        { "name": "Pricing", "href": "#pricing" },
+        { "name": "Blog", "href": "/blog" }
+      ]
+    },
+    "company": {
+      "title": "Company",
+      "links": [
+        { "name": "About", "href": "/about" },
+        { "name": "Contact", "href": "/contact" },
+        { "name": "Careers", "href": "/careers" }
+      ]
+    },
+    "legal": {
+      "title": "Legal",
+      "links": [
+        { "name": "Terms", "href": "/terms" },
+        { "name": "Privacy", "href": "/privacy" },
+        { "name": "Cookie Settings", "href": "#cookie-settings" }
+      ]
+    },
+    "social": {
+      "title": "Social",
+      "links": [
+        { "name": "LinkedIn", "href": "https://linkedin.com/company/nality", "icon": "💼" },
+        { "name": "Instagram", "href": "https://instagram.com/nality", "icon": "📷" }
+      ]
+    }
+  },
+  "profile": {
+    "influenceTypes": {
+      "author": "Author",
+      "philosopher": "Philosopher",
+      "person": "Person",
+      "mentor": "Mentor",
+      "public_figure": "Public figure",
+      "historical": "Historical",
+      "other": "Other"
+    }
+  }
+}
