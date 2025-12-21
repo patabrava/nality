@@ -10,15 +10,18 @@
 
 ### Environment Setup
 
-Create a `.env.local` file in the root directory with the following variables:
+Create a `.env.local` file in `apps/web/` with the following variables:
 
 ```bash
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=anon_key
 
-# OpenAI Configuration (for Edge Functions)
-OPENAI_API_KEY=your_openai_api_key
+# Server-only Supabase key (do not expose to the browser)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Google AI / Gemini
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
 
 # Local Development
 NODE_ENV=development
