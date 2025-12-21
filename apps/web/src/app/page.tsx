@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 
 // Import landing page components
-import Header from '@/components/landing/Header'
 import HeroSection from '@/components/landing/HeroSection'
 import SocialProofSection from '@/components/landing/SocialProofSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
@@ -44,15 +43,6 @@ export default function Home() {
       router.replace('/onboarding')
     }
   }, [shouldRedirect, authLoading, profileLoading, isOnboardingComplete, router])
-
-  const handleNavigation = (section: string) => {
-    // Track navigation analytics
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'nav_section_clicked', {
-        section_name: section
-      })
-    }
-  }
 
   const handleSampleBook = () => {
     // Track sample book clicks
@@ -98,8 +88,6 @@ export default function Home() {
         Skip to content
       </a>
 
-      {/* Header */}
-      <Header onNavigate={handleNavigation} />
 
       {/* Main Content */}
       <main id="main-content" className="min-h-screen">

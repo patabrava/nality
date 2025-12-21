@@ -5,7 +5,8 @@ import { Header } from '@/components/layout/Header'
 import { ModuleErrorBoundary } from '@/components/errors/ModuleErrorBoundary'
 
 // Feature flag to test header navigation while preserving working right-rail navigation
-const USE_HEADER_NAVIGATION = process.env.NEXT_PUBLIC_USE_HEADER_NAV === 'true'
+// Default to header navigation (true) unless explicitly disabled
+const USE_HEADER_NAVIGATION = process.env.NEXT_PUBLIC_USE_HEADER_NAV !== 'false'
 
 export default function DashboardLayout({
   children,
