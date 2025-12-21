@@ -1,5 +1,6 @@
 import { streamText, type CoreMessage } from 'ai';
 import { google } from '@ai-sdk/google';
+import { NextResponse } from 'next/server';
 import { buildOnboardingSystemPrompt } from '@/lib/prompts/onboarding';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
     // Validate messages array
     if (!messages || !Array.isArray(messages)) {
       console.error(" Invalid messages format");
-      return Response.json(
+      return NextResponse.json(
         { error: "Invalid messages format. Expected array of messages." },
         { status: 400 }
       );
@@ -199,7 +200,7 @@ export async function POST(req: Request) {
     if (!apiKey) {
       console.error(" Google AI API key not found in environment variables");
       console.error("Looking for: GOOGLE_GENERATIVE_AI_API_KEY, GEMINI_API_KEY, or Gemini_API_KEY");
-      return Response.json(
+      return NextResponse.json(
         { error: "API key not configured. Please set GOOGLE_GENERATIVE_AI_API_KEY in your environment." },
         { status: 500 }
       );
@@ -245,7 +246,7 @@ export async function POST(req: Request) {
     console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
     
     // Return user-friendly error message
-    return Response.json(
+    return NextResponse.json(
       { 
         error: "I'm having trouble connecting right now. Please try again in a moment.",
         details: process.env.NODE_ENV === 'development' 

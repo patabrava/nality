@@ -1,5 +1,5 @@
 declare module 'framer-motion' {
-  import { ReactNode } from 'react';
+  import { ReactNode, JSX } from 'react';
   
   interface AnimatePresenceProps {
     children?: ReactNode;
@@ -14,7 +14,7 @@ declare module 'framer-motion' {
     root?: Element;
   }
   
-  export function AnimatePresence(props: AnimatePresenceProps): ReactNode;
+  export function AnimatePresence(props: AnimatePresenceProps): JSX.Element;
   
   export { motion } from 'framer-motion';
 }

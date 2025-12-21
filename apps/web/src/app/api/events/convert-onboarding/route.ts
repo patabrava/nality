@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { convertOnboardingToEvents } from '@/lib/events/onboarding-mapper';
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
 
     if (!effectiveUserId) {
       console.error("❌ No authenticated user found");
-      return Response.json({ error: "Authentication required" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
     console.log("🔄 Converting onboarding for user:", effectiveUserId);
@@ -75,14 +76,14 @@ export async function POST(req: Request) {
     
     console.log("✅ Onboarding conversion result:", result);
     
-    return Response.json({
+    return NextResponse.json({
       success: true,
       ...result
     });
     
   } catch (error) {
     console.error("❌ Convert Onboarding API error:", error);
-    return Response.json(
+    return NextResponse.json(
       { error: "Failed to convert onboarding data" },
       { status: 500 }
     );

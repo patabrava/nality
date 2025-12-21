@@ -11,6 +11,7 @@ import HeroSection from '@/components/landing/HeroSection'
 import SocialProofSection from '@/components/landing/SocialProofSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import ProductHighlightsSection from '@/components/landing/ProductHighlightsSection'
+import CustomerValueSection from '@/components/landing/CustomerValueSection'
 import OutcomesGallerySection from '@/components/landing/OutcomesGallerySection'
 import PricingSection from '@/components/landing/PricingSection'
 import FAQSection from '@/components/landing/FAQSection'
@@ -69,6 +70,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Grain Overlay */}
+      <div className="grain-overlay"></div>
+
       {/* Skip to content for screen readers */}
       <a 
         href="#main-content" 
@@ -102,14 +106,17 @@ export default function Home() {
         {/* Hero Section */}
         <HeroSection onSecondaryAction={handleSampleBook} />
         
-        {/* Social Proof */}
-        <SocialProofSection />
+        {/* Features Section */}
+        <ProductHighlightsSection />
+        
+        {/* Customer Value Propositions */}
+        <CustomerValueSection />
         
         {/* How It Works */}
         <HowItWorksSection />
         
-        {/* Product Highlights/Features */}
-        <ProductHighlightsSection />
+        {/* Social Proof & Testimonials */}
+        <SocialProofSection />
         
         {/* Outcomes Gallery */}
         <OutcomesGallerySection />

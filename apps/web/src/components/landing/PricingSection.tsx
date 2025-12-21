@@ -2,51 +2,67 @@
 
 const pricingTiers = [
   {
-    name: "Free",
-    price: "€0",
-    period: "",
-    description: "Perfect for getting started",
+    name: "Explorer",
+    price: "Free",
+    period: "Forever",
+    description: "Start your life story journey today",
     features: [
-      "AI onboarding chat",
-      "Timeline editing", 
-      "Up to 50 photos",
-      "Basic privacy controls"
+      "AI-guided memory capture",
+      "Interactive timeline builder", 
+      "Up to 100 photos & documents",
+      "Basic privacy controls",
+      "Export to digital formats"
     ],
-    buttonText: "Start Free",
+    limitations: ["Watermarked exports", "Community support only"],
+    buttonText: "Start Free Today",
     buttonStyle: "secondary" as const,
-    popular: false
+    popular: false,
+    savings: null
   },
   {
-    name: "Standard",
-    price: "€8",
+    name: "Storyteller",
+    price: "€12",
     period: "/ month",
-    yearlyPrice: "€60 / year",
-    description: "Everything you need for your life story",
+    yearlyPrice: "€99 / year",
+    description: "Everything you need for a complete memoir",
     features: [
-      "Everything in Free",
-      "Unlimited photos",
-      "Video clips (≤ 2 minutes each)",
-      "Advanced categories/tags",
-      "Export to PDF"
+      "Everything in Explorer",
+      "Unlimited photos & videos",
+      "AI gap detection & suggestions",
+      "Advanced timeline organization",
+      "Premium export templates",
+      "Professional book printing",
+      "Family sharing & collaboration",
+      "Priority email support"
     ],
-    buttonText: "Start Standard",
+    limitations: [],
+    buttonText: "Start 14-Day Free Trial",
     buttonStyle: "primary" as const,
-    popular: true
+    popular: true,
+    savings: "Save €45/year"
   },
   {
-    name: "Pro",
-    price: "€29",
+    name: "Legacy",
+    price: "€39",
     period: "/ month", 
-    description: "Professional storytelling with interview support",
+    yearlyPrice: "€399 / year",
+    description: "Professional storytelling with expert interviews",
     features: [
-      "Everything in Standard",
-      "Interviewer booking and transcript",
-      "Priority support",
-      "Custom book themes"
+      "Everything in Storyteller",
+      "Expert interviewer sessions",
+      "Professional transcription",
+      "Custom book design service",
+      "Multi-format publishing",
+      "100-year preservation guarantee",
+      "Dedicated account manager",
+      "Phone & video support",
+      "Custom branding options"
     ],
-    buttonText: "Start Pro",
+    limitations: [],
+    buttonText: "Book Consultation",
     buttonStyle: "primary" as const,
-    popular: false
+    popular: false,
+    savings: "Save €69/year"
   }
 ]
 
@@ -69,7 +85,7 @@ export default function PricingSection() {
               marginBottom: '16px'
             }}
           >
-            Simple, flexible plans
+            Preserve your legacy, <span className="serif-text italic text-gold">affordably</span>
           </h2>
           <p 
             style={{
@@ -79,7 +95,7 @@ export default function PricingSection() {
               margin: '0 auto'
             }}
           >
-            Start free. Upgrade when you're ready to export or book an interview.
+            Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.
           </p>
         </div>
 

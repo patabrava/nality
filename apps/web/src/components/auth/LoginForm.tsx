@@ -5,41 +5,51 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 
 const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');
+
   :root {
-    /* Material Design 3 Monochromatic Theme */
-    --md-sys-color-primary: #ffffff;
+    /* Design Preview Color Scheme */
+    --bg-color: #050505;
+    --text-color: #e0e0e0;
+    --accent-gold: #D4AF37;
+    --accent-gold-dim: #8a7020;
+    --surface-color: #0f0f0f;
+    --border-color: rgba(255, 255, 255, 0.08);
+    
+    /* Material Design 3 Compatible Variables */
+    --md-sys-color-primary: #D4AF37;
     --md-sys-color-on-primary: #000000;
     --md-sys-color-primary-container: #1a1a1a;
-    --md-sys-color-on-primary-container: #ffffff;
+    --md-sys-color-on-primary-container: #D4AF37;
     
     --md-sys-color-secondary: #e5e5e5;
     --md-sys-color-on-secondary: #000000;
     --md-sys-color-secondary-container: #2a2a2a;
     --md-sys-color-on-secondary-container: #e5e5e5;
     
-    --md-sys-color-surface: #0a0a0a;
+    --md-sys-color-surface: #050505;
     --md-sys-color-surface-dim: #000000;
     --md-sys-color-surface-bright: #1a1a1a;
     --md-sys-color-surface-container-lowest: #000000;
     --md-sys-color-surface-container-low: #0f0f0f;
-    --md-sys-color-surface-container: #1a1a1a;
+    --md-sys-color-surface-container: rgba(20, 20, 20, 0.4);
     --md-sys-color-surface-container-high: #2a2a2a;
     --md-sys-color-surface-container-highest: #333333;
     
-    --md-sys-color-on-surface: #ffffff;
-    --md-sys-color-on-surface-variant: #cccccc;
+    --md-sys-color-on-surface: #e0e0e0;
+    --md-sys-color-on-surface-variant: #a0a0a0;
     --md-sys-color-surface-variant: #1a1a1a;
     
-    --md-sys-color-outline: #666666;
-    --md-sys-color-outline-variant: #333333;
+    --md-sys-color-outline: rgba(255, 255, 255, 0.15);
+    --md-sys-color-outline-variant: rgba(255, 255, 255, 0.08);
     
-    --md-sys-color-background: #000000;
-    --md-sys-color-on-background: #ffffff;
+    --md-sys-color-background: #050505;
+    --md-sys-color-on-background: #e0e0e0;
     
-    --md-sys-color-error: #ffffff;
+    --md-sys-color-error: #ff4444;
     --md-sys-color-on-error: #000000;
-    --md-sys-color-error-container: #1a1a1a;
-    --md-sys-color-on-error-container: #ffffff;
+    --md-sys-color-error-container: rgba(255, 68, 68, 0.1);
+    --md-sys-color-on-error-container: #ff4444;
     
     /* Animation Tokens */
     --md-sys-motion-duration-short1: 100ms;
@@ -57,40 +67,43 @@ const styles = `
 
   .login-container {
     min-height: 100vh;
-    background-color: var(--md-sys-color-background);
-    color: var(--md-sys-color-on-background);
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
-    font-family: 'Roboto', system-ui, sans-serif;
+    font-family: 'Inter', sans-serif;
     position: relative;
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
+  /* Grain Overlay */
   .login-container::before {
     content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    animation: float var(--md-sys-motion-duration-long2) ease-in-out infinite alternate;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 
   .login-card {
     width: 100%;
     max-width: 480px;
-    background: var(--md-sys-color-surface-container);
-    border-radius: 28px;
-    padding: 48px 32px;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    position: relative;
-    z-index: 1;
-    animation: fadeInUp var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-decelerated);
+    background: rgba(20, 20, 20, 0.4);
     backdrop-filter: blur(20px);
+    border-radius: 4px;
+    padding: 48px 32px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 10;
+    animation: fadeInUp var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-decelerated);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
@@ -137,6 +150,34 @@ const styles = `
   }
 
   .input-field {
+    width: 100%;
+    padding: 20px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+    outline: none;
+  }
+
+  .input-field:focus {
+    border-color: var(--accent-gold);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 1px var(--accent-gold);
+  }
+
+  .input-field::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.7;
+  }
+
+  .input-field:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
     width: 100%;
     height: 56px;
     padding: 16px 20px;
@@ -187,13 +228,32 @@ const styles = `
     width: 100%;
     height: 56px;
     padding: 16px 24px;
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-    border: none;
-    border-radius: 16px;
+    background: var(--accent-gold);
+    color: var(--bg-color);
+    border: 1px solid var(--accent-gold);
+    border-radius: 4px;
     font-size: 16px;
-    font-weight: 600;
-    font-family: inherit;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-button:hover:not(:disabled) {
+    background: transparent;
+    color: var(--accent-gold);
+    transform: translateY(-1px);
+  }
+
+  .submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
     cursor: pointer;
     transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
     position: relative;
@@ -237,28 +297,29 @@ const styles = `
     height: 56px;
     padding: 16px 24px;
     background: transparent;
-    color: var(--md-sys-color-primary);
-    border: 2px solid var(--md-sys-color-outline);
-    border-radius: 16px;
+    color: var(--accent-gold);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     font-size: 16px;
-    font-weight: 600;
-    font-family: inherit;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
   }
 
   .secondary-button:hover {
-    background: var(--md-sys-color-surface-container-high);
-    border-color: var(--md-sys-color-primary);
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
     transform: translateY(-1px);
   }
 
   .auth-method-selector {
     display: flex;
-    background: var(--md-sys-color-surface-container-low);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
     padding: 4px;
     margin-bottom: 32px;
+    border: 1px solid var(--border-color);
   }
 
   .auth-method-option {
@@ -269,14 +330,15 @@ const styles = `
     color: var(--md-sys-color-on-surface-variant);
     font-size: 14px;
     font-weight: 500;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 2px;
     transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
   }
 
   .auth-method-option.active {
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
+    background: var(--accent-gold);
+    color: var(--bg-color);
   }
 
   .password-input-container {
@@ -413,21 +475,21 @@ const styles = `
     width: 100%;
     height: 56px;
     padding: 16px 24px;
-    background: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface);
-    border: 2px solid var(--md-sys-color-outline-variant);
-    border-radius: 16px;
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     font-size: 16px;
     font-weight: 500;
-    font-family: inherit;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
     text-decoration: none;
   }
 
   .oauth-button:hover:not(:disabled) {
-    background: var(--md-sys-color-surface-container-highest);
-    border-color: var(--md-sys-color-primary);
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
     transform: translateY(-1px);
   }
 
@@ -446,15 +508,7 @@ const styles = `
     background: rgba(234, 67, 53, 0.1);
   }
 
-  .oauth-button.apple {
-    border-color: #000000;
-    color: var(--md-sys-color-on-surface);
-  }
 
-  .oauth-button.apple:hover:not(:disabled) {
-    border-color: #000000;
-    background: rgba(0, 0, 0, 0.1);
-  }
 
   .oauth-icon {
     width: 20px;
@@ -543,8 +597,7 @@ export function LoginForm() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [appleLoading, setAppleLoading] = useState(false)
-  const { signInWithEmail, signInWithPassword, signUpWithPassword, signInWithGoogle, signInWithApple, loading, error, isAuthenticated } = useAuth()
+  const { signInWithEmail, signInWithPassword, signUpWithPassword, signInWithGoogle, loading, error, isAuthenticated } = useAuth()
   const router = useRouter()
 
   // Redirect authenticated users to dashboard
@@ -590,14 +643,7 @@ export function LoginForm() {
     // If successful, user will be redirected to Google OAuth
   }
 
-  const handleAppleSignIn = async () => {
-    setAppleLoading(true)
-    const { error } = await signInWithApple()
-    if (error) {
-      setAppleLoading(false)
-    }
-    // If successful, user will be redirected to Apple OAuth
-  }
+
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -698,7 +744,7 @@ export function LoginForm() {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1 className="login-title">Welcome to Nality</h1>
+            <h1 className="login-title">Welcome to <span className="serif-accent">Nality</span></h1>
             <p className="login-subtitle">
               Your life story, beautifully preserved
             </p>
@@ -866,19 +912,7 @@ export function LoginForm() {
               {googleLoading ? 'Connecting to Google...' : 'Continue with Google'}
             </button>
 
-            <button
-              type="button"
-              className="oauth-button apple"
-              onClick={handleAppleSignIn}
-              disabled={loading || appleLoading}
-            >
-              <div className="oauth-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.017 10.15c-.03-2.63 2.163-3.9 2.26-3.957-1.23-1.8-3.143-2.047-3.83-2.077-1.627-.167-3.177.96-4.003.96-.827 0-2.103-.936-3.457-.912-1.78.027-3.417 1.033-4.33 2.627-1.847 3.2-.473 7.937 1.327 10.533.877 1.27 1.923 2.7 3.297 2.647 1.327-.053 1.83-.857 3.433-.857 1.603 0 2.06.857 3.457.83 1.427-.027 2.343-1.297 3.22-2.567 1.013-1.47 1.43-2.897 1.457-2.97-.033-.013-2.793-1.07-2.83-4.253zm-2.403-7.15C10.5 1.78 11.42.47 11.287.0c-.96.04-2.123.637-2.81 1.44-.617.713-1.157 1.853-1.013 2.947 1.07.083 2.163-.543 2.85-1.39z"/>
-                </svg>
-              </div>
-              {appleLoading ? 'Connecting to Apple...' : 'Sign in with Apple'}
-            </button>
+
           </div>
 
           <div className="login-footer">

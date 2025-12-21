@@ -5,6 +5,7 @@
  * Routes data to appropriate destinations: users, user_profile, or life_event.
  */
 
+import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import {
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
 
     // Validate content
     if (!content || typeof content !== 'string') {
-      return Response.json({ error: 'Content is required', success: false }, { status: 400 });
+      return NextResponse.json({ error: 'Content is required', success: false }, { status: 400 });
     }
 
     // Authenticate user
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
 
     if (!effectiveUserId) {
       console.error('❌ No authenticated user found');
-      return Response.json({ error: 'Authentication required', success: false }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required', success: false }, { status: 401 });
     }
 
     console.log(`� Source: ${source}, Topic: ${topic || 'N/A'}, Chapter: ${chapterId || 'N/A'}`);
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
     } else if (source === 'onboarding') {
       result = await extractFromOnboarding(content, topic || 'identity');
     } else {
-      return Response.json({ error: 'Invalid source', success: false }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid source', success: false }, { status: 400 });
     }
 
     // Persist extracted data
@@ -97,11 +98,11 @@ export async function POST(req: Request) {
     };
 
     console.log(`✅ Extraction complete: ${result.destination}, persisted: ${persistResult.success}`);
-    return Response.json(response);
+    return NextResponse.json(response);
 
   } catch (error) {
     console.error('❌ Extraction API error:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Extraction failed', success: false },
       { status: 500 }
     );
