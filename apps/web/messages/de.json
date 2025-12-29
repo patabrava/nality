@@ -22,6 +22,8 @@
   },
   "hero": {
     "title": "Dein Leben, schön erzählt.",
+    "titleLine": "Dein Leben,",
+    "titleHighlight": "schön erzählt.",
     "subtitle": "Nality hilft dir, Erinnerungen in eine lebendige Timeline und ein wunderschönes Life Book zu verwandeln – geführt von einem intelligenten Begleiter und, wenn du möchtest, einem echten Interviewer.",
     "primaryCta": "Meine Geschichte starten",
     "secondaryCta": "Ein Beispiel-Life-Book ansehen",
@@ -55,7 +57,114 @@
       "Partner 3",
       "Partner 4",
       "Partner 5"
+    ],
+    "stats": [
+      { "number": "50.000+", "label": "Bewahrte Lebensgeschichten" },
+      { "number": "2,3 Mio.+", "label": "Hochgeladene Fotos & Videos" },
+      { "number": "15.000+", "label": "Gedruckte & geteilte Bücher" },
+      { "number": "99,9%", "label": "Daten-Sicherungsrate" }
     ]
+  },
+  "customerValue": {
+    "label": "Für jede Geschichte",
+    "title": "Zugeschnitten auf",
+    "highlight": "jede Erzählerin, jeden Erzähler",
+    "description": "Ob Familiengeschichte, professionelles Memoir oder institutionelles Wissen – Nality passt sich deinem Erzählbedarf an.",
+    "segments": [
+      {
+        "title": "Familien & Ältere",
+        "subtitle": "Generationenwissen bewahren",
+        "description": "Halte die Geschichten deiner Großeltern fest, bevor sie verloren gehen. Unsere KI führt ältere Menschen behutsam, Familien können gemeinsam Erinnerungen ergänzen.",
+        "benefits": [
+          "Einfache Sprachaufnahmen für Senior:innen",
+          "Familien-Kollaboration",
+          "Automatische Sortierung nach Jahrzehnten",
+          "Wunderschöne Druckbücher für Generationen"
+        ],
+        "testimonial": "\"Wir haben 80 Jahre Geschichte meiner Großmutter in nur drei Sessions bewahrt.\"",
+        "author": "Maria Santos",
+        "icon": "👵"
+      },
+      {
+        "title": "Autor:innen & Kreative",
+        "subtitle": "Professionelle Memoir-Werkzeuge",
+        "description": "Verwandle Lebenserfahrungen in packende Narrative – mit KI-Struktur, Interview-Support und Publishing-Qualität.",
+        "benefits": [
+          "KI-Analyse der Dramaturgie",
+          "Professionelle Transkripte",
+          "Multi-Format-Publishing",
+          "Gemeinsame Bearbeitung"
+        ],
+        "testimonial": "\"Nality hat mein Memoir auf ein neues Level gebracht.\"",
+        "author": "Dr. James Patterson",
+        "icon": "✍️"
+      },
+      {
+        "title": "Organisationen & Institutionen",
+        "subtitle": "Institutionelles Gedächtnis sichern",
+        "description": "Bewahre Unternehmensgeschichte, Wissen ausscheidender Führungskräfte und erstelle institutionelle Vermächtnisse mit Enterprise-Sicherheit.",
+        "benefits": [
+          "Enterprise-Security & Compliance",
+          "Nutzerverwaltung in großen Mengen",
+          "Individuelles Branding",
+          "API-Integrationen"
+        ],
+        "testimonial": "\"Über 200 Jahre Wissen mühelos gesichert.\"",
+        "author": "Heritage Foundation",
+        "icon": "🏛️"
+      }
+    ]
+  },
+  "outcomes": {
+    "title": "Ein Andenken zum Anfassen",
+    "subtitle": "Nality verwandelt deine Timeline in ein poliertes, druckfertiges PDF. Wähle Cover-Stile und teile es digital oder bestelle Drucke.",
+    "zoomHint": "Zum Vergrößern klicken",
+    "ctaText": "Sieh, wie deine Geschichte im Druck lebendig wird",
+    "ctaButton": "Beispielbuch ansehen",
+    "gallery": [
+      { "title": "Buchcover", "description": "Hardcover-Life-Book auf einem Tisch", "mockContent": "📖\nLife Book\nCover" },
+      { "title": "Buch-Doppelseite 1", "description": "Aufgeschlagene Buchseite mit Fotos und Bildunterschriften", "mockContent": "📷\nKapitel 1\nFrühe Jahre" },
+      { "title": "Buch-Doppelseite 2", "description": "Zweiseitige Life-Book-Ansicht mit großem Bild und Bildunterschrift", "mockContent": "🎓\nKapitel 3\nBildung" }
+    ]
+  },
+  "productHighlights": {
+    "title": "Funktionen für deine Geschichte",
+    "subtitle": "Jedes Werkzeug sorgfältig entwickelt, um dir zu helfen, die wichtigsten Momente deines Lebens festzuhalten, zu organisieren und zu teilen",
+    "features": [
+      {
+        "title": "Intelligentes Onboarding",
+        "description": "Starte mit einem geführten Chat, der deine Erinnerungen in strukturierte Ereignisse verwandelt. Jederzeit bearbeitbar.",
+        "icon": "🤖",
+        "screenshot": "onboarding-chat"
+      },
+      {
+        "title": "Eine lebendige Timeline",
+        "description": "Klares, abwechselndes Layout. Ziehe, kategorisiere und tagge wichtige Momente. Sieh Fotos und Clips im Kontext.",
+        "icon": "⏰",
+        "screenshot": "timeline"
+      },
+      {
+        "title": "Interview, wenn es darauf ankommt",
+        "description": "Professionelle Interviewer helfen dir, tiefer zu gehen – besonders bei Geschichten von Älteren. Wir kümmern uns um die Terminplanung.",
+        "icon": "🎯",
+        "screenshot": "media-grid"
+      },
+      {
+        "title": "Exportiere ein wunderschönes Life Book",
+        "description": "Mit einem Klick zu einem polierten PDF, entworfen zum Drucken und Teilen.",
+        "icon": "📚",
+        "screenshot": "pdf-preview"
+      }
+    ],
+    "timelineSamples": {
+      "graduation": "🎓 Hochschulabschluss – 2020",
+      "firstJob": "💼 Erster Job – 2021",
+      "marriage": "❤️ Geheiratet – 2023"
+    },
+    "chatSamples": {
+      "prompt": "Erzähl mir von einem Moment, der dich zu dem gemacht hat, der du heute bist",
+      "response": "Als ich meinen Abschluss machte, fühlte ich mich wie..."
+    }
   },
   "howItWorks": {
     "title": "So funktioniert es",
@@ -185,7 +294,10 @@
         "question": "Ist das für Ältere geeignet?",
         "answer": "Absolut. Geführte Prompts und optionaler Interviewer machen es leicht und angenehm."
       }
-    ]
+    ],
+    "ctaTitle": "Noch Fragen?",
+    "ctaBody": "Unser Team hilft dir beim Start deiner Lebensgeschichte.",
+    "ctaButton": "Support kontaktieren"
   },
   "finalCta": {
     "title": "Starte deine Geschichte heute",

@@ -22,10 +22,13 @@
   },
   "hero": {
     "title": "Your life, beautifully told.",
+    "titleLine": "Your life,",
+    "titleHighlight": "beautifully told.",
     "subtitle": "Nality helps you turn memories into a living timeline and a gorgeous Life Book—guided by an intelligent companion and, if you like, a real interviewer.",
     "primaryCta": "Start My Story",
     "secondaryCta": "See a sample Life Book",
     "trust": "Private by design. You control who sees your story.",
+    "recordingStatus": "Recording Session...",
     "timelinePreview": {
       "graduation": "🎓 College Graduation - 2020",
       "firstJob": "💼 First Job - 2021",
@@ -38,23 +41,86 @@
     "testimonials": [
       {
         "text": "I recorded my mother's stories over a weekend. The book we printed is now the centerpiece of our family.",
-        "author": "Sofia R."
+        "author": "Sofia R.",
+        "role": "Family Historian",
+        "location": "Barcelona, Spain"
       },
       {
         "text": "The AI prompts helped me remember things I hadn't thought about in years.",
-        "author": "David K."
+        "author": "David K.",
+        "role": "Documentary Filmmaker",
+        "location": "San Francisco, CA"
       },
       {
         "text": "As a journalist, I use Nality to structure interviews and deliver a finished keepsake.",
-        "author": "Leila M."
+        "author": "Leila M.",
+        "role": "Journalist & Interviewer",
+        "location": "Oxford, UK"
       }
     ],
-    "partners": [
-      "Partner 1",
-      "Partner 2",
-      "Partner 3",
-      "Partner 4",
-      "Partner 5"
+    "partnerLogos": [
+      { "name": "National Archives", "placeholder": "NAT" },
+      { "name": "Genealogy Society", "placeholder": "GEN" },
+      { "name": "Senior Living Corp", "placeholder": "SLC" },
+      { "name": "Memorial Foundation", "placeholder": "MEM" },
+      { "name": "Heritage Trust", "placeholder": "HTR" }
+    ],
+    "partnerAriaSuffix": "logo",
+    "stats": [
+      { "number": "50,000+", "label": "Life stories preserved" },
+      { "number": "2.3M+", "label": "Photos & videos uploaded" },
+      { "number": "15,000+", "label": "Books printed & shared" },
+      { "number": "99.9%", "label": "Data preservation rate" }
+    ]
+  },
+  "customerValue": {
+    "label": "For Every Story",
+    "title": "Tailored for",
+    "highlight": "every storyteller",
+    "description": "Whether you're preserving family heritage, crafting professional memoirs, or capturing institutional knowledge, Nality adapts to your unique storytelling needs.",
+    "segments": [
+      {
+        "title": "Families & Elders",
+        "subtitle": "Preserve generational wisdom",
+        "description": "Capture grandparents' stories before they're lost forever. Our AI guides elderly users through gentle conversations, while family members can collaborate on shared memories.",
+        "benefits": [
+          "Easy voice recording for seniors",
+          "Family collaboration tools",
+          "Automated organization by decades",
+          "Beautiful printed books for generations"
+        ],
+        "testimonial": "\"We preserved 80 years of my grandmother's stories in just three sessions.\"",
+        "author": "Maria Santos",
+        "icon": "👵"
+      },
+      {
+        "title": "Authors & Creatives",
+        "subtitle": "Professional memoir tools",
+        "description": "Transform your life experiences into compelling narratives with AI-powered structure, interview support, and publishing-quality exports.",
+        "benefits": [
+          "AI story arc analysis",
+          "Professional transcript services",
+          "Multi-format publishing",
+          "Collaborative editing features"
+        ],
+        "testimonial": "\"Nality helped me structure my memoir in ways I never imagined.\"",
+        "author": "Dr. James Patterson",
+        "icon": "✍️"
+      },
+      {
+        "title": "Organizations & Institutions",
+        "subtitle": "Institutional memory capture",
+        "description": "Preserve organizational history, capture retiring executives' knowledge, and create institutional legacies with enterprise-grade security.",
+        "benefits": [
+          "Enterprise security & compliance",
+          "Bulk user management",
+          "Custom branding options",
+          "API integrations available"
+        ],
+        "testimonial": "\"We've preserved 200+ years of institutional knowledge effortlessly.\"",
+        "author": "Heritage Foundation",
+        "icon": "🏛️"
+      }
     ]
   },
   "outcomes": {
@@ -153,9 +219,14 @@
           "Up to 50 photos",
           "Basic privacy controls"
         ],
+        "limitations": [
+          "Watermarked exports",
+          "Community support only"
+        ],
         "buttonText": "Start Free",
         "buttonStyle": "secondary",
-        "popular": false
+        "popular": false,
+        "savings": ""
       },
       {
         "name": "Standard",
@@ -170,9 +241,11 @@
           "Advanced categories/tags",
           "Export to PDF"
         ],
+        "limitations": [],
         "buttonText": "Start Standard",
         "buttonStyle": "primary",
-        "popular": true
+        "popular": true,
+        "savings": "Save €36/year"
       },
       {
         "name": "Pro",
@@ -186,9 +259,11 @@
           "Priority support",
           "Custom book themes"
         ],
+        "limitations": [],
         "buttonText": "Start Pro",
         "buttonStyle": "primary",
-        "popular": false
+        "popular": false,
+        "savings": ""
       }
     ]
   },
@@ -236,7 +311,10 @@
         "question": "Is this suitable for elders?",
         "answer": "Absolutely. The guided prompts and optional interviewer help make it easy and enjoyable."
       }
-    ]
+    ],
+    "ctaTitle": "Still have questions?",
+    "ctaBody": "Our team is here to help you get started with your life story.",
+    "ctaButton": "Contact Support"
   },
   "finalCta": {
     "title": "Start your story today",
@@ -305,5 +383,14 @@
       "historical": "Historical",
       "other": "Other"
     }
+  },
+  "dashboardNav": {
+    "tabs": {
+      "dashboard": "Dashboard",
+      "timeline": "Timeline",
+      "chat": "Chat",
+      "contact": "Contact"
+    },
+    "profile": "Profile"
   }
 }
