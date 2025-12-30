@@ -194,8 +194,9 @@ export default function DashboardPage() {
     window.location.reload()
   }
 
+  // Always route chat interactions through the mode selector so user picks how to talk
   const handleChatNavigation = () => {
-    router.push('/dash/chat')
+    setShowVoiceSelector(true)
   }
 
   // Build tiles from chapters config with stats

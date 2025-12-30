@@ -8,6 +8,11 @@ export type VoiceMode = 'interview' | 'free-talk' | 'text';
 interface VoiceModeSelectorProps {
   onSelect: (mode: VoiceMode) => void;
   onClose: () => void;
+  /**
+   * Restrict which modes are shown (e.g., during onboarding only text is allowed).
+   * Defaults to all modes.
+   */
+  availableModes?: VoiceMode[];
 }
 
 /**
@@ -15,10 +20,10 @@ interface VoiceModeSelectorProps {
  * Glassmorphic modal for choosing memory input method
  * Matches luxury dark design aesthetic
  */
-export function VoiceModeSelector({ onSelect, onClose }: VoiceModeSelectorProps) {
+export function VoiceModeSelector({ onSelect, onClose, availableModes }: VoiceModeSelectorProps) {
   const { t } = useI18n();
 
-  const modes = [
+  const allModes = [
     {
       id: 'interview' as VoiceMode,
       icon: Mic,
@@ -44,6 +49,10 @@ export function VoiceModeSelector({ onSelect, onClose }: VoiceModeSelectorProps)
       recommended: false,
     },
   ];
+
+  const modes = availableModes
+    ? allModes.filter((m) => availableModes.includes(m.id))
+    : allModes;
 
   return (
     <div

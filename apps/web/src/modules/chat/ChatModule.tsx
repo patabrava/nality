@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { ChatInterface } from '@/components/chat/ChatInterface'
 import { useChat } from '@/hooks/useChat'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { VoiceModeSelector, InterviewInterface, FreeTalkInterface, type VoiceMode } from '@/components/voice'
 import OnboardingChatInterface from '@/components/onboarding/ChatInterface'
 
 /**
@@ -22,6 +24,19 @@ export function ChatModule() {
     isOnboardingComplete, 
     isLoading: profileLoading 
   } = useUserProfile(user?.id)
+
+  // Mode selection state (always shown once auth/profile is resolved)
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false)
+  const [showInterview, setShowInterview] = useState(false)
+  const [showFreeTalk, setShowFreeTalk] = useState(false)
+  const [activeMode, setActiveMode] = useState<VoiceMode | null>(null)
+
+  // Open selector once auth/profile is resolved
+  useEffect(() => {
+    if (!authLoading && !profileLoading && isAuthenticated) {
+      setShowVoiceSelector(true)
+    }
+  }, [authLoading, profileLoading, isAuthenticated])
 
   // Initialize chat with auto-session creation (only if authenticated AND onboarding complete)
   const { 
@@ -72,22 +87,7 @@ export function ChatModule() {
     )
   }
 
-  // Show onboarding chat if user hasn't completed onboarding
-  if (!isOnboardingComplete) {
-    console.log('[ChatModule] User needs onboarding, showing onboarding chat')
-    return (
-      <section 
-        className="h-full overflow-auto"
-        style={{ 
-          backgroundColor: 'var(--c-primary-invert)',
-        }}
-      >
-        <OnboardingChatInterface />
-      </section>
-    )
-  }
-
-  // Show general chat for users who completed onboarding
+  // Render shared container; selector drives which UI we show
   return (
     <section 
       className="h-full"
@@ -105,6 +105,65 @@ export function ChatModule() {
         height: '80vh',
         maxHeight: '700px',
       }}>
+        {/* Voice mode selector modal */}
+        {showVoiceSelector && (
+          <VoiceModeSelector
+            availableModes={['interview','free-talk','text']}
+            onSelect={(mode: VoiceMode) => {
+              setShowVoiceSelector(false)
+              setActiveMode(mode)
+              switch (mode) {
+                case 'interview':
+                  setShowInterview(true)
+                  setShowFreeTalk(false)
+                  break
+                case 'free-talk':
+                  setShowFreeTalk(true)
+                  setShowInterview(false)
+                  break
+                case 'text':
+                  // stay on text chat
+                  setShowInterview(false)
+                  setShowFreeTalk(false)
+                  break
+              }
+            }}
+            onClose={() => setShowVoiceSelector(false)}
+          />
+        )}
+
+        {/* Guided interview */}
+        {showInterview && (
+          <InterviewInterface
+            onClose={() => {
+              setShowInterview(false)
+              setActiveMode(null)
+              setShowVoiceSelector(true)
+            }}
+            onMemorySaved={() => {
+              setShowInterview(false)
+              setActiveMode(null)
+              setShowVoiceSelector(true)
+            }}
+          />
+        )}
+
+        {/* Free talk */}
+        {showFreeTalk && (
+          <FreeTalkInterface
+            onClose={() => {
+              setShowFreeTalk(false)
+              setActiveMode(null)
+              setShowVoiceSelector(true)
+            }}
+            onComplete={() => {
+              setShowFreeTalk(false)
+              setActiveMode(null)
+              setShowVoiceSelector(true)
+            }}
+          />
+        )}
+
         {/* Error state */}
         {error && !currentSessionId && (
           <div 
@@ -155,15 +214,25 @@ export function ChatModule() {
         )}
 
         {/* Chat interface - matches ChapterChatInterface sizing */}
-        {currentSessionId && (
-          <ChatInterface 
-            sessionId={currentSessionId}
-            title="Add Memory"
-            subtitle="Teile deine Erinnerungen"
-            icon="🧠"
-            placeholder="Share your memory..."
-            welcomeMessage="🧠 Was möchtest du heute festhalten? Erzähle mir von einem besonderen Moment."
-          />
+        {!showInterview && !showFreeTalk && (
+          isOnboardingComplete
+            ? (currentSessionId && (
+                <ChatInterface 
+                  sessionId={currentSessionId}
+                  title="Add Memory"
+                  subtitle="Teile deine Erinnerungen"
+                  icon="🧠"
+                  placeholder="Share your memory..."
+                  welcomeMessage="🧠 Was möchtest du heute festhalten? Erzähle mir von einem besonderen Moment."
+                  onClose={() => {
+                    setActiveMode(null)
+                    setShowVoiceSelector(true)
+                  }}
+                />
+              ))
+            : (
+                <OnboardingChatInterface />
+              )
         )}
       </div>
     </section>

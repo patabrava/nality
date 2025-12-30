@@ -41,10 +41,12 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     onMemorySaved,
     onError,
     autoStart = false,
-    voice = 'aura-asteria-en',
+    voice = 'aura-2-viktoria-de',
   } = options;
 
   const { user, session } = useAuth();
+  const agentLanguage = 'de'; // Agent language (LLM + TTS) per docs
+  const sttLanguage = 'de-DE'; // Web Speech API locale for STT
   const [agentState, setAgentState] = useState<VoiceAgentState>('idle');
   const [error, setError] = useState<Error | null>(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -74,8 +76,8 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
         id: 'voice-welcome',
         role: 'assistant',
         content: chapterId 
-          ? "Hello! I'm here to help capture your memories. What moment would you like to share?"
-          : "Hello! I'm your personal memory assistant. Tell me about a meaningful moment you'd like to preserve.",
+          ? "Hallo! Ich helfe dir, deine Erinnerungen festzuhalten. Woran möchtest du dich heute erinnern?"
+          : "Hallo! Ich bin deine persönliche Erinnerungsassistentin. Erzähl mir von einem Moment, den du bewahren möchtest.",
       }
     ],
   });
@@ -108,6 +110,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
   // Initialize voice input
   const voiceInput = useVoiceInput({
+    language: sttLanguage,
     onUtteranceEnd: handleUtteranceEnd,
     onError: (err) => {
       setError(err);

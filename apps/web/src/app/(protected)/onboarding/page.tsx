@@ -7,6 +7,7 @@ import { fetchUserProfile } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { VoiceModeSelector, InterviewInterface, FreeTalkInterface, type VoiceMode } from '@/components/voice'
 
 export default function OnboardingPage() {
   const { user, isAuthenticated, loading } = useAuth()
@@ -14,6 +15,10 @@ export default function OnboardingPage() {
   const { t } = useI18n()
   const [progress, setProgress] = useState(0)
   const [questionsAnswered, setQuestionsAnswered] = useState(0)
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false)
+  const [activeMode, setActiveMode] = useState<VoiceMode>('text')
+  const [showInterview, setShowInterview] = useState(false)
+  const [showFreeTalk, setShowFreeTalk] = useState(false)
 
   useEffect(() => {
     if (!loading && isAuthenticated && user?.id) {
@@ -23,6 +28,8 @@ export default function OnboardingPage() {
           router.replace('/dash')
         }
       })
+      // Always prompt for mode selection when entering onboarding
+      setShowVoiceSelector(true)
     }
   }, [loading, isAuthenticated, user, router])
 
@@ -70,7 +77,73 @@ export default function OnboardingPage() {
                 border: '1px solid var(--md-sys-color-outline-variant)'
               }}
             >
-              <ChatInterface onProgressChange={handleProgressChange} />
+              {/* Voice mode selector overlay */}
+              {showVoiceSelector && (
+                <VoiceModeSelector
+                  onSelect={(mode: VoiceMode) => {
+                    setShowVoiceSelector(false)
+                    setActiveMode(mode)
+                    switch (mode) {
+                      case 'interview':
+                        setShowInterview(true)
+                        setShowFreeTalk(false)
+                        break
+                      case 'free-talk':
+                        setShowFreeTalk(true)
+                        setShowInterview(false)
+                        break
+                      case 'text':
+                        setShowInterview(false)
+                        setShowFreeTalk(false)
+                        break
+                    }
+                  }}
+                  onClose={() => {
+                    // Default to text mode if user closes
+                    setActiveMode('text')
+                    setShowVoiceSelector(false)
+                    setShowInterview(false)
+                    setShowFreeTalk(false)
+                  }}
+                />
+              )}
+
+              {/* Guided interview path */}
+              {showInterview && (
+                <InterviewInterface
+                  onClose={() => {
+                    setShowInterview(false)
+                    setActiveMode('text')
+                    setShowVoiceSelector(true)
+                  }}
+                  onMemorySaved={() => {
+                    setShowInterview(false)
+                    setActiveMode('text')
+                    setShowVoiceSelector(true)
+                  }}
+                />
+              )}
+
+              {/* Free talk path */}
+              {showFreeTalk && (
+                <FreeTalkInterface
+                  onClose={() => {
+                    setShowFreeTalk(false)
+                    setActiveMode('text')
+                    setShowVoiceSelector(true)
+                  }}
+                  onComplete={() => {
+                    setShowFreeTalk(false)
+                    setActiveMode('text')
+                    setShowVoiceSelector(true)
+                  }}
+                />
+              )}
+
+              {/* Text onboarding chat (default mode) */}
+              {!showInterview && !showFreeTalk && (
+                <ChatInterface onProgressChange={handleProgressChange} />
+              )}
             </div>
           </div>
 

@@ -81,6 +81,23 @@ export async function POST(req: Request) {
     
     console.log(" Cleaned + sanitized messages for AI SDK:", JSON.stringify(cleanMessages, null, 2));
 
+    /**
+     * Guardrail: prevent Q1 loops.
+     * If the assistant has already asked the form-of-address question multiple times,
+     * inject a system reminder to move on to Q2.
+     */
+    const q1Regex = /wie soll ich dich ansprechen|wie m[oö]chten sie angesprochen werden/i;
+    const assistantQ1Count = cleanMessages.filter(m => m.role === 'assistant' && typeof m.content === 'string' && q1Regex.test(m.content)).length;
+    const lastUserMessage = [...cleanMessages].reverse().find(m => m.role === 'user');
+
+    if (assistantQ1Count >= 2) {
+      const userAnswer = lastUserMessage?.content ? sanitizeContent(String(lastUserMessage.content)) : 'Keine Antwort erkannt';
+      cleanMessages.push({
+        role: 'system',
+        content: `Q1 (form of address/name/style) has already been asked. User's latest reply: "${userAnswer}". Do NOT repeat Q1. Continue with the next onboarding question (Q2: origins). If style is missing, default to "locker".`
+      });
+    }
+
     // Persist latest user answer with minimal metadata (best-effort, non-blocking for chat)
     try {
       const supabase = await createClient();
