@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.2.22",
     "@ai-sdk/google": "^1.2.22",
     "@ai-sdk/react": "^1.2.12",
     "@deepgram/sdk": "^4.11.3",

@@ -195,26 +195,26 @@ export async function POST(req: Request) {
       console.error('❌ Error during onboarding answer persistence (non-fatal):', persistError);
     }
 
-    // Check API key - try multiple possible variable names
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || process.env.Gemini_API_KEY;
+    // Pick API key (prefer freshly provided Gemini key)
+    const apiKey = process.env.Gemini_API_KEY ||
+                   process.env.GEMINI_API_KEY ||
+                   process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
     if (!apiKey) {
-      console.error(" Google AI API key not found in environment variables");
-      console.error("Looking for: GOOGLE_GENERATIVE_AI_API_KEY, GEMINI_API_KEY, or Gemini_API_KEY");
+      console.error("❌ API key not configured");
       return NextResponse.json(
-        { error: "API key not configured. Please set GOOGLE_GENERATIVE_AI_API_KEY in your environment." },
+        { error: "API key not configured" },
         { status: 500 }
       );
     }
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
 
     console.log(" API key found, making request to Gemini...");
 
-    // Set the API key for Google AI SDK
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
-
-    // Use AI SDK's streamText with cleaned messages and runtime-built XML system prompt
+    // Stream response with onboarding-specific prompt
     const result = await streamText({
       model: google('gemini-2.0-flash-exp'),
-      system: buildOnboardingSystemPrompt(cleanMessages),
+      system: buildOnboardingSystemPrompt(),
       messages: cleanMessages,
       maxTokens: 1000, // Limit response length for senior-friendly conversations
       temperature: 0.7, // Balanced creativity for warm but consistent responses

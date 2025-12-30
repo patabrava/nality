@@ -1,6 +1,5 @@
 import { streamText, type CoreMessage } from 'ai';
 import { google } from '@ai-sdk/google';
-import { openai } from '@ai-sdk/openai';
 import { NextResponse } from 'next/server';
 import { buildChapterSystemPrompt } from '@/lib/prompts/chapters';
 import { createClient } from '@/lib/supabase/server';
@@ -19,15 +18,6 @@ function sanitizeContent(raw: string): string {
   }
   text = text.replace(/```/g, '').trim();
   return text;
-}
-
-function selectModel() {
-  // Prefer OpenAI if key is present (often less restrictive than free Gemini quotas)
-  if (process.env.OPENAI_API_KEY) {
-    return openai('gpt-4o-mini');
-  }
-  // Fallback to Gemini; use stable flash model instead of exp
-  return google('gemini-1.5-flash');
 }
 
 export async function POST(req: Request) {
@@ -74,9 +64,24 @@ export async function POST(req: Request) {
 
     console.log(`📖 Chapter: ${chapterId}, User: ${effectiveUserId}, Messages: ${cleanMessages.length}`);
 
+    // Check API key
+    // Prefer the freshly provided Gemini key first, then fall back
+    const apiKey = process.env.Gemini_API_KEY ||
+                   process.env.GEMINI_API_KEY ||
+                   process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+                   
+    if (!apiKey) {
+      console.error("❌ API key not configured");
+      return NextResponse.json(
+        { error: "API key not configured" },
+        { status: 500 }
+      );
+    }
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
+
     // Stream response with chapter-specific prompt
     const result = await streamText({
-      model: selectModel(),
+      model: google('gemini-2.0-flash-exp'),
       system: buildChapterSystemPrompt(chapterId as ChapterId),
       messages: cleanMessages,
       maxTokens: 1000,
@@ -130,19 +135,14 @@ export async function POST(req: Request) {
     console.error("❌ Chapter Chat API error:", error);
     console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
     
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    const isQuota = message.toLowerCase().includes('quota') || message.includes('RESOURCE_EXHAUSTED') || message.includes('429');
-    
     return NextResponse.json(
       { 
-        error: isQuota 
-          ? "LLM quota exceeded. Please add OPENAI_API_KEY or update Gemini billing."
-          : "Something went wrong. Please try again.",
+        error: "Something went wrong. Please try again.",
         details: process.env.NODE_ENV === 'development' 
-          ? message
+          ? (error instanceof Error ? error.message : "Unknown error")
           : undefined
       },
-      { status: isQuota ? 429 : 500 }
+      { status: 500 }
     );
   }
 }
