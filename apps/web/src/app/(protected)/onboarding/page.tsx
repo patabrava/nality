@@ -80,6 +80,7 @@ export default function OnboardingPage() {
               {/* Voice mode selector overlay */}
               {showVoiceSelector && (
                 <VoiceModeSelector
+                  availableModes={['text', 'interview']}
                   onSelect={(mode: VoiceMode) => {
                     setShowVoiceSelector(false)
                     setActiveMode(mode)

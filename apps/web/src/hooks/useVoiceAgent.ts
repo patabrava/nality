@@ -14,6 +14,7 @@ interface UseVoiceAgentOptions {
   onError?: (error: Error) => void;
   autoStart?: boolean;
   voice?: string;
+  onComplete?: () => Promise<void> | void;
 }
 
 interface UseVoiceAgentReturn {
@@ -46,6 +47,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     onError,
     autoStart = false,
     voice = 'aura-2-viktoria-de',
+    onComplete,
   } = options;
 
   const { user, session } = useAuth();
@@ -54,6 +56,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   const [error, setError] = useState<Error | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const completionHandledRef = useRef(false);
 
   // Refs for state machine control (avoid stale closures in callbacks)
   const processedMessageIdRef = useRef<string | null>(null);
@@ -234,6 +237,69 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     const content = lastMessage.content.trim();
     if (!content) return;
+
+    // Detect onboarding completion markers (voice path lacks ChatInterface detection)
+    const lower = content.toLowerCase();
+    const completionPatterns = [
+      '[onboarding_complete]',
+      'grunddaten sind vollständig',
+      'basisdaten sind jetzt vollständig',
+      'basisdaten sind erfasst',
+      'deine basisdaten sind erfasst',
+      'basic data is complete',
+      'onboarding is complete',
+      'all mandatory fields',
+      'profile is complete',
+      'ready to explore',
+      'weiterführende biografiearbeit',
+    ];
+    const isCompletion = completionHandledRef.current
+      ? false
+      : completionPatterns.some(p => lower.includes(p));
+
+    if (isCompletion) {
+      completionHandledRef.current = true;
+      console.log('🎯 Voice path onboarding completion detected');
+      // Best-effort: mark onboarding complete + convert answers, if user/session available
+      (async () => {
+        try {
+          const accessToken = session?.access_token;
+
+          // Ensure a chat session exists (GET will create if missing)
+          const sessionResp = await fetch('/api/onboarding/session', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const sessionJson = sessionResp.ok ? await sessionResp.json() : null;
+          const chatSessionId = sessionJson?.session?.id;
+
+          if (chatSessionId) {
+            await fetch('/api/onboarding/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId: chatSessionId,
+                markComplete: true,
+                userId: user?.id,
+                accessToken,
+              }),
+            });
+          }
+
+          // Convert onboarding answers to events
+          await fetch('/api/events/convert-onboarding', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user?.id, accessToken }),
+          });
+
+          // External callback if provided
+          await onComplete?.();
+        } catch (err) {
+          console.error('❌ Failed to finalize onboarding from voice path:', err);
+        }
+      })();
+    }
 
     console.log('🔊 Speaking assistant message:', lastMessage.id, content.length, 'chars');
     processedMessageIdRef.current = lastMessage.id;

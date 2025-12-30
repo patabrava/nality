@@ -81,6 +81,9 @@ export async function POST(req: Request) {
     
     console.log(" Cleaned + sanitized messages for AI SDK:", JSON.stringify(cleanMessages, null, 2));
 
+    let systemPrompt = buildOnboardingSystemPrompt();
+    const extraSystemGuidance: string[] = [];
+
     /**
      * Guardrail: prevent Q1 loops.
      * If the assistant has already asked the form-of-address question multiple times,
@@ -92,10 +95,24 @@ export async function POST(req: Request) {
 
     if (assistantQ1Count >= 2) {
       const userAnswer = lastUserMessage?.content ? sanitizeContent(String(lastUserMessage.content)) : 'Keine Antwort erkannt';
-      cleanMessages.push({
-        role: 'system',
-        content: `Q1 (form of address/name/style) has already been asked. User's latest reply: "${userAnswer}". Do NOT repeat Q1. Continue with the next onboarding question (Q2: origins). If style is missing, default to "locker".`
-      });
+      extraSystemGuidance.push(
+        `Q1 (form of address/name/style) has already been asked. User's latest reply: "${userAnswer}". Do NOT repeat Q1. Continue with the next onboarding question (Q2: origins). If style is missing, default to "locker".`
+      );
+    }
+
+    // Move any system-role messages into the system prompt to satisfy provider constraints
+    const systemMessages = cleanMessages.filter(
+      (m) => m.role === 'system' && typeof m.content === 'string' && m.content.trim().length > 0
+    );
+    if (systemMessages.length > 0) {
+      extraSystemGuidance.push(
+        ...systemMessages.map((m) => sanitizeContent(String(m.content)))
+      );
+    }
+    cleanMessages = cleanMessages.filter((m) => m.role !== 'system');
+
+    if (extraSystemGuidance.length > 0) {
+      systemPrompt = `${systemPrompt}\n\nAdditional guidance:\n- ${extraSystemGuidance.join('\n- ')}`;
     }
 
     // Persist latest user answer with minimal metadata (best-effort, non-blocking for chat)
@@ -231,7 +248,7 @@ export async function POST(req: Request) {
     // Stream response with onboarding-specific prompt
     const result = await streamText({
       model: google('gemini-2.0-flash-exp'),
-      system: buildOnboardingSystemPrompt(),
+      system: systemPrompt,
       messages: cleanMessages,
       maxTokens: 1000, // Limit response length for senior-friendly conversations
       temperature: 0.7, // Balanced creativity for warm but consistent responses

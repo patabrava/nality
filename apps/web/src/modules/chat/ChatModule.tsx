@@ -108,7 +108,7 @@ export function ChatModule() {
         {/* Voice mode selector modal */}
         {showVoiceSelector && (
           <VoiceModeSelector
-            availableModes={['interview','free-talk','text']}
+            availableModes={isOnboardingComplete ? ['interview','free-talk','text'] : ['text','interview']}
             onSelect={(mode: VoiceMode) => {
               setShowVoiceSelector(false)
               setActiveMode(mode)
