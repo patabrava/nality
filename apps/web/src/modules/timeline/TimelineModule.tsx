@@ -12,6 +12,8 @@ import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType, ChapterId
 import { ChapterChatInterface } from '@/components/chat/ChapterChatInterface'
 import { getChapterById } from '@/lib/chapters'
 import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
+import { VoiceModeSelector, InterviewInterface, FreeTalkInterface, type VoiceMode } from '@/components/voice'
+import { Search, Book, Wrench, AlertTriangle } from 'lucide-react'
 
 /**
  * Timeline Module Props
@@ -44,24 +46,59 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
   const [showForm, setShowForm] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false)
+  const [showInterview, setShowInterview] = useState(false)
+  const [showFreeTalk, setShowFreeTalk] = useState(false)
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
-  
+
   // Get chapter info if we're in a chapter context
   const chapter = chapterId ? getChapterById(chapterId as ChapterId) : null
 
   // Header navigation detection - CODE_EXPANSION: Preserve working functionality
   const hasHeaderNavigation = process.env.NEXT_PUBLIC_USE_HEADER_NAV === 'true'
-  
-  console.log('[TimelineModule] Component mounted', { 
-    eventsCount: events.length, 
-    loading, 
+
+  console.log('[TimelineModule] Component mounted', {
+    eventsCount: events.length,
+    loading,
     showForm,
     showChat,
+    showVoiceSelector,
+    showInterview,
+    showFreeTalk,
     chapterId,
     chapter: chapter?.name,
     editingEvent: editingEvent?.id,
     hasHeaderNavigation // Debug output for header detection
   })
+
+  // Handle voice mode selection
+  const handleVoiceModeSelect = (mode: VoiceMode) => {
+    setShowVoiceSelector(false)
+    switch (mode) {
+      case 'interview':
+        setShowInterview(true)
+        break
+      case 'free-talk':
+        setShowFreeTalk(true)
+        break
+      case 'text':
+        if (chapter) {
+          setShowChat(true)
+        } else {
+          setShowForm(true)
+        }
+        break
+    }
+  }
+
+  // Handle memory completion (refresh timeline)
+  const handleMemoryComplete = () => {
+    setShowInterview(false)
+    setShowFreeTalk(false)
+    setShowChat(false)
+    // Refresh the page to show new events
+    window.location.reload()
+  }
 
   // ──────────────────────
   // Timeline Data Processing - Enhanced with Filtering
@@ -86,15 +123,15 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
   const timelineData = useMemo(() => {
     console.log('[TimelineModule] Processing timeline data, events:', filteredEvents.length)
-    
+
     // Group events by decade for timeline structure
     const eventsByDecade = new Map<number, TimelineEvent[]>()
     const decades = new Set<number>()
-    
+
     filteredEvents.forEach(event => {
       const year = new Date(event.start_date).getFullYear()
       const decade = Math.floor(year / 10) * 10
-      
+
       decades.add(decade)
       if (!eventsByDecade.has(decade)) {
         eventsByDecade.set(decade, [])
@@ -113,10 +150,10 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
     // Sort decades
     const sortedDecades = Array.from(decades).sort((a, b) => b - a)
-    
+
     sortedDecades.forEach(decade => {
       const decadeEvents = eventsByDecade.get(decade) || []
-      
+
       // Add decade marker
       timelineItems.push({
         type: 'decade',
@@ -136,10 +173,10 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       // Sort years in descending order (most recent first)
       const sortedYears = Array.from(eventsByYear.keys()).sort((a, b) => b - a)
-      
+
       sortedYears.forEach(year => {
         const yearEvents = eventsByYear.get(year) || []
-        
+
         // Add year label for first event of the year
         yearEvents.forEach((event, index) => {
           if (index === 0) {
@@ -269,7 +306,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   const renderTimelineCard = (event: TimelineEvent, index: number) => {
     // Determine card variant based on event properties
     let variant: 'standard' | 'featured' | 'featured-media' = 'standard'
-    
+
     if (event.primary_media && event.media_count && event.media_count > 0) {
       variant = 'featured-media'
     } else if (event.importance && event.importance >= 8) {
@@ -300,9 +337,9 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   const renderEmptyState = () => {
     // Show different empty states based on whether filters are active
     const hasFilters = filterStats.hasFilters
-    
+
     return (
-      <div 
+      <div
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -315,16 +352,19 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           boxSizing: 'border-box'
         }}
       >
-        <div 
+        <div
           style={{
             fontSize: 'clamp(2.5rem, 8vw, 4rem)',
             marginBottom: 'clamp(12px, 3vw, 24px)',
-            opacity: 0.6
+            opacity: 0.6,
+            display: 'flex',
+            justifyContent: 'center',
+            color: 'var(--accent-gold)'
           }}
         >
-          {hasFilters ? '🔍' : '📖'}
+          {hasFilters ? <Search size={64} strokeWidth={1.5} /> : <Book size={64} strokeWidth={1.5} />}
         </div>
-        <h2 
+        <h2
           style={{
             fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
             fontWeight: 600,
@@ -336,7 +376,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
         >
           {hasFilters ? 'No matching events' : 'Your story starts here'}
         </h2>
-        <p 
+        <p
           style={{
             fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
             color: 'var(--md-sys-color-on-surface-variant)',
@@ -346,7 +386,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             margin: '0 0 clamp(16px, 4vw, 32px) 0'
           }}
         >
-          {hasFilters 
+          {hasFilters
             ? 'Try adjusting your filters or create a new event that matches your criteria.'
             : 'Begin documenting your life\'s journey. Share your first memory, achievement, or milestone.'
           }
@@ -371,13 +411,13 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               Clear Filters
             </button>
             <AddMemoryButton
-              onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
+              onClick={() => setShowVoiceSelector(true)}
               aria-label="Add new event"
             />
           </div>
         ) : (
           <AddMemoryButton
-            onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
+            onClick={() => setShowVoiceSelector(true)}
             label="Add Your First Memory"
             aria-label="Add your first memory"
           />
@@ -395,7 +435,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             <div className="timeline-event-node moment" />
           </div>
           <div className="timeline-card-container">
-            <div 
+            <div
               style={{
                 background: 'var(--md-sys-color-surface-container)',
                 borderRadius: 'clamp(12px, 3vw, 16px)',
@@ -407,37 +447,37 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 boxSizing: 'border-box'
               }}
             >
-              <div style={{ 
-                height: 'clamp(12px, 3vw, 16px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(6px, 1.5vw, 8px)', 
+              <div style={{
+                height: 'clamp(12px, 3vw, 16px)',
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: 'clamp(6px, 1.5vw, 8px)',
                 marginBottom: 'clamp(8px, 2vw, 12px)',
                 width: '60%'
               }} />
-              <div style={{ 
-                height: 'clamp(10px, 2.5vw, 14px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(5px, 1.25vw, 7px)', 
+              <div style={{
+                height: 'clamp(10px, 2.5vw, 14px)',
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: 'clamp(5px, 1.25vw, 7px)',
                 marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '40%'
               }} />
-              <div style={{ 
-                height: 'clamp(8px, 2vw, 12px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(4px, 1vw, 6px)', 
+              <div style={{
+                height: 'clamp(8px, 2vw, 12px)',
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: 'clamp(4px, 1vw, 6px)',
                 marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '80%'
               }} />
-              <div style={{ 
-                height: 'clamp(8px, 2vw, 12px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
-                borderRadius: 'clamp(4px, 1vw, 6px)', 
+              <div style={{
+                height: 'clamp(8px, 2vw, 12px)',
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: 'clamp(4px, 1vw, 6px)',
                 marginBottom: 'clamp(6px, 1.5vw, 8px)',
                 width: '70%'
               }} />
-              <div style={{ 
-                height: 'clamp(6px, 1.5vw, 10px)', 
-                background: 'var(--md-sys-color-surface-container-high)', 
+              <div style={{
+                height: 'clamp(6px, 1.5vw, 10px)',
+                background: 'var(--md-sys-color-surface-container-high)',
                 borderRadius: 'clamp(3px, 0.75vw, 5px)',
                 width: '30%'
               }} />
@@ -449,11 +489,11 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   )
 
   const renderErrorState = () => {
-    const isDatabaseSetupError = error?.includes('table does not exist') || 
-                                error?.includes('Database not set up')
-    
+    const isDatabaseSetupError = error?.includes('table does not exist') ||
+      error?.includes('Database not set up')
+
     return (
-      <div 
+      <div
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -464,10 +504,16 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           textAlign: 'center'
         }}
       >
-        <div style={{ fontSize: '4rem', marginBottom: '24px' }}>
-          {isDatabaseSetupError ? '🔧' : '⚠️'}
+        <div style={{
+          fontSize: '4rem',
+          marginBottom: '24px',
+          display: 'flex',
+          justifyContent: 'center',
+          color: isDatabaseSetupError ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-error)'
+        }}>
+          {isDatabaseSetupError ? <Wrench size={64} strokeWidth={1.5} /> : <AlertTriangle size={64} strokeWidth={1.5} />}
         </div>
-        <h2 
+        <h2
           style={{
             fontSize: '1.5rem',
             fontWeight: 600,
@@ -478,7 +524,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
         >
           {isDatabaseSetupError ? 'Database Setup Required' : 'Something went wrong'}
         </h2>
-        <p 
+        <p
           style={{
             fontSize: '1rem',
             color: 'var(--md-sys-color-on-surface-variant)',
@@ -488,17 +534,17 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
         >
           {error}
         </p>
-        
+
         {isDatabaseSetupError ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p 
+            <p
               style={{
                 fontSize: '0.875rem',
                 color: 'var(--md-sys-color-on-surface-variant)',
                 maxWidth: '400px'
               }}
             >
-              Your database needs to be initialized with the required tables. 
+              Your database needs to be initialized with the required tables.
               This is a one-time setup process.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -562,7 +608,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   // Show form overlay - Mobile-First Responsive Design
   if (showForm || editingEvent) {
     return (
-      <div 
+      <div
         style={{
           position: 'fixed',
           // Header-aware positioning for form overlay
@@ -577,10 +623,10 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           boxSizing: 'border-box'
         }}
       >
-        <div style={{ 
-          width: '100%', 
-          maxWidth: 'clamp(320px, 90vw, 800px)', 
-          margin: '0 auto', 
+        <div style={{
+          width: '100%',
+          maxWidth: 'clamp(320px, 90vw, 800px)',
+          margin: '0 auto',
           minHeight: 'calc(100vh - clamp(16px, 4vw, 48px))',
           boxSizing: 'border-box'
         }}>
@@ -596,7 +642,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   }
 
   return (
-    <div 
+    <div
       style={{
         position: 'fixed',
         // Header-aware positioning - CODE_EXPANSION: Conditional fix preserves working functionality
@@ -612,13 +658,13 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       }}
     >
       {/* Responsive Timeline Title - Observable Implementation */}
-      <div 
+      <div
         style={{
           padding: 'clamp(16px, 4vw, 32px) clamp(12px, 4vw, 32px) clamp(8px, 2vw, 16px) clamp(12px, 4vw, 32px)',
           flexShrink: 0
         }}
       >
-        <h1 
+        <h1
           style={{
             fontSize: 'clamp(1.5rem, 4vw, 2rem)',
             fontWeight: 700,
@@ -628,12 +674,12 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             letterSpacing: '-0.02em'
           }}
         >
-          
+
         </h1>
-        
+
         {/* Filter results summary - CODE_EXPANSION: Add filter feedback */}
         {filterStats.hasFilters && (
-          <div 
+          <div
             style={{
               fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
               color: 'var(--md-sys-color-on-surface-variant)',
@@ -647,7 +693,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       </div>
 
       {/* Timeline Filters - CODE_EXPANSION: Add filtering without affecting existing layout */}
-      <div 
+      <div
         style={{
           padding: '0 clamp(12px, 4vw, 32px)',
           flexShrink: 0
@@ -658,7 +704,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       </div>
 
       {/* Responsive Timeline Content - Progressive Construction */}
-      <div 
+      <div
         style={{
           flex: 1,
           overflow: 'auto',
@@ -701,8 +747,8 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 const showYearMarker = item.type === 'year' && item.year
 
                 return (
-                  <div 
-                    key={`timeline-item-${item.event.id}-${index}`} 
+                  <div
+                    key={`timeline-item-${item.event.id}-${index}`}
                     className={`timeline-item timeline-event-item ${isEven ? 'timeline-event-even' : 'timeline-event-odd'}`}
                     style={{ '--item-index': index } as React.CSSProperties}
                   >
@@ -719,7 +765,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       {/* Responsive Floating Action Button - Add New Memory - Explicit Error Handling */}
       <AddMemoryButton
-        onClick={() => chapter ? setShowChat(true) : setShowForm(true)}
+        onClick={() => setShowVoiceSelector(true)}
         disabled={creating || updating || deleting}
         aria-label="Add new memory"
         styleOverrides={{
@@ -732,7 +778,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       {/* Loading overlay - Graceful Fallbacks */}
       {(creating || updating || deleting) && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0,
@@ -747,7 +793,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             backdropFilter: 'blur(4px)'
           }}
         >
-          <div 
+          <div
             style={{
               background: 'var(--md-sys-color-surface-container)',
               borderRadius: '16px',
@@ -758,7 +804,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               maxWidth: '90vw'
             }}
           >
-            <div 
+            <div
               style={{
                 width: 'clamp(24px, 6vw, 32px)',
                 height: 'clamp(24px, 6vw, 32px)',
@@ -769,7 +815,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 animation: 'spin 1s linear infinite'
               }}
             />
-            <p 
+            <p
               style={{
                 color: 'var(--md-sys-color-on-surface)',
                 fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
@@ -789,11 +835,33 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
         <ChapterChatInterface
           chapter={chapter}
           onClose={() => setShowChat(false)}
-          onEventCreated={() => {
-            setShowChat(false)
-            // Trigger refetch by refreshing the page (or could use refetch from useLifeEvents)
-            window.location.reload()
-          }}
+          onEventCreated={handleMemoryComplete}
+        />
+      )}
+
+      {/* Voice Mode Selector Modal */}
+      {showVoiceSelector && (
+        <VoiceModeSelector
+          onSelect={handleVoiceModeSelect}
+          onClose={() => setShowVoiceSelector(false)}
+        />
+      )}
+
+      {/* Voice Interview Interface */}
+      {showInterview && (
+        <InterviewInterface
+          chapter={chapter || undefined}
+          onClose={() => setShowInterview(false)}
+          onMemorySaved={handleMemoryComplete}
+        />
+      )}
+
+      {/* Free Talk Interface */}
+      {showFreeTalk && (
+        <FreeTalkInterface
+          chapter={chapter || undefined}
+          onClose={() => setShowFreeTalk(false)}
+          onComplete={handleMemoryComplete}
         />
       )}
     </div>

@@ -6,6 +6,9 @@ import { TimelineModule } from '@/modules/timeline/TimelineModule'
 import { getChapterById, isValidChapterId } from '@/lib/chapters'
 import type { ChapterId } from '@nality/schema'
 
+import { ChapterIcon } from '@/components/icons/ChapterIcon'
+import { ArrowLeft } from 'lucide-react'
+
 interface ChapterPageProps {
   params: Promise<{ chapter: string }>
 }
@@ -13,7 +16,7 @@ interface ChapterPageProps {
 export default function ChapterPage({ params }: ChapterPageProps) {
   const { chapter: chapterParam } = use(params)
   const router = useRouter()
-  
+
   // Validate chapter ID and redirect if invalid
   const isValid = isValidChapterId(chapterParam)
   const chapterId = isValid ? (chapterParam as ChapterId) : null
@@ -35,7 +38,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   return (
     <div className="h-full flex flex-col">
       {/* Chapter Header */}
-      <div 
+      <div
         style={{
           padding: '12px 20px',
           borderBottom: '1px solid var(--md-sys-color-outline-variant)',
@@ -65,16 +68,16 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
           aria-label="Back to dashboard"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
+          <ArrowLeft size={24} />
         </button>
 
         {/* Chapter Info */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-          <span style={{ fontSize: '1.75rem' }}>{chapter.icon}</span>
+          <span style={{ display: 'flex', alignItems: 'center', color: 'var(--accent-gold)' }}>
+            <ChapterIcon name={chapter.icon} size={28} strokeWidth={2} />
+          </span>
           <div>
-            <h1 
+            <h1
               style={{
                 fontSize: '1.25rem',
                 fontWeight: 700,
@@ -85,7 +88,7 @@ export default function ChapterPage({ params }: ChapterPageProps) {
             >
               {chapter.name}
             </h1>
-            <p 
+            <p
               style={{
                 fontSize: '0.8rem',
                 color: 'var(--md-sys-color-on-surface-variant)',
@@ -97,10 +100,10 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Timeline filtered by chapter categories */}
       <div style={{ flex: 1, overflow: 'hidden' }}>
-        <TimelineModule 
+        <TimelineModule
           chapterId={chapter.id}
           categoryFilter={chapter.categories}
         />

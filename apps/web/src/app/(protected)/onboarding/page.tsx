@@ -6,10 +6,12 @@ import ProgressIndicator from '@/components/onboarding/ProgressIndicator';
 import { fetchUserProfile } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function OnboardingPage() {
   const { user, isAuthenticated, loading } = useAuth()
   const router = useRouter()
+  const { t } = useI18n()
   const [progress, setProgress] = useState(0)
   const [questionsAnswered, setQuestionsAnswered] = useState(0)
 
@@ -32,7 +34,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div 
+    <div
       style={{
         minHeight: '100vh',
         background: 'var(--md-sys-color-background)',
@@ -40,14 +42,14 @@ export default function OnboardingPage() {
       }}
     >
       {/* Main Content */}
-      <main 
+      <main
         style={{
           maxWidth: '1200px',
           margin: '0 auto',
           padding: '24px'
         }}
       >
-        <div 
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
@@ -56,10 +58,10 @@ export default function OnboardingPage() {
           }}
           className="lg:grid-cols-[2fr_1fr]"
         >
-          
+
           {/* Chat Interface - Main Area */}
           <div>
-            <div 
+            <div
               style={{
                 background: 'var(--md-sys-color-surface)',
                 borderRadius: '16px',
@@ -73,19 +75,19 @@ export default function OnboardingPage() {
           </div>
 
           {/* Sidebar - Progress Indicator */}
-          <div 
+          <div
             style={{
               display: 'none'
             }}
             className="lg:block"
           >
             <div style={{ position: 'sticky', top: '24px' }}>
-              <ProgressIndicator 
+              <ProgressIndicator
                 progress={progress}
                 questionsAnswered={questionsAnswered}
                 totalQuestions={16}
               />
-              
+
               {/* Tips Card */}
               <div style={{
                 marginTop: '16px',
@@ -100,7 +102,7 @@ export default function OnboardingPage() {
                   fontWeight: 600,
                   color: 'var(--md-sys-color-on-surface)',
                 }}>
-                  💡 Tipps
+                  💡 {t('onboarding.tips')}
                 </h4>
                 <ul style={{
                   margin: 0,
@@ -109,9 +111,9 @@ export default function OnboardingPage() {
                   color: 'var(--md-sys-color-on-surface-variant)',
                   lineHeight: 1.6
                 }}>
-                  <li>Nimm dir Zeit für deine Antworten</li>
-                  <li>Du kannst jederzeit pausieren</li>
-                  <li>Alle Daten bleiben privat</li>
+                  <li>{t('onboarding.tipTime')}</li>
+                  <li>{t('onboarding.tipPause')}</li>
+                  <li>{t('onboarding.tipPrivacy')}</li>
                 </ul>
               </div>
             </div>

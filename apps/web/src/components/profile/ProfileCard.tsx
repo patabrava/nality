@@ -11,6 +11,7 @@
 import { motion } from 'framer-motion';
 import { User, Heart, BookOpen, Quote, Sparkles, Users } from 'lucide-react';
 import type { ProfileAttributes } from '@/hooks/useUserProfile';
+import { useI18n } from '@/components/i18n/I18nProvider';
 
 // ──────────────────────
 // Types
@@ -38,11 +39,16 @@ interface ProfileCardProps {
 // ──────────────────────
 
 export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact = false }: ProfileCardProps) {
+  const { t } = useI18n();
   const hasValues = attributes?.values && attributes.values.length > 0;
   const hasInfluences = attributes?.influences && attributes.influences.length > 0;
   const hasRoleModels = attributes?.role_models && attributes.role_models.length > 0;
   const hasMotto = attributes?.motto;
   const hasAnyAttributes = hasValues || hasInfluences || hasRoleModels || hasMotto;
+
+  const translateInfluenceType = (type: string): string => {
+    return t(`profile.influenceTypes.${type}`) || type;
+  };
 
   // Empty State (CTA Mode)
   if (!hasAnyAttributes) {
@@ -92,24 +98,24 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
         }}>
           <Sparkles size={32} className="text-primary" style={{ color: 'var(--md-sys-color-primary)' }} />
         </div>
-        
+
         <div>
-          <h3 style={{ 
-            fontSize: '1.25rem', 
-            fontWeight: 600, 
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: 600,
             color: 'var(--md-sys-color-on-surface)',
             margin: '0 0 8px 0'
           }}>
-            Erzähl uns, wer du bist
+            {t('profile.emptyTitle')}
           </h3>
-          <p style={{ 
-            fontSize: '0.9375rem', 
+          <p style={{
+            fontSize: '0.9375rem',
             color: 'var(--md-sys-color-on-surface-variant)',
             margin: 0,
             maxWidth: '400px',
             lineHeight: 1.5,
           }}>
-            Dein Profil ist noch leer. Füge deine Werte, Einflüsse und dein Lebensmotto hinzu, um deiner Timeline Persönlichkeit zu geben.
+            {t('profile.emptySubtitle')}
           </p>
         </div>
 
@@ -148,7 +154,7 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
             }}
           >
-            {onChatNavigate ? 'Im Chat vervollständigen' : 'Profil vervollständigen'}
+            {onChatNavigate ? t('profile.completeInChat') : t('profile.completeProfile')}
             <Sparkles size={16} />
           </button>
         )}
@@ -186,9 +192,9 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
       }} />
 
       {/* Header */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'flex-start',
         marginBottom: hasAnyAttributes ? '24px' : '0',
         position: 'relative',
@@ -209,27 +215,27 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
             <User size={compact ? 24 : 32} color="white" />
           </div>
           <div>
-            <h2 style={{ 
-              margin: 0, 
+            <h2 style={{
+              margin: 0,
               fontSize: compact ? '1.125rem' : '1.5rem',
               fontWeight: 700,
               color: 'var(--md-sys-color-on-surface)',
               letterSpacing: '-0.02em',
             }}>
-              {user.full_name || 'Mein Profil'}
+              {user.full_name || t('profile.defaultName')}
             </h2>
             {user.birth_date && user.birth_place && (
-              <p style={{ 
-                margin: '4px 0 0 0', 
+              <p style={{
+                margin: '4px 0 0 0',
                 fontSize: '0.9375rem',
                 color: 'var(--md-sys-color-on-surface-variant)',
               }}>
-                Geboren {formatYear(user.birth_date)} in {user.birth_place}
+                {t('profile.bornIn').replace('{year}', formatYear(user.birth_date)).replace('{place}', user.birth_place)}
               </p>
             )}
           </div>
         </div>
-        
+
         {onEdit && (
           <button
             onClick={onEdit}
@@ -257,7 +263,7 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
             }}
           >
             <Sparkles size={14} />
-            Bearbeiten
+            {t('profile.edit')}
           </button>
         )}
       </div>
@@ -272,9 +278,9 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
       }}>
         {/* Values Section */}
         {hasValues && (
-          <ProfileSection 
-            icon={<Heart size={18} />} 
-            title="Meine Werte"
+          <ProfileSection
+            icon={<Heart size={18} />}
+            title={t('profile.myValues')}
             compact={compact}
           >
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -300,29 +306,29 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
 
         {/* Influences Section */}
         {hasInfluences && (
-          <ProfileSection 
-            icon={<BookOpen size={18} />} 
-            title="Einflüsse"
+          <ProfileSection
+            icon={<BookOpen size={18} />}
+            title={t('profile.influences')}
             compact={compact}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {attributes!.influences.map((inf, i) => (
-                <div 
+                <div
                   key={i}
-                  style={{ 
+                  style={{
                     display: 'flex',
                     alignItems: 'baseline',
                     gap: '8px',
                   }}
                 >
-                  <span style={{ 
+                  <span style={{
                     color: 'var(--md-sys-color-on-surface)',
                     fontWeight: 500,
                   }}>
                     {inf.name}
                   </span>
                   {inf.type && inf.type !== 'other' && (
-                    <span style={{ 
+                    <span style={{
                       color: 'var(--md-sys-color-on-surface-variant)',
                       fontSize: '0.75rem',
                       textTransform: 'capitalize',
@@ -341,30 +347,30 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
 
         {/* Role Models Section */}
         {hasRoleModels && (
-          <ProfileSection 
-            icon={<Users size={18} />} 
-            title="Vorbilder"
+          <ProfileSection
+            icon={<Users size={18} />}
+            title={t('profile.roleModels')}
             compact={compact}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {attributes!.role_models.map((rm, i) => (
-                <div 
+                <div
                   key={i}
-                  style={{ 
+                  style={{
                     display: 'flex',
                     alignItems: 'baseline',
                     gap: '8px',
                     flexWrap: 'wrap',
                   }}
                 >
-                  <span style={{ 
+                  <span style={{
                     color: 'var(--md-sys-color-on-surface)',
                     fontWeight: 500,
                   }}>
                     {rm.name}
                   </span>
                   {rm.traits && rm.traits.length > 0 && (
-                    <span style={{ 
+                    <span style={{
                       color: 'var(--md-sys-color-on-surface-variant)',
                       fontSize: '0.75rem',
                     }}>
@@ -381,9 +387,9 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
       {/* Motto Section (Full Width) */}
       {hasMotto && (
         <div style={{ marginTop: '24px', position: 'relative', zIndex: 1 }}>
-          <ProfileSection 
-            icon={<Quote size={18} />} 
-            title="Lebensmotto"
+          <ProfileSection
+            icon={<Quote size={18} />}
+            title={t('profile.lifeMotto')}
             compact={compact}
           >
             <blockquote style={{
@@ -411,30 +417,30 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
 // Sub-components
 // ──────────────────────
 
-function ProfileSection({ 
-  icon, 
-  title, 
+function ProfileSection({
+  icon,
+  title,
   children,
   compact = false,
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
+}: {
+  icon: React.ReactNode;
+  title: string;
   children: React.ReactNode;
   compact?: boolean;
 }) {
   return (
     <div style={{ marginTop: compact ? '16px' : '20px' }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
         gap: '8px',
         marginBottom: '12px',
         color: 'var(--md-sys-color-on-surface-variant)',
       }}>
         {icon}
-        <h3 style={{ 
-          margin: 0, 
-          fontSize: '0.875rem', 
+        <h3 style={{
+          margin: 0,
+          fontSize: '0.875rem',
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
@@ -454,20 +460,6 @@ function ProfileSection({
 function formatYear(dateStr: string): string {
   const match = dateStr.match(/^(\d{4})/);
   return match && match[1] ? match[1] : dateStr;
-}
-
-function translateInfluenceType(type: string): string {
-  const translations: Record<string, string> = {
-    author: 'Autor',
-    philosopher: 'Philosoph',
-    person: 'Person',
-    mentor: 'Mentor',
-    public_figure: 'Persönlichkeit',
-    historical: 'Historisch',
-    other: 'Sonstige',
-  };
-  const translated = translations[type];
-  return translated !== undefined ? translated : type;
 }
 
 export default ProfileCard;

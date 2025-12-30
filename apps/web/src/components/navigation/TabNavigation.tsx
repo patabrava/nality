@@ -43,11 +43,7 @@ export function TabNavigation() {
 
   return (
     <nav 
-      className={`flex flex-col py-4 transition-all duration-200 ${compactMode ? 'w-16' : 'w-20'}`}
-      style={{
-        backgroundColor: 'var(--c-primary-100)',
-        borderLeft: '1px solid var(--c-neutral-dark)'
-      }}
+      className={`flex-shrink-0 flex flex-col py-4 transition-all duration-200 border-l border-white/5 bg-[#050505] ${compactMode ? 'w-16' : 'w-20'}`}
       aria-label="Dashboard Navigation"
       role="tablist"
     >

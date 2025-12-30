@@ -1,5 +1,7 @@
 'use client'
 
+import { LayoutGrid, Calendar, MessageSquare, Users, Settings, Loader2, AlertTriangle, type LucideIcon } from 'lucide-react'
+
 interface Tab {
   id: string
   label: string
@@ -16,12 +18,29 @@ interface TabButtonProps {
 }
 
 export function TabButton({ tab, isActive, isLoading = false, hasError = false, onClick }: TabButtonProps) {
+  // Icon mapping
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'house': return LayoutGrid
+      case 'timeline': return Calendar
+      case 'chat': return MessageSquare
+      case 'user': return Users
+      case 'settings': return Settings
+      default: return LayoutGrid
+    }
+  }
+
+  const Icon = getIcon(tab.icon)
+
   return (
     <button
-      className="w-full h-16 flex flex-col items-center justify-center gap-1 text-xs font-medium transition-colors duration-150 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className={`
+        w-full h-16 flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-all duration-200
+        hover:bg-white/5 focus:outline-none
+        ${isActive ? 'text-[#D4AF37]' : 'text-gray-400 hover:text-gray-200'}
+      `}
       style={{
-        color: isActive ? 'var(--c-primary-invert)' : 'var(--c-neutral-dark)',
-        backgroundColor: isActive ? 'var(--c-neutral-dark)' : 'transparent'
+        borderLeft: isActive ? '3px solid #D4AF37' : '3px solid transparent'
       }}
       onClick={onClick}
       role="tab"
@@ -29,25 +48,17 @@ export function TabButton({ tab, isActive, isLoading = false, hasError = false, 
       aria-label={`Switch to ${tab.label}`}
     >
       {/* Icon with loading/error states */}
-      <span className="text-lg relative">
-        {isLoading && (
-          <span className="absolute inset-0 animate-spin">⟳</span>
-        )}
-        {hasError && !isLoading && (
-          <span style={{ color: 'var(--c-accent-100)' }}>⚠</span>
-        )}
-        {!isLoading && !hasError && (
-          <>
-            {tab.icon === 'house' && '🏠'}
-            {tab.icon === 'timeline' && '📅'}
-            {tab.icon === 'chat' && '💬'}
-            {tab.icon === 'user' && '👤'}
-            {tab.icon === 'settings' && '⚙️'}
-          </>
+      <span className="relative">
+        {isLoading ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : hasError ? (
+          <AlertTriangle className="w-5 h-5 text-red-500" />
+        ) : (
+          <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
         )}
       </span>
       
-      <span className="text-[10px] leading-tight">
+      <span className="leading-tight uppercase tracking-wide">
         {tab.label}
       </span>
     </button>

@@ -3,6 +3,8 @@
 import { useTheme } from '@/stores/theme'
 import { useEffect, useState } from 'react'
 
+import { Sun, Moon, Contrast } from 'lucide-react'
+
 /**
  * ThemeToggle Component
  * 
@@ -13,12 +15,12 @@ import { useEffect, useState } from 'react'
 export function ThemeToggle() {
   const { mode, resolvedTheme, setMode } = useTheme()
   const [mounted, setMounted] = useState(false)
-  
+
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
-  
+
   if (!mounted) {
     // Return static placeholder during SSR/hydration
     return (
@@ -27,7 +29,7 @@ export function ThemeToggle() {
       </div>
     )
   }
-  
+
   const handleToggle = () => {
     // Cycle through: system → light → dark → system
     switch (mode) {
@@ -42,7 +44,7 @@ export function ThemeToggle() {
         break
     }
   }
-  
+
   const getToggleLabel = () => {
     switch (mode) {
       case 'system':
@@ -53,18 +55,18 @@ export function ThemeToggle() {
         return 'Dark'
     }
   }
-  
+
   const getToggleIcon = () => {
     switch (mode) {
       case 'system':
-        return '🌓' // Half moon for auto
+        return <Contrast size={16} />
       case 'light':
-        return '☀️' // Sun for light
+        return <Sun size={16} />
       case 'dark':
-        return '🌙' // Moon for dark
+        return <Moon size={16} />
     }
   }
-  
+
   return (
     <>
       <button
@@ -80,7 +82,7 @@ export function ThemeToggle() {
           {getToggleLabel()}
         </span>
       </button>
-      
+
       <style jsx>{`
         .theme-toggle-skeleton {
           width: 100px;
@@ -184,15 +186,15 @@ export function ThemeToggle() {
 export function ThemeToggleCompact() {
   const { mode, setMode } = useTheme()
   const [mounted, setMounted] = useState(false)
-  
+
   useEffect(() => {
     setMounted(true)
   }, [])
-  
+
   if (!mounted) {
     return <div className="theme-toggle-compact-skeleton" />
   }
-  
+
   const handleToggle = () => {
     // Simple toggle between light and dark (no system mode in compact)
     switch (mode) {
@@ -205,11 +207,11 @@ export function ThemeToggleCompact() {
         break
     }
   }
-  
+
   const getIcon = () => {
-    return mode === 'light' ? '🌙' : '☀️'
+    return mode === 'light' ? <Moon size={18} /> : <Sun size={18} />
   }
-  
+
   return (
     <>
       <button
@@ -221,7 +223,7 @@ export function ThemeToggleCompact() {
           {getIcon()}
         </span>
       </button>
-      
+
       <style jsx>{`
         .theme-toggle-compact-skeleton {
           width: 40px;

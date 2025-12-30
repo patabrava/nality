@@ -8,6 +8,10 @@ import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
 import { ProfileCard } from '@/components/profile/ProfileCard'
+import { VoiceModeSelector, InterviewInterface, FreeTalkInterface, type VoiceMode } from '@/components/voice'
+
+import { ChapterIcon } from '@/components/icons/ChapterIcon'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 const DASHBOARD_CHAPTERS = CHAPTERS_ORDERED.filter(chapter => chapter.id !== 'moments')
 
@@ -22,7 +26,7 @@ interface DashboardTileProps {
 
 function DashboardTile({ title, content, isInteractive = false, slogan, onClick }: DashboardTileProps) {
   return (
-    <div 
+    <div
       className={`dashboard-tile feature-card ${isInteractive ? 'interactive' : ''}`}
       onClick={isInteractive ? onClick : undefined}
       style={{
@@ -84,41 +88,41 @@ export default function DashboardPage() {
   const router = useRouter()
   const { user } = useAuth()
   const { profile, isLoading: profileLoading } = useUserProfile(user?.id)
+  const { t } = useI18n()
   const [chapterStats, setChapterStats] = useState<Record<string, number>>({})
   const [totalEvents, setTotalEvents] = useState(0)
-  
-  console.log('📊 Dashboard page mounted')
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false)
+  const [showInterview, setShowInterview] = useState(false)
+  const [showFreeTalk, setShowFreeTalk] = useState(false)
+
+  // ... (keep useEffects logic same)
 
   // Auto-convert any unconverted onboarding answers on dashboard load
   useEffect(() => {
     async function convertOnboardingAnswers() {
       if (!user?.id) return
-      
+
       try {
-        // Get access token for API auth
         const { data: { session } } = await supabase.auth.getSession()
         const accessToken = session?.access_token
-        
-        console.log('🔄 Checking for unconverted onboarding answers...')
+
         const response = await fetch('/api/events/convert-onboarding', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, accessToken }),
         })
-        
+
         if (response.ok) {
           const result = await response.json()
           if (result.created > 0) {
             console.log('✅ Auto-converted onboarding answers:', result)
-          } else {
-            console.log('📋 No new answers to convert')
           }
         }
       } catch (error) {
         console.error('❌ Error auto-converting onboarding answers:', error)
       }
     }
-    
+
     convertOnboardingAnswers()
   }, [user?.id])
 
@@ -126,105 +130,129 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchStats() {
       if (!user?.id) return
-      
+
       try {
-        // Get event counts per category
         const { data, error } = await supabase
           .from('life_event')
           .select('category')
           .eq('user_id', user.id)
-        
+
         if (error) {
           console.error('Failed to fetch stats:', error)
           return
         }
-        
-        // Count events per chapter
+
         const stats: Record<string, number> = {}
         let total = 0
-        
+
         DASHBOARD_CHAPTERS.forEach(chapter => {
-          const count = data?.filter((e: { category: string }) => 
+          const count = data?.filter((e: { category: string }) =>
             chapter.categories.includes(e.category as typeof chapter.categories[number])
           ).length || 0
           stats[chapter.id] = count
           total += count
         })
-        
+
         setChapterStats(stats)
         setTotalEvents(total)
-        console.log('📊 Chapter stats:', stats, 'Total:', total)
       } catch (err) {
         console.error('Error fetching stats:', err)
       }
     }
-    
+
     fetchStats()
   }, [user?.id])
 
+  // ... (keep handle functions same)
+
   const handleChapterClick = (chapterId: string) => {
-    console.log(`📖 Navigating to chapter: ${chapterId}`)
     router.push(`/dash/${chapterId}`)
   }
 
   const handleAddMemory = () => {
-    console.log('🧠 Navigating to chat to add a memory')
-    router.push('/dash/chat')
+    setShowVoiceSelector(true)
   }
-  
+
+  const handleVoiceModeSelect = (mode: VoiceMode) => {
+    setShowVoiceSelector(false)
+    switch (mode) {
+      case 'interview':
+        setShowInterview(true)
+        break
+      case 'free-talk':
+        setShowFreeTalk(true)
+        break
+      case 'text':
+        router.push('/dash/chat')
+        break
+    }
+  }
+
+  const handleMemoryComplete = () => {
+    setShowInterview(false)
+    setShowFreeTalk(false)
+    window.location.reload()
+  }
+
   const handleChatNavigation = () => {
-    console.log('🗣️ Navigating to chat for profile completion')
     router.push('/dash/chat')
   }
 
   // Build tiles from chapters config with stats
-  const chapterTiles = DASHBOARD_CHAPTERS.map(chapter => ({
-    title: chapter.name,
-    content: (
-      <div style={{ textAlign: 'center' }}>
-        <span className="chapter-icon">{chapter.icon}</span>
-        {(chapterStats[chapter.id] ?? 0) > 0 && (
-          <span style={{ 
-            fontSize: '0.8rem', 
-            color: '#a0a0a0',
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 400,
-            marginTop: '8px',
-            display: 'block',
-            letterSpacing: '0.5px'
-          }}>
-            {chapterStats[chapter.id]} {chapterStats[chapter.id] === 1 ? 'memory' : 'memories'}
+  const chapterTiles = DASHBOARD_CHAPTERS.map(chapter => {
+    const memoryCount = chapterStats[chapter.id] ?? 0
+    const labelKey = memoryCount === 1 ? 'dashboardNav.dashboard.memory' : 'dashboardNav.dashboard.memories'
+
+    return {
+      title: t(`dashboardNav.chapters.${chapter.id}.name`) || chapter.name,
+      content: (
+        <div style={{ textAlign: 'center' }}>
+          <span className="chapter-icon">
+            <ChapterIcon name={chapter.icon} size={48} strokeWidth={1.5} />
           </span>
-        )}
-      </div>
-    ),
-    isInteractive: true,
-    slogan: chapter.subtitle,
-    onClick: () => handleChapterClick(chapter.id)
-  }))
+          {memoryCount > 0 && (
+            <span style={{
+              fontSize: '0.8rem',
+              color: '#a0a0a0',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 400,
+              marginTop: '8px',
+              display: 'block',
+              letterSpacing: '0.5px'
+            }}>
+              {memoryCount} {t(labelKey).toLowerCase()}
+            </span>
+          )}
+        </div>
+      ),
+      isInteractive: true,
+      slogan: t(`dashboardNav.chapters.${chapter.id}.subtitle`) || chapter.subtitle,
+      onClick: () => handleChapterClick(chapter.id)
+    }
+  })
 
   // Add stats tiles
   const statsTiles = [
     {
-      title: "Your Story",
+      title: t('dashboardNav.dashboard.statsTitle'),
       content: (
         <div style={{ textAlign: 'center' }}>
           <p className="stats-number">
             {totalEvents}
           </p>
-          <p style={{ 
-            fontSize: '0.9rem', 
+          <p style={{
+            fontSize: '0.9rem',
             color: '#a0a0a0',
             fontFamily: 'var(--font-sans)',
             margin: '8px 0 0',
             letterSpacing: '0.5px'
           }}>
-            {totalEvents === 1 ? 'Memory' : 'Memories'} Captured
+            {totalEvents === 1 ? t('dashboardNav.dashboard.memory') : t('dashboardNav.dashboard.memories')} {t('dashboardNav.dashboard.captured')}
           </p>
         </div>
       ),
       isInteractive: false,
-      slogan: `Across ${DASHBOARD_CHAPTERS.length} life chapters`,
+      slogan: t('dashboardNav.dashboard.acrossChapters').replace('{count}', DASHBOARD_CHAPTERS.length.toString()),
       onClick: undefined as (() => void) | undefined
     }
   ]
@@ -247,38 +275,76 @@ export default function DashboardPage() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
         
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         .section-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           text-align: center;
-          margin-bottom: 4rem;
-          padding: 0 5vw;
+          margin-bottom: 5rem;
+          padding: 2rem 5vw 0;
           position: relative;
           z-index: 2;
+          width: 100%;
+          animation: fadeInDown 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
         }
         
         .section-label {
-          font-family: 'var(--font-sans)';
-          font-size: 0.8rem;
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.5em; /* Increased letter spacing for more luxury feel */
           color: var(--accent-gold);
           margin-bottom: 1.5rem;
           display: block;
+          opacity: 0.7;
+          font-weight: 500;
+          text-align: center;
         }
         
         .section-title {
-          font-family: 'var(--font-serif)';
-          font-size: clamp(2.5rem, 4vw, 4rem);
+          font-family: var(--font-serif);
+          font-size: clamp(2.5rem, 5vw, 4.5rem);
           font-weight: 400;
           margin-bottom: 1.5rem;
           color: var(--text-color);
-          line-height: 1.2;
-          letter-spacing: -0.02em;
+          line-height: 1.1;
+          letter-spacing: -0.04em;
+          max-width: 1000px;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: center;
+          display: block;
         }
         
         .section-subtitle {
-          font-family: 'var(--font-serif-text)';
+          font-family: var(--font-serif-text);
           font-style: italic;
           color: var(--accent-gold);
+          display: inline;
+          position: relative;
+          white-space: pre-wrap; /* Ensure spaces are preserved */
+        }
+
+        .section-subtitle::after {
+          content: '';
+          position: absolute;
+          bottom: 0.1em;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+          opacity: 0.3;
         }
         
         .dashboard-grid {
@@ -444,18 +510,19 @@ export default function DashboardPage() {
           }
         }
       `}</style>
-      
+
       <div className="h-full" style={{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)', position: 'relative' }}>
         <div className="grain-overlay"></div>
-        
+
         {/* Section Header - Moved to top */}
         <div className="section-header">
-          <span className="section-label">Your Journey</span>
+          <span className="section-label">{t('dashboardNav.dashboard.label')}</span>
           <h1 className="section-title">
-            Your life, <span className="section-subtitle">beautifully told.</span>
+            <span>{t('dashboardNav.dashboard.titlePrefix')}</span>
+            <span className="section-subtitle">{t('dashboardNav.dashboard.titleSubtitle')}</span>
           </h1>
         </div>
-        
+
         {/* Profile Card - Shows values, influences, motto */}
         {!profileLoading && profile && (
           <div style={{ maxWidth: '1400px', margin: '0 auto 3rem', padding: '0 5vw', position: 'relative', zIndex: 2 }}>
@@ -470,7 +537,7 @@ export default function DashboardPage() {
             />
           </div>
         )}
-        
+
         <div className="dashboard-grid" style={{ position: 'relative', zIndex: 2 }}>
           {tilesData.map((tile, index) => (
             <DashboardTile
@@ -483,16 +550,40 @@ export default function DashboardPage() {
             />
           ))}
         </div>
-        
+
         {/* Floating Add Memory Button */}
         <button
           className="floating-add-button"
           onClick={handleAddMemory}
-          aria-label="Add a new memory"
-          title="Add Memory"
+          aria-label={t('dashboardNav.dashboard.addMemory')}
+          title={t('dashboardNav.dashboard.addMemory')}
         >
           +
         </button>
+
+        {/* Voice Mode Selector Modal */}
+        {showVoiceSelector && (
+          <VoiceModeSelector
+            onSelect={handleVoiceModeSelect}
+            onClose={() => setShowVoiceSelector(false)}
+          />
+        )}
+
+        {/* Voice Interview Interface */}
+        {showInterview && (
+          <InterviewInterface
+            onClose={() => setShowInterview(false)}
+            onMemorySaved={handleMemoryComplete}
+          />
+        )}
+
+        {/* Free Talk Interface */}
+        {showFreeTalk && (
+          <FreeTalkInterface
+            onClose={() => setShowFreeTalk(false)}
+            onComplete={handleMemoryComplete}
+          />
+        )}
       </div>
     </>
   )

@@ -1,36 +1,24 @@
 'use client'
 
-const galleryImages = [
-  {
-    title: "Book Cover",
-    description: "Hardcover Life Book on a table",
-    mockContent: "📖\nLife Book\nCover"
-  },
-  {
-    title: "Book Spread 1",
-    description: "Open book spread showing photos and captions",
-    mockContent: "📷\nChapter 1\nEarly Years"
-  },
-  {
-    title: "Book Spread 2", 
-    description: "Two-page Life Book spread with a large image and caption",
-    mockContent: "🎓\nChapter 3\nEducation"
-  }
-]
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function OutcomesGallerySection() {
+  const { t } = useI18n()
+
+  const galleryImages = t('outcomes.gallery')
+
   return (
-    <section 
-      id="gallery" 
-      className="section" 
-      style={{ 
+    <section
+      id="gallery"
+      className="section"
+      style={{
         padding: '80px 0',
         margin: '0 -24px'
       }}
     >
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 
+          <h2
             style={{
               fontSize: 'clamp(2rem, 4vw, 2.5rem)',
               fontWeight: '700',
@@ -38,9 +26,9 @@ export default function OutcomesGallerySection() {
               marginBottom: '16px'
             }}
           >
-            A keepsake you can hold
+            {t('outcomes.title')}
           </h2>
-          <p 
+          <p
             style={{
               fontSize: '1.125rem',
               color: 'var(--md-sys-color-on-surface-variant)',
@@ -48,11 +36,11 @@ export default function OutcomesGallerySection() {
               margin: '0 auto'
             }}
           >
-            Nality turns your timeline into a polished, print-ready PDF. Choose cover styles and share digitally or order prints.
+            {t('outcomes.subtitle')}
           </p>
         </div>
 
-        <div 
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -61,7 +49,7 @@ export default function OutcomesGallerySection() {
             margin: '0 auto'
           }}
         >
-          {galleryImages.map((image, index) => (
+          {Array.isArray(galleryImages) && galleryImages.map((image: any, index: number) => (
             <div
               key={index}
               style={{
@@ -81,7 +69,7 @@ export default function OutcomesGallerySection() {
               }}
             >
               {/* Mock book preview */}
-              <div 
+              <div
                 style={{
                   width: '100%',
                   height: '250px',
@@ -99,12 +87,12 @@ export default function OutcomesGallerySection() {
                 }}
               >
                 {/* Book-like styling */}
-                <div 
+                <div
                   style={{
                     width: '80%',
                     height: '80%',
-                    background: index === 0 ? 
-                      'linear-gradient(145deg, #f0f0f0, #e0e0e0)' : 
+                    background: index === 0 ?
+                      'linear-gradient(145deg, #f0f0f0, #e0e0e0)' :
                       'linear-gradient(145deg, #ffffff, #f5f5f5)',
                     borderRadius: index === 0 ? '8px' : '4px',
                     display: 'flex',
@@ -112,7 +100,7 @@ export default function OutcomesGallerySection() {
                     justifyContent: 'center',
                     flexDirection: 'column',
                     gap: '8px',
-                    boxShadow: index === 0 ? 
+                    boxShadow: index === 0 ?
                       '0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5)' :
                       '0 4px 12px rgba(0, 0, 0, 0.1)',
                     border: index === 0 ? 'none' : '1px solid #e0e0e0',
@@ -131,12 +119,12 @@ export default function OutcomesGallerySection() {
                       borderRadius: '0 4px 4px 0'
                     }} />
                   )}
-                  
+
                   {/* Content */}
                   <div style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
                     {image.mockContent}
                   </div>
-                  
+
                   {/* Page binding for spreads */}
                   {index > 0 && (
                     <div style={{
@@ -160,13 +148,13 @@ export default function OutcomesGallerySection() {
                   color: '#666',
                   opacity: '0.6'
                 }}>
-                  {index === 0 ? 'Cover' : `Page ${index * 2 - 1}-${index * 2}`}
+                  {index === 0 ? t('outcomes.coverLabel') : `${t('outcomes.pageLabel')} ${index * 2 - 1}-${index * 2}`}
                 </div>
               </div>
 
               {/* Caption */}
               <div style={{ padding: '20px' }}>
-                <h3 
+                <h3
                   style={{
                     fontSize: '1.125rem',
                     fontWeight: '600',
@@ -176,7 +164,7 @@ export default function OutcomesGallerySection() {
                 >
                   {image.title}
                 </h3>
-                <p 
+                <p
                   style={{
                     fontSize: '0.875rem',
                     color: 'var(--md-sys-color-on-surface-variant)',
@@ -188,7 +176,7 @@ export default function OutcomesGallerySection() {
               </div>
 
               {/* Zoom hint */}
-              <div 
+              <div
                 style={{
                   position: 'absolute',
                   top: '16px',
@@ -203,7 +191,7 @@ export default function OutcomesGallerySection() {
                 }}
                 className="zoom-hint"
               >
-                Click to zoom
+                {t('outcomes.zoomHint')}
               </div>
             </div>
           ))}
@@ -211,16 +199,16 @@ export default function OutcomesGallerySection() {
 
         {/* Call to action */}
         <div style={{ textAlign: 'center', marginTop: '48px' }}>
-          <p 
+          <p
             style={{
               fontSize: '1rem',
               color: 'var(--md-sys-color-on-surface-variant)',
               marginBottom: '24px'
             }}
           >
-            See your story come to life in print
+            {t('outcomes.ctaText')}
           </p>
-          <button 
+          <button
             className="form-button secondary"
             style={{
               fontSize: '16px',
@@ -232,7 +220,7 @@ export default function OutcomesGallerySection() {
               console.log('View sample book clicked')
             }}
           >
-            View sample book
+            {t('outcomes.ctaButton')}
           </button>
         </div>
       </div>

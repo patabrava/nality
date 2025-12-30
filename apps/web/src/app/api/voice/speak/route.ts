@@ -1,0 +1,86 @@
+import { createClient } from '@deepgram/sdk';
+import { NextResponse } from 'next/server';
+
+/**
+ * Voice TTS API Route
+ * Converts text to speech using Deepgram Aura
+ * Returns audio stream for playback
+ */
+export async function POST(req: Request) {
+  const apiKey = process.env.DEEPGRAM_KEY;
+  
+  if (!apiKey) {
+    console.error('❌ DEEPGRAM_KEY not configured');
+    return NextResponse.json(
+      { error: 'Voice service not configured' }, 
+      { status: 500 }
+    );
+  }
+
+  try {
+    const { text, voice = 'aura-asteria-en' } = await req.json();
+    
+    if (!text || typeof text !== 'string') {
+      return NextResponse.json(
+        { error: 'Text is required' }, 
+        { status: 400 }
+      );
+    }
+
+    // Limit text length to prevent abuse
+    const trimmedText = text.slice(0, 2000);
+    
+    console.log(`🔊 Generating speech for ${trimmedText.length} characters`);
+    
+    const deepgram = createClient(apiKey);
+
+    // Available voices:
+    // - aura-asteria-en (English, female, warm)
+    // - aura-luna-en (English, female, soft)
+    // - aura-stella-en (English, female, confident)
+    // - aura-athena-en (English, female, professional)
+    // - aura-hera-en (English, female, mature)
+    // - aura-orion-en (English, male, confident)
+    // - aura-arcas-en (English, male, warm)
+    // - aura-perseus-en (English, male, deep)
+    // - aura-angus-en (English, male, Irish)
+    // - aura-orpheus-en (English, male, gentle)
+    // - aura-helios-en (English, male, bright)
+    // - aura-zeus-en (English, male, authoritative)
+    
+    const response = await deepgram.speak.request(
+      { text: trimmedText },
+      {
+        model: voice,
+        encoding: 'linear16',
+        container: 'wav',
+      }
+    );
+
+    const stream = await response.getStream();
+    
+    if (!stream) {
+      console.error('❌ No audio stream returned from Deepgram');
+      return NextResponse.json(
+        { error: 'Failed to generate audio' }, 
+        { status: 500 }
+      );
+    }
+
+    console.log('✅ Speech generated successfully');
+
+    // Return the audio stream directly
+    return new NextResponse(stream, {
+      headers: {
+        'Content-Type': 'audio/wav',
+        'Cache-Control': 'no-cache',
+      },
+    });
+  } catch (error) {
+    console.error('❌ TTS generation failed:', error);
+    return NextResponse.json(
+      { error: 'Failed to generate speech' }, 
+      { status: 500 }
+    );
+  }
+}

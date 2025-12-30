@@ -7,6 +7,7 @@ import { useChat } from '@ai-sdk/react';
 import { Bot, User, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
+import { useI18n } from '@/components/i18n/I18nProvider';
 
 interface ChatInterfaceProps {
   placeholder?: string;
@@ -23,10 +24,14 @@ interface DisplayMessage {
 }
 
 export default function ChatInterface({
-  placeholder = "Erzähle mir kurz etwas über dich …",
-  initialMessage = "Guten Tag! Wie möchten Sie angesprochen werden – du oder Sie? Ihr vollständiger Name? Und welcher Stil passt zu Ihnen: **prosa** (erzählend), **fachlich** (strukturiert) oder **locker** (entspannt)?",
+  placeholder,
+  initialMessage,
   onProgressChange
 }: ChatInterfaceProps) {
+  const { t } = useI18n();
+  const defaultPlaceholder = placeholder || t('onboarding.chat.placeholder');
+  const defaultInitialMessage = initialMessage || t('onboarding.chat.initialMessage');
+
   // Sanitize AI output: remove status markers and code fences
   function sanitizeAIContent(raw: string): string {
     if (!raw) return '';
@@ -57,7 +62,7 @@ export default function ChatInterface({
   const [userId, setUserId] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
-  
+
   // Session persistence hook
   const {
     session,
@@ -67,7 +72,7 @@ export default function ChatInterface({
     saveMessage,
     markComplete
   } = useOnboardingSession(userId);
-  
+
   // Notify parent of progress changes (for progress bar)
   useEffect(() => {
     if (onProgressChange && displayMessages.length > 0) {
@@ -76,14 +81,14 @@ export default function ChatInterface({
       onProgressChange(estimatedProgress);
     }
   }, [displayMessages.length, onProgressChange]);
-  
+
   // Detect onboarding completion message and redirect to dashboard
   function isCompletionMessage(text: string): boolean {
     if (!text) return false;
-    const t = text.toLowerCase();
+    const tLower = text.toLowerCase();
 
     // Explicit signal from prompt instructions
-    if (t.includes('[onboarding_complete]')) {
+    if (tLower.includes('[onboarding_complete]')) {
       return true;
     }
 
@@ -100,7 +105,7 @@ export default function ChatInterface({
       /ready\s+to\s+explore/,                 // Completion CTA variant
       /weiterführende\s+biografiearbeit/,     // From prompt completion message
     ];
-    return completionPatterns.some(pattern => pattern.test(t));
+    return completionPatterns.some(pattern => pattern.test(tLower));
   }
 
   const handleCompletionRedirect = useCallback(async (content: string) => {
@@ -108,10 +113,10 @@ export default function ChatInterface({
     if (isCompletionMessage(content)) {
       console.log('🎯 Onboarding completion detected. Converting answers to life events...');
       setHasRedirected(true);
-      
+
       // Mark session as complete (this also marks user as onboarding complete via API)
       await markComplete();
-      
+
       // Convert onboarding answers to life events before redirecting
       try {
         const response = await fetch('/api/events/convert-onboarding', {
@@ -119,7 +124,7 @@ export default function ChatInterface({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, accessToken }),
         });
-        
+
         if (response.ok) {
           const result = await response.json();
           console.log('✅ Onboarding answers converted to life events:', result);
@@ -129,13 +134,13 @@ export default function ChatInterface({
       } catch (error) {
         console.error('❌ Error converting onboarding answers:', error);
       }
-      
+
       // Redirect to dashboard
       setTimeout(() => {
         router.push('/dash');
       }, 500);
     }
-  }, [hasRedirected, markComplete, userId, router]);
+  }, [hasRedirected, markComplete, userId, accessToken, router]);
 
   const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
@@ -144,12 +149,12 @@ export default function ChatInterface({
     onFinish: async (message) => {
       console.log('Message exchange completed');
       const sanitizedContent = sanitizeAIContent(message.content);
-      
+
       // Save AI message to database
       if (session) {
         await saveMessage('assistant', sanitizedContent);
       }
-      
+
       // Add AI response to display messages
       const aiMessage: DisplayMessage = {
         id: `ai-${Date.now()}`,
@@ -159,7 +164,7 @@ export default function ChatInterface({
       };
       setDisplayMessages(prev => [...prev, aiMessage]);
       setIsSubmitting(false);
-      
+
       // Check for completion
       handleCompletionRedirect(sanitizedContent);
     },
@@ -212,14 +217,14 @@ export default function ChatInterface({
 
   // Initialize chat - either resume or start fresh
   useEffect(() => {
-    console.log('🔄 ChatInterface init effect:', { 
-      sessionLoading, 
-      userId: userId ? 'set' : 'null', 
+    console.log('🔄 ChatInterface init effect:', {
+      sessionLoading,
+      userId: userId ? 'set' : 'null',
       isInitialized,
       isResuming,
-      persistedMessagesCount: persistedMessages.length 
+      persistedMessagesCount: persistedMessages.length
     });
-    
+
     if (sessionLoading || !userId || isInitialized) {
       console.log('⏸️ Skipping init:', { sessionLoading, hasUserId: !!userId, isInitialized });
       return;
@@ -227,48 +232,48 @@ export default function ChatInterface({
 
     const initializeChat = async () => {
       console.log('🤖 Initializing chat...', { isResuming, persistedMessagesCount: persistedMessages.length });
-      
+
       if (isResuming && persistedMessages.length > 0) {
         // Resume from persisted messages
         console.log('📂 Resuming from', persistedMessages.length, 'persisted messages');
-        
+
         const restoredMessages: DisplayMessage[] = persistedMessages.map((msg, index) => ({
           id: msg.id || `restored-${index}`,
           type: msg.role === 'assistant' ? 'bot' : 'user',
           content: msg.content,
           timestamp: new Date(msg.created_at)
         }));
-        
+
         // Add a "Welcome back" message at the start if resuming
         const welcomeBackMessage: DisplayMessage = {
           id: 'welcome-back',
           type: 'bot',
-          content: 'Willkommen zurück! Lass uns dort weitermachen, wo wir aufgehört haben.',
+          content: t('onboarding.chat.welcomeBack'),
           timestamp: new Date()
         };
-        
+
         setDisplayMessages([welcomeBackMessage, ...restoredMessages]);
         setIsInitialized(true);
         console.log('✅ Chat resumed with', restoredMessages.length, 'messages');
       } else {
         // Start fresh with welcome message
         setShowTyping(true);
-        
+
         setTimeout(async () => {
           setShowTyping(false);
-          
+
           const botMessage: DisplayMessage = {
             id: 'bot-welcome',
             type: 'bot',
-            content: initialMessage,
+            content: defaultInitialMessage,
             timestamp: new Date()
           };
-          
+
           // Save welcome message to database
           if (session) {
-            await saveMessage('assistant', initialMessage);
+            await saveMessage('assistant', defaultInitialMessage);
           }
-          
+
           setDisplayMessages([botMessage]);
           setIsInitialized(true);
           console.log('💬 Welcome message added');
@@ -277,7 +282,7 @@ export default function ChatInterface({
     };
 
     initializeChat();
-  }, [sessionLoading, userId, isInitialized, isResuming, persistedMessages, session, saveMessage, initialMessage]);
+  }, [sessionLoading, userId, isInitialized, isResuming, persistedMessages, session, saveMessage, defaultInitialMessage, t]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -288,7 +293,7 @@ export default function ChatInterface({
   const handleSubmitResponse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     console.log('🛰️ Submitting response with userId:', userId ?? 'null');
 
@@ -297,7 +302,7 @@ export default function ChatInterface({
       console.warn('Response submission timed out, resetting state');
       setIsSubmitting(false);
     }, 10000); // 10 second timeout
-    
+
     // Add user message to our display messages
     const userMessage: DisplayMessage = {
       id: `user-${Date.now()}`,
@@ -305,14 +310,14 @@ export default function ChatInterface({
       content: input,
       timestamp: new Date()
     };
-    
+
     // Save user message to database
     if (session) {
       saveMessage('user', input);
     }
-    
+
     setDisplayMessages(prev => [...prev, userMessage]);
-    
+
     // Submit to AI
     try {
       await handleSubmit(e);
@@ -347,7 +352,7 @@ export default function ChatInterface({
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         />
         <p style={{ color: 'var(--md-sys-color-on-surface-variant)', fontSize: '0.875rem' }}>
-          Lade Gespräch...
+          {t('onboarding.chat.loadingChat')}
         </p>
       </div>
     );
@@ -359,14 +364,14 @@ export default function ChatInterface({
   return (
     <>
       {/* Chat Header with Progress */}
-      <div 
+      <div
         style={{
           background: 'var(--md-sys-color-surface-container)',
           borderBottom: '1px solid var(--md-sys-color-outline-variant)',
         }}
       >
         {/* Header Content */}
-        <div 
+        <div
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -382,7 +387,7 @@ export default function ChatInterface({
               style={{ width: '40px', height: '40px', display: 'block' }}
             />
             <div>
-              <h3 
+              <h3
                 style={{
                   margin: 0,
                   fontSize: '1.125rem',
@@ -391,10 +396,10 @@ export default function ChatInterface({
                   lineHeight: 1.2
                 }}
               >
-                Biografie-Assistent 
+                {t('onboarding.chat.assistantTitle')}
                 {isResuming && (
-                  <span style={{ 
-                    fontSize: '0.7rem', 
+                  <span style={{
+                    fontSize: '0.7rem',
                     marginLeft: '8px',
                     padding: '2px 8px',
                     background: 'var(--md-sys-color-primary-container)',
@@ -402,11 +407,11 @@ export default function ChatInterface({
                     borderRadius: '12px',
                     fontWeight: 500
                   }}>
-                    Fortgesetzt
+                    {t('onboarding.chat.resumed')}
                   </span>
                 )}
               </h3>
-              <p 
+              <p
                 style={{
                   margin: 0,
                   fontSize: '0.875rem',
@@ -414,11 +419,11 @@ export default function ChatInterface({
                   lineHeight: 1.2
                 }}
               >
-                Fast wie ein Gespräch unter Freunden.
+                {t('onboarding.chat.tagline')}
               </p>
             </div>
           </div>
-          
+
           {/* Progress Percentage */}
           <div style={{
             display: 'flex',
@@ -432,7 +437,7 @@ export default function ChatInterface({
               fontSize: '0.75rem',
               color: 'var(--md-sys-color-on-surface-variant)',
             }}>
-              Fortschritt
+              {t('onboarding.chat.progress')}
             </span>
             <span style={{
               fontSize: '0.875rem',
@@ -443,7 +448,7 @@ export default function ChatInterface({
             </span>
           </div>
         </div>
-        
+
         {/* Progress Bar */}
         <div style={{
           padding: '0 24px 12px 24px',
@@ -472,385 +477,380 @@ export default function ChatInterface({
             fontSize: '0.7rem',
             color: 'var(--md-sys-color-on-surface-variant)',
           }}>
-            <span>Start</span>
-            <span>~{Math.floor(displayMessages.length / 2)} Fragen beantwortet</span>
-            <span>Fertig</span>
+            <span>{t('onboarding.chat.start')}</span>
+            <span>{t('onboarding.chat.questionsAnswered').replace('{count}', String(Math.floor(displayMessages.length / 2))).replace('{total}', '6')}</span>
+            <span>{t('onboarding.chat.done')}</span>
           </div>
         </div>
       </div>
 
-        {/* Error display */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{
-              margin: '16px 24px',
-              marginTop: '16px',
-              padding: '16px',
-              background: 'var(--md-sys-color-error-container)',
-              border: '1px solid var(--md-sys-color-error)',
-              borderRadius: '12px',
-              borderLeft: '4px solid var(--md-sys-color-error)'
-            }}
-            role="alert"
-          >
-            <p style={{ 
-              color: 'var(--md-sys-color-on-error-container)', 
-              fontSize: '0.875rem',
-              margin: 0
-            }}>
-              {error.message}
-            </p>
-          </motion.div>
-        )}
-
-        {/* Messages Area */}
-        <div 
+      {/* Error display */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           style={{
-            height: '400px',
-            overflowY: 'auto',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            scrollBehavior: 'smooth',
-            background: 'var(--md-sys-color-surface)'
+            margin: '16px 24px',
+            marginTop: '16px',
+            padding: '16px',
+            background: 'var(--md-sys-color-error-container)',
+            border: '1px solid var(--md-sys-color-error)',
+            borderRadius: '12px',
+            borderLeft: '4px solid var(--md-sys-color-error)'
           }}
+          role="alert"
         >
-          <AnimatePresence>
-            {displayMessages.map((message: DisplayMessage) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{
-                  duration: 0.25,
-                  ease: [0.2, 0, 0, 1]
-                }}
-                style={{
-                  display: 'flex',
-                  gap: '12px',
-                  justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start'
-                }}
-              >
-                {message.type === 'bot' && (
-                  <div 
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}
-                  >
-                    <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
-                  </div>
-                )}
-                
-                <div
-                  style={{
-                    maxWidth: '80%',
-                    background: message.type === 'user' 
-                      ? 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))' 
-                      : 'var(--md-sys-color-surface-container-high)',
-                    color: message.type === 'user'
-                      ? 'var(--md-sys-color-on-primary)'
-                      : 'var(--md-sys-color-on-surface)',
-                    padding: '12px 16px',
-                    borderRadius: message.type === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                    fontSize: '0.875rem',
-                    lineHeight: 1.5,
-                    fontFamily: 'Roboto, system-ui, sans-serif',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                    wordWrap: 'break-word'
-                  }}
-                >
-                  {message.content}
-                  <div 
-                    style={{
-                      fontSize: '0.75rem',
-                      marginTop: '4px',
-                      opacity: 0.7,
-                      color: 'inherit'
-                    }}
-                  >
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </div>
-                </div>
+          <p style={{
+            color: 'var(--md-sys-color-on-error-container)',
+            fontSize: '0.875rem',
+            margin: 0
+          }}>
+            {error.message}
+          </p>
+        </motion.div>
+      )}
 
-                {message.type === 'user' && (
-                  <div 
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      background: 'var(--md-sys-color-surface-container-highest)',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}
-                  >
-                    <User style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-surface-variant)' }} />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {/* Typing Indicator */}
-          {showTyping && (
+      {/* Messages Area */}
+      <div
+        style={{
+          height: '400px',
+          overflowY: 'auto',
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          scrollBehavior: 'smooth',
+          background: 'var(--md-sys-color-surface)'
+        }}
+      >
+        <AnimatePresence>
+          {displayMessages.map((message: DisplayMessage) => (
             <motion.div
+              key={message.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{
+                duration: 0.25,
+                ease: [0.2, 0, 0, 1]
+              }}
               style={{
                 display: 'flex',
                 gap: '12px',
-                justifyContent: 'flex-start'
+                justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start'
               }}
             >
-              <div 
+              {message.type === 'bot' && (
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}
+                >
+                  <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
+                </div>
+              )}
+
+              <div
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
-              </div>
-              <div 
-                style={{
-                  background: 'var(--md-sys-color-surface-container-high)',
-                  borderRadius: '20px 20px 20px 4px',
+                  maxWidth: '80%',
+                  background: message.type === 'user'
+                    ? 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))'
+                    : 'var(--md-sys-color-surface-container-high)',
+                  color: message.type === 'user'
+                    ? 'var(--md-sys-color-on-primary)'
+                    : 'var(--md-sys-color-on-surface)',
                   padding: '12px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+                  borderRadius: message.type === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.5,
+                  fontFamily: 'Roboto, system-ui, sans-serif',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                  wordWrap: 'break-word'
                 }}
               >
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        background: 'var(--md-sys-color-on-surface-variant)',
-                        borderRadius: '50%'
-                      }}
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                        ease: [0.2, 0, 0, 1]
-                      }}
-                    />
-                  ))}
+                {message.content}
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    marginTop: '4px',
+                    opacity: 0.7,
+                    color: 'inherit'
+                  }}
+                >
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </div>
               </div>
+
+              {message.type === 'user' && (
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    background: 'var(--md-sys-color-surface-container-highest)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}
+                >
+                  <User style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-surface-variant)' }} />
+                </div>
+              )}
             </motion.div>
-          )}
+          ))}
+        </AnimatePresence>
 
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Response Input Area */}
-        {!showTyping && displayMessages.length > 0 && !isSubmitting && (
+        {/* Typing Indicator */}
+        {showTyping && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
             style={{
-              borderTop: '1px solid var(--md-sys-color-outline-variant)',
-              background: 'var(--md-sys-color-surface-container)',
-              padding: '16px 24px'
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'flex-start'
             }}
           >
-            <form onSubmit={handleSubmitResponse}>
-              <div style={{ position: 'relative', marginBottom: '12px' }}>
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder={placeholder}
-                  disabled={isSubmitting}
-                  style={{
-                    width: '100%',
-                    minHeight: '80px',
-                    padding: '12px 16px',
-                    border: '2px solid var(--md-sys-color-outline-variant)',
-                    borderRadius: '12px',
-                    color: 'var(--md-sys-color-on-surface)',
-                    fontFamily: 'Roboto, system-ui, sans-serif',
-                    fontSize: '1rem',
-                    transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
-                    outline: 'none',
-                    background: 'var(--md-sys-color-surface-container-highest)',
-                    lineHeight: 1.4,
-                    resize: 'none',
-                    paddingRight: '120px'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
-                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--md-sys-color-outline-variant)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSubmitResponse(e as any);
-                    }
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isSubmitting}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    bottom: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 20px',
-                    borderRadius: '20px',
-                    background: !input.trim() || isSubmitting
-                      ? 'var(--md-sys-color-surface-container)'
-                      : 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
-                    color: !input.trim() || isSubmitting
-                      ? 'var(--md-sys-color-on-surface-variant)'
-                      : 'var(--md-sys-color-on-primary)',
-                    border: 'none',
-                    cursor: !input.trim() || isSubmitting ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    boxShadow: !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)',
-                    transform: 'translateY(0px)'
-                  }}
-                  onMouseOver={(e) => {
-                    if (!isSubmitting && input.trim()) {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)';
-                  }}
-                >
-                  <Send style={{ width: '16px', height: '16px' }} />
-                  Senden
-                </button>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                background: 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Bot style={{ width: '16px', height: '16px', color: 'var(--md-sys-color-on-primary)' }} />
+            </div>
+            <div
+              style={{
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: '20px 20px 20px 4px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+              }}
+            >
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      background: 'var(--md-sys-color-on-surface-variant)',
+                      borderRadius: '50%'
+                    }}
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                      ease: [0.2, 0, 0, 1]
+                    }}
+                  />
+                ))}
               </div>
-              </form>
-            </motion.div>
-          )}
-
-        {/* Submitting State */}
-        {isSubmitting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
-            style={{
-              borderTop: '1px solid var(--md-sys-color-outline-variant)',
-              background: 'var(--md-sys-color-surface-container)',
-              padding: '24px',
-              textAlign: 'center',
-              color: 'var(--md-sys-color-on-surface-variant)'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <motion.div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'var(--md-sys-color-primary)'
-                }}
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 1, repeat: Infinity, ease: [0.2, 0, 0, 1] }}
-              />
-              <span style={{ fontSize: '0.875rem' }}>Antwort wird verarbeitet …</span>
             </div>
           </motion.div>
         )}
 
-        {/* Continue Later Button */}
-        <div style={{ 
-          padding: '16px 24px', 
-          borderTop: !showTyping && displayMessages.length > 0 && !isSubmitting ? 'none' : '1px solid var(--md-sys-color-outline-variant)',
-          borderBottomLeftRadius: !showTyping && displayMessages.length > 0 && !isSubmitting ? '0px' : '16px',
-          borderBottomRightRadius: !showTyping && displayMessages.length > 0 && !isSubmitting ? '0px' : '16px',
-          background: 'var(--md-sys-color-surface-container)'
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Response Input Area */}
+      {!showTyping && displayMessages.length > 0 && !isSubmitting && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+          style={{
+            borderTop: '1px solid var(--md-sys-color-outline-variant)',
+            background: 'var(--md-sys-color-surface-container)',
+            padding: '16px 24px'
+          }}
+        >
+          <form onSubmit={handleSubmitResponse}>
+            <div style={{ position: 'relative', marginBottom: '12px' }}>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={handleInputChange}
+                placeholder={defaultPlaceholder}
+                disabled={isSubmitting}
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: '12px 16px',
+                  border: '2px solid var(--md-sys-color-outline-variant)',
+                  borderRadius: '12px',
+                  color: 'var(--md-sys-color-on-surface)',
+                  fontFamily: 'Roboto, system-ui, sans-serif',
+                  fontSize: '1rem',
+                  transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
+                  outline: 'none',
+                  background: 'var(--md-sys-color-surface-container-highest)',
+                  lineHeight: 1.4,
+                  resize: 'none',
+                  paddingRight: '120px'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
+                  e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--md-sys-color-outline-variant)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitResponse(e as any);
+                  }
+                }}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isSubmitting}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  bottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  background: !input.trim() || isSubmitting
+                    ? 'var(--md-sys-color-surface-container)'
+                    : 'linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))',
+                  color: !input.trim() || isSubmitting
+                    ? 'var(--md-sys-color-on-primary)'
+                    : 'var(--md-sys-color-on-surface-variant)',
+                  border: 'none',
+                  cursor: !input.trim() || isSubmitting ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  boxShadow: !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)',
+                  transform: 'translateY(0px)'
+                }}
+                onMouseOver={(e) => {
+                  if (!isSubmitting && input.trim()) {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = !input.trim() || isSubmitting ? 'none' : '0 2px 8px rgba(0,0,0,0.15)';
+                }}
+              >
+                <Send style={{ width: '16px', height: '16px' }} />
+                {t('onboarding.chat.send')}
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+
+      {/* Submitting State */}
+      {isSubmitting && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+          style={{
+            borderTop: '1px solid var(--md-sys-color-outline-variant)',
+            background: 'var(--md-sys-color-surface-container)',
+            padding: '24px',
+            textAlign: 'center',
+            color: 'var(--md-sys-color-on-surface-variant)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <motion.div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: 'var(--md-sys-color-primary)'
+              }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity, ease: [0.2, 0, 0, 1] }}
+            />
+            <span style={{ fontSize: '0.875rem' }}>{t('onboarding.chat.processing')}</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Continue Later Button */}
+      <div style={{
+        padding: '16px 24px',
+        borderTop: '1px solid var(--md-sys-color-outline-variant)',
+        display: 'flex',
+        justifyContent: 'center',
+        background: 'var(--md-sys-color-surface)'
+      }}>
+        <button
+          onClick={() => router.push('/dash')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 20px',
+            borderRadius: '20px',
+            background: 'transparent',
+            color: 'var(--md-sys-color-on-surface-variant)',
+            border: '1px solid var(--md-sys-color-outline-variant)',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            transition: 'all 0.2s ease'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = 'var(--md-sys-color-surface-container-high)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          {t('onboarding.chat.continueLater')}
+        </button>
+      </div>
+
+      {/* Info Text */}
+      <div style={{
+        padding: '12px 24px 24px 24px',
+        textAlign: 'center'
+      }}>
+        <p style={{
+          margin: 0,
+          fontSize: '0.75rem',
+          color: 'var(--md-sys-color-on-surface-variant)',
+          lineHeight: 1.5,
+          maxWidth: '500px',
+          marginInline: 'auto'
         }}>
-          <button
-            type="button"
-            onClick={async () => {
-              // Convert any existing onboarding answers to life events before leaving
-              console.log('📤 Continue Later clicked - converting partial answers...');
-              try {
-                const response = await fetch('/api/events/convert-onboarding', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ userId, accessToken }),
-                });
-                if (response.ok) {
-                  const result = await response.json();
-                  console.log('✅ Partial conversion result:', result);
-                }
-              } catch (error) {
-                console.error('❌ Error converting partial answers:', error);
-              }
-              // Navigate to dashboard
-              router.push('/dash');
-            }}
-            style={{
-              width: '100%',
-              padding: '12px 24px',
-              background: 'transparent',
-              border: '1px solid var(--md-sys-color-outline)',
-              borderRadius: '20px',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              fontFamily: 'Roboto, system-ui, sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s var(--md-sys-motion-easing-standard)'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'var(--md-sys-color-surface-container-high)';
-              e.currentTarget.style.borderColor = 'var(--md-sys-color-primary)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.borderColor = 'var(--md-sys-color-outline)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            Später fortsetzen
-          </button>
-        </div>
+          {t('onboarding.chat.continueLaterDesc')}
+        </p>
+      </div>
     </>
   );
-  }
+}

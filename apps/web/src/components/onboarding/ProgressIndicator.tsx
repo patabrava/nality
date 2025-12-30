@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useI18n } from '@/components/i18n/I18nProvider';
 
 interface ProgressIndicatorProps {
   progress: number; // 0-100
@@ -9,32 +10,35 @@ interface ProgressIndicatorProps {
   currentQuestion?: number;
 }
 
-// Seven core onboarding questions (see onboarding.txt)
-const ONBOARDING_SECTIONS = [
-  { id: 'identity', label: 'Identität & Stimme', questions: 1 },
-  { id: 'origins', label: 'Anfänge & Herkunft', questions: 1 },
-  { id: 'family', label: 'Familienbild', questions: 1 },
-  { id: 'education', label: 'Bildungsweg', questions: 1 },
-  { id: 'career', label: 'Beruf & Berufung', questions: 1 },
-  { id: 'influences', label: 'Prägende Stimmen', questions: 1 },
-  { id: 'values', label: 'Werte & Motto', questions: 1 },
-];
-
-const TOTAL_QUESTIONS = ONBOARDING_SECTIONS.reduce((sum, s) => sum + s.questions, 0);
-
-export default function ProgressIndicator({ 
-  progress, 
+export default function ProgressIndicator({
+  progress,
   questionsAnswered = 0,
-  totalQuestions = TOTAL_QUESTIONS,
+  totalQuestions,
   currentQuestion = 1,
 }: ProgressIndicatorProps) {
-  const clampedTotal = Math.max(totalQuestions, TOTAL_QUESTIONS);
+  const { t } = useI18n();
+
+  // Core onboarding questions
+  const ONBOARDING_SECTIONS = [
+    { id: 'identity', label: t('onboarding.sections.identity'), questions: 1 },
+    { id: 'origins', label: t('onboarding.sections.origins'), questions: 1 },
+    { id: 'family', label: t('onboarding.sections.family'), questions: 1 },
+    { id: 'education', label: t('onboarding.sections.education'), questions: 1 },
+    { id: 'career', label: t('onboarding.sections.career'), questions: 1 },
+    { id: 'influences', label: t('onboarding.sections.influences'), questions: 1 },
+    { id: 'values', label: t('onboarding.sections.values'), questions: 1 },
+  ];
+
+  const TOTAL_QUESTIONS_DEFAULT = ONBOARDING_SECTIONS.length;
+  const actualTotalQuestions = totalQuestions || TOTAL_QUESTIONS_DEFAULT;
+
+  const clampedTotal = Math.max(actualTotalQuestions, TOTAL_QUESTIONS_DEFAULT);
   const clampedAnswered = Math.min(Math.max(questionsAnswered, 0), clampedTotal);
   const currentSectionIndex = Math.min(
     Math.max(currentQuestion - 1, 0),
     ONBOARDING_SECTIONS.length - 1
   );
-  
+
   return (
     <div style={{
       background: 'var(--md-sys-color-surface-container)',
@@ -55,7 +59,7 @@ export default function ProgressIndicator({
           fontWeight: 600,
           color: 'var(--md-sys-color-on-surface)',
         }}>
-          Fortschritt
+          {t('onboarding.chat.progress')}
         </h4>
         <span style={{
           fontSize: '0.875rem',
@@ -95,7 +99,7 @@ export default function ProgressIndicator({
         {ONBOARDING_SECTIONS.map((section, index) => {
           const isComplete = index < clampedAnswered;
           const isCurrent = clampedAnswered < clampedTotal && !isComplete && index === currentSectionIndex;
-          
+
           return (
             <div
               key={section.id}
@@ -105,8 +109,8 @@ export default function ProgressIndicator({
                 gap: '10px',
                 padding: '8px 12px',
                 borderRadius: '8px',
-                background: isCurrent 
-                  ? 'var(--md-sys-color-primary-container)' 
+                background: isCurrent
+                  ? 'var(--md-sys-color-primary-container)'
                   : 'transparent',
                 transition: 'all 0.2s ease'
               }}
@@ -116,11 +120,11 @@ export default function ProgressIndicator({
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                border: isComplete 
-                  ? 'none' 
+                border: isComplete
+                  ? 'none'
                   : `2px solid ${isCurrent ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-outline)'}`,
-                background: isComplete 
-                  ? 'var(--md-sys-color-primary)' 
+                background: isComplete
+                  ? 'var(--md-sys-color-primary)'
                   : 'transparent',
                 display: 'flex',
                 alignItems: 'center',
@@ -130,23 +134,23 @@ export default function ProgressIndicator({
               }}>
                 {isComplete && (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path 
-                      d="M2 6L5 9L10 3" 
-                      stroke="var(--md-sys-color-on-primary)" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
+                    <path
+                      d="M2 6L5 9L10 3"
+                      stroke="var(--md-sys-color-on-primary)"
+                      strokeWidth="2"
+                      strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                   </svg>
                 )}
               </div>
-              
+
               {/* Label */}
               <span style={{
                 fontSize: '0.8rem',
-                color: isComplete 
-                  ? 'var(--md-sys-color-on-surface-variant)' 
-                  : isCurrent 
+                color: isComplete
+                  ? 'var(--md-sys-color-on-surface-variant)'
+                  : isCurrent
                     ? 'var(--md-sys-color-on-primary-container)'
                     : 'var(--md-sys-color-on-surface)',
                 fontWeight: isCurrent ? 500 : 400,
@@ -172,7 +176,9 @@ export default function ProgressIndicator({
           fontSize: '0.75rem',
           color: 'var(--md-sys-color-on-surface-variant)'
         }}>
-          {questionsAnswered} von ~{totalQuestions} Fragen beantwortet
+          {t('onboarding.chat.questionsAnswered')
+            .replace('{count}', String(questionsAnswered))
+            .replace('{total}', String(actualTotalQuestions))}
         </p>
       </div>
     </div>

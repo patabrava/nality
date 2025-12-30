@@ -18,7 +18,12 @@
     "login": "Log in",
     "start": "Start My Story",
     "myTimeline": "My Timeline",
-    "mobileMenuAria": "Toggle navigation menu"
+    "mobileMenuAria": "Toggle navigation menu",
+    "menu": "Menu",
+    "myProfile": "My Profile",
+    "viewSettings": "View settings",
+    "accessProfile": "Access user profile",
+    "toggleMenu": "Toggle menu"
   },
   "hero": {
     "title": "Your life, beautifully told.",
@@ -34,43 +39,79 @@
       "firstJob": "💼 First Job - 2021",
       "marriage": "❤️ Marriage - 2023"
     },
-    "bookPreview": "Life Book Preview"
+    "bookPreview": "Life Book Preview",
+    "timelineBegin": "1985 • The Beginning",
+    "timelineLegacy": "2023 • Legacy",
+    "momentQuote": "\"It was a moment of absolute clarity...\""
   },
   "socialProof": {
     "title": "Trusted for the moments that matter",
     "testimonials": [
       {
-        "text": "I recorded my mother's stories over a weekend. The book we printed is now the centerpiece of our family.",
+        "text": "I captured 40 years of my grandmother's stories in just two weekend sessions. The AI helped me ask questions I never would have thought of. The printed book is now our family's most treasured possession.",
         "author": "Sofia R.",
         "role": "Family Historian",
         "location": "Barcelona, Spain"
       },
       {
-        "text": "The AI prompts helped me remember things I hadn't thought about in years.",
-        "author": "David K.",
+        "text": "As a documentary filmmaker, I was skeptical of AI storytelling. But Nality's interview structure and timeline organization saved me 80% of my prep time. Now I recommend it to all my clients.",
+        "author": "Marcus Chen",
         "role": "Documentary Filmmaker",
         "location": "San Francisco, CA"
       },
       {
-        "text": "As a journalist, I use Nality to structure interviews and deliver a finished keepsake.",
-        "author": "Leila M.",
-        "role": "Journalist & Interviewer",
+        "text": "We used Nality to preserve my father's Holocaust survival story before he passed. The professional interviewer was incredibly sensitive, and the final book helps us share his legacy with future generations.",
+        "author": "Rachel Goldstein",
+        "role": "Holocaust Education Foundation",
+        "location": "New York, NY"
+      },
+      {
+        "text": "I've written three memoirs with Nality's platform. The AI suggests story connections I never saw, and the export quality rivals traditional publishers. It's revolutionized my writing process.",
+        "author": "Dr. James Patterson",
+        "role": "Former University President",
         "location": "Oxford, UK"
       }
     ],
     "partnerLogos": [
-      { "name": "National Archives", "placeholder": "NAT" },
-      { "name": "Genealogy Society", "placeholder": "GEN" },
-      { "name": "Senior Living Corp", "placeholder": "SLC" },
-      { "name": "Memorial Foundation", "placeholder": "MEM" },
-      { "name": "Heritage Trust", "placeholder": "HTR" }
+      {
+        "name": "National Archives",
+        "placeholder": "NAT"
+      },
+      {
+        "name": "Genealogy Society",
+        "placeholder": "GEN"
+      },
+      {
+        "name": "Senior Living Corp",
+        "placeholder": "SLC"
+      },
+      {
+        "name": "Memorial Foundation",
+        "placeholder": "MEM"
+      },
+      {
+        "name": "Heritage Trust",
+        "placeholder": "HTR"
+      }
     ],
     "partnerAriaSuffix": "logo",
     "stats": [
-      { "number": "50,000+", "label": "Life stories preserved" },
-      { "number": "2.3M+", "label": "Photos & videos uploaded" },
-      { "number": "15,000+", "label": "Books printed & shared" },
-      { "number": "99.9%", "label": "Data preservation rate" }
+      {
+        "number": "50,000+",
+        "label": "Life stories preserved"
+      },
+      {
+        "number": "2.3M+",
+        "label": "Photos & videos uploaded"
+      },
+      {
+        "number": "15,000+",
+        "label": "Books printed & shared"
+      },
+      {
+        "number": "99.9%",
+        "label": "Data preservation rate"
+      }
     ]
   },
   "customerValue": {
@@ -129,52 +170,60 @@
     "zoomHint": "Click to zoom",
     "ctaText": "See your story come to life in print",
     "ctaButton": "View sample book",
+    "coverLabel": "Cover",
+    "pageLabel": "Page",
     "gallery": [
-      { "title": "Book Cover", "description": "Hardcover Life Book on a table", "mockContent": "📖\nLife Book\nCover" },
-      { "title": "Book Spread 1", "description": "Open book spread showing photos and captions", "mockContent": "📷\nChapter 1\nEarly Years" },
-      { "title": "Book Spread 2", "description": "Two-page Life Book spread with a large image and caption", "mockContent": "🎓\nChapter 3\nEducation" }
+      {
+        "title": "Book Cover",
+        "description": "Hardcover Life Book on a table",
+        "mockContent": "📖\nLife Book\nCover"
+      },
+      {
+        "title": "Book Spread 1",
+        "description": "Open book spread showing photos and captions",
+        "mockContent": "📷\nChapter 1\nEarly Years"
+      },
+      {
+        "title": "Book Spread 2",
+        "description": "Two-page Life Book spread with a large image and caption",
+        "mockContent": "🎓\nChapter 3\nEducation"
+      }
     ]
   },
   "productHighlights": {
-    "title": "Features designed for your story",
-    "subtitle": "Every tool thoughtfully crafted to help you capture, organize, and share your life's most important moments",
+    "label": "Technology & Features",
+    "titlePrefix": "Enterprise-grade tools for",
+    "titleHighlight": "personal heritage",
+    "description": "Combining AI storytelling, professional services, and preservation technology to create the most comprehensive life documentation platform ever built.",
     "features": [
       {
-        "title": "Smart onboarding",
-        "description": "Start with a guided chat that turns your memories into structured events. Edit anytime.",
-        "icon": "🤖",
-        "screenshot": "onboarding-chat"
+        "title": "AI-Powered Memory Assistant",
+        "description": "Our intelligent chat guides you through your life story with personalized questions. Voice or text input, automatic structuring, and smart gap detection to ensure nothing important is forgotten."
       },
       {
-        "title": "A timeline that feels alive",
-        "description": "Clean, alternating layout. Drag, categorize, and tag important moments. See photos and clips in context.",
-        "icon": "⏰",
-        "screenshot": "timeline"
+        "title": "Interactive Life Timeline",
+        "description": "Beautiful, drag-and-drop timeline with rich media support. Organize by decades, themes, or relationships. Real-time collaboration and automatic backups ensure your story is always safe."
       },
       {
-        "title": "Interview, when it matters",
-        "description": "Professional interviewers can help you go deeper—especially for elder stories. We'll handle scheduling.",
-        "icon": "🎯",
-        "screenshot": "media-grid"
+        "title": "Expert Interview Service",
+        "description": "Professional storytellers and journalists help capture deeper narratives. Seamless booking, HD recording, AI transcription, and integration into your timeline. Perfect for family elders."
       },
       {
-        "title": "Export a beautiful Life Book",
-        "description": "One click to a polished PDF designed for printing and sharing.",
-        "icon": "📚",
-        "screenshot": "pdf-preview"
+        "title": "Premium Publishing Suite",
+        "description": "Transform your timeline into a stunning hardbound book, digital memoir, or shareable family archive. Custom layouts, professional printing, and secure family sharing options."
+      },
+      {
+        "title": "Rich Media Library",
+        "description": "Upload photos, videos, documents, and audio recordings. Smart organization, facial recognition, and automatic metadata extraction. Cloud storage with family access controls."
+      },
+      {
+        "title": "Legacy Preservation Technology",
+        "description": "Bank-grade security, automatic backups, and 100-year digital preservation guarantee. Your family's stories will outlast generations with our quantum-resistant encryption."
       }
-    ],
-    "timelineSamples": {
-      "graduation": "🎓 Graduated College - 2020",
-      "firstJob": "💼 First Job - 2021",
-      "marriage": "❤️ Got Married - 2023"
-    },
-    "chatSamples": {
-      "prompt": "Tell me about a moment that shaped who you are today",
-      "response": "When I graduated college, I felt like..."
-    }
+    ]
   },
   "howItWorks": {
+    "label": "Process",
     "title": "How it works",
     "subtitle": "Four simple steps to transform your memories into a beautiful, lasting story",
     "steps": [
@@ -201,75 +250,82 @@
     ]
   },
   "pricing": {
-    "title": "Simple, flexible plans",
-    "subtitle": "Start free. Upgrade when you're ready to export or book an interview.",
+    "titlePrefix": "Preserve your legacy,",
+    "titleHighlight": "affordably",
+    "subtitle": "Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.",
     "badgePopular": "Most Popular",
     "yearlyPrefix": "or",
     "legalNote": "Prices include VAT where applicable. Interview sessions are billed separately if outside Pro plan.",
     "tiers": [
       {
-        "name": "Free",
-        "price": "€0",
-        "period": "",
+        "name": "Explorer",
+        "price": "Free",
+        "period": "Forever",
         "yearlyPrice": "",
-        "description": "Perfect for getting started",
+        "description": "Start your life story journey today",
         "features": [
-          "AI onboarding chat",
-          "Timeline editing",
-          "Up to 50 photos",
-          "Basic privacy controls"
+          "AI-guided memory capture",
+          "Interactive timeline builder",
+          "Up to 100 photos & documents",
+          "Basic privacy controls",
+          "Export to digital formats"
         ],
-        "limitations": [
-          "Watermarked exports",
-          "Community support only"
-        ],
-        "buttonText": "Start Free",
+        "buttonText": "Start Free Today",
         "buttonStyle": "secondary",
         "popular": false,
         "savings": ""
       },
       {
-        "name": "Standard",
-        "price": "€8",
+        "name": "Storyteller",
+        "price": "€12",
         "period": "/ month",
-        "yearlyPrice": "€60 / year",
-        "description": "Everything you need for your life story",
+        "yearlyPrice": "€99 / year",
+        "description": "Everything you need for a complete memoir",
         "features": [
-          "Everything in Free",
-          "Unlimited photos",
-          "Video clips (≤ 2 minutes each)",
-          "Advanced categories/tags",
-          "Export to PDF"
+          "Everything in Explorer",
+          "Unlimited photos & videos",
+          "AI gap detection & suggestions",
+          "Advanced timeline organization",
+          "Premium export templates",
+          "Professional book printing",
+          "Family sharing & collaboration",
+          "Priority email support"
         ],
-        "limitations": [],
-        "buttonText": "Start Standard",
+        "buttonText": "Start 14-Day Free Trial",
         "buttonStyle": "primary",
         "popular": true,
-        "savings": "Save €36/year"
+        "savings": "Save €45/year"
       },
       {
-        "name": "Pro",
-        "price": "€29",
+        "name": "Legacy",
+        "price": "€39",
         "period": "/ month",
-        "yearlyPrice": "",
-        "description": "Professional storytelling with interview support",
+        "yearlyPrice": "€399 / year",
+        "description": "Professional storytelling with expert interviews",
         "features": [
-          "Everything in Standard",
-          "Interviewer booking and transcript",
-          "Priority support",
-          "Custom book themes"
+          "Everything in Storyteller",
+          "Expert interviewer sessions",
+          "Professional transcription",
+          "Custom book design service",
+          "Multi-format publishing",
+          "100-year preservation guarantee",
+          "Dedicated account manager",
+          "Phone & video support",
+          "Custom branding options"
         ],
-        "limitations": [],
-        "buttonText": "Start Pro",
+        "buttonText": "Book Consultation",
         "buttonStyle": "primary",
         "popular": false,
-        "savings": ""
+        "savings": "Save €69/year"
       }
     ]
   },
   "faq": {
     "title": "Frequently asked questions",
     "subtitle": "Everything you need to know about preserving your life story",
+    "ctaTitle": "Still have questions?",
+    "ctaText": "Our team is here to help you get started with your life story.",
+    "ctaButton": "Contact Support",
     "items": [
       {
         "question": "Who can see my story?",
@@ -305,16 +361,13 @@
       },
       {
         "question": "What languages are supported?",
-        "answer": "We support English and German; more languages are on the roadmap."
+        "answer": "We currently support English and German, with more languages on the roadmap."
       },
       {
         "question": "Is this suitable for elders?",
         "answer": "Absolutely. The guided prompts and optional interviewer help make it easy and enjoyable."
       }
-    ],
-    "ctaTitle": "Still have questions?",
-    "ctaBody": "Our team is here to help you get started with your life story.",
-    "ctaButton": "Contact Support"
+    ]
   },
   "finalCta": {
     "title": "Start your story today",
@@ -343,37 +396,224 @@
     "product": {
       "title": "Product",
       "links": [
-        { "name": "Features", "href": "#features" },
-        { "name": "How it works", "href": "#how-it-works" },
-        { "name": "Pricing", "href": "#pricing" },
-        { "name": "Blog", "href": "/blog" }
+        {
+          "name": "Features",
+          "href": "#features"
+        },
+        {
+          "name": "How it works",
+          "href": "#how-it-works"
+        },
+        {
+          "name": "Pricing",
+          "href": "#pricing"
+        },
+        {
+          "name": "Blog",
+          "href": "/blog"
+        }
       ]
     },
     "company": {
       "title": "Company",
       "links": [
-        { "name": "About", "href": "/about" },
-        { "name": "Contact", "href": "/contact" },
-        { "name": "Careers", "href": "/careers" }
+        {
+          "name": "About",
+          "href": "/about"
+        },
+        {
+          "name": "Contact",
+          "href": "/contact"
+        },
+        {
+          "name": "Careers",
+          "href": "/careers"
+        }
       ]
     },
     "legal": {
       "title": "Legal",
       "links": [
-        { "name": "Terms", "href": "/terms" },
-        { "name": "Privacy", "href": "/privacy" },
-        { "name": "Cookie Settings", "href": "#cookie-settings" }
+        {
+          "name": "Terms",
+          "href": "/terms"
+        },
+        {
+          "name": "Privacy",
+          "href": "/privacy"
+        },
+        {
+          "name": "Cookie Settings",
+          "href": "#cookie-settings"
+        }
       ]
     },
     "social": {
       "title": "Social",
       "links": [
-        { "name": "LinkedIn", "href": "https://linkedin.com/company/nality", "icon": "💼" },
-        { "name": "Instagram", "href": "https://instagram.com/nality", "icon": "📷" }
+        {
+          "name": "LinkedIn",
+          "href": "https://linkedin.com/company/nality",
+          "icon": "💼"
+        },
+        {
+          "name": "Instagram",
+          "href": "https://instagram.com/nality",
+          "icon": "📷"
+        }
       ]
+    },
+    "copyright": "© {year} Nality. All rights reserved.",
+    "taglineElite": "The Autobiography for the Elite"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome to",
+      "subtitle": "Your life story, beautifully preserved",
+      "methodPassword": "Password",
+      "methodMagicLink": "Email Link",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholderSignIn": "Enter your password",
+      "passwordPlaceholderSignUp": "Create a password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "sending": "Sending...",
+      "processing": "Processing...",
+      "needAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?",
+      "switchToSignUp": "Join Nality",
+      "switchToSignIn": "Sign in here",
+      "or": "or",
+      "googleSignIn": "Continue with Google",
+      "googleLoading": "Connecting to Google...",
+      "success": {
+        "accountCreated": "Account Created!",
+        "checkEmail": "Check Your Email",
+        "signUpPrefix": "Welcome to Nality! We've sent a confirmation email to ",
+        "signUpSuffix": ". Please verify your email address to complete your account setup.",
+        "magicLinkPrefix": "We've sent an Email Link to ",
+        "magicLinkSuffix": "",
+        "signUpAction": "Click the link in your email to verify your account",
+        "magicLinkAction": "Click the link in your email to sign in to Nality",
+        "tryDifferentEmail": "Try Different Email"
+      },
+      "passwordRequirements": {
+        "title": "Password Requirements",
+        "minLength": "At least 8 characters",
+        "hasLowerCase": "One lowercase letter",
+        "hasUpperCase": "One uppercase letter",
+        "hasNumber": "One number",
+        "strength": "Strength"
+      },
+      "errors": {
+        "emailRequired": "Email is required",
+        "invalidEmail": "Please enter a valid email",
+        "passwordRequired": "Password is required"
+      },
+      "footerMagicLink": "We'll send you a secure link to sign in. No passwords required.",
+      "footerPassword": "Your account is protected with enterprise-grade security."
+    }
+  },
+  "voice": {
+    "selector": {
+      "title": "Add a Memory",
+      "subtitle": "Choose how you'd like to share your story",
+      "cancel": "Cancel",
+      "recommended": "Recommended",
+      "interview": {
+        "title": "Guided Interview",
+        "description": "Have a voice conversation with our AI biographer. Speak naturally and we'll capture your memories."
+      },
+      "freeTalk": {
+        "title": "Free Talk",
+        "description": "Record your thoughts freely. Speak for as long as you'd like and we'll extract the memories."
+      },
+      "text": {
+        "title": "Text Entry",
+        "description": "Type at your own pace. Fill out a form to add your memory manually."
+      }
+    },
+    "interview": {
+      "title": "Voice Interview",
+      "close": "Close interview",
+      "mute": "Mute AI voice",
+      "unmute": "Unmute AI voice",
+      "start": "Start session",
+      "end": "End session",
+      "listening": "Listening for your voice",
+      "thinking": "Thinking...",
+      "speaking": "AI is speaking"
+    },
+    "freeTalk": {
+      "title": "Free Talk",
+      "subtitle": "Record your memories",
+      "readyTitle": "Ready to listen",
+      "readyBody": "Press the button and speak freely about your memories. Take your time - we'll extract the key moments when you're done.",
+      "startRecording": "Start Recording",
+      "stopRecording": "Stop Recording",
+      "recording": "Recording... Speak freely",
+      "processing": "Extracting memories from your recording...",
+      "foundPrefix": "Found",
+      "memory": "memory",
+      "memories": "memories",
+      "previewTitle": "Review and confirm to add to your timeline",
+      "tryAgain": "Try Again",
+      "saveMemories": "Save Memories",
+      "success": "Memories saved!",
+      "successBody": "Your memories have been added to the timeline",
+      "recordingShort": "Recording too short. Please speak for longer.",
+      "failedProcess": "Failed to process recording. Please try again.",
+      "failedSave": "Failed to save memories. Please try again."
+    }
+  },
+  "onboarding": {
+    "tips": "Tips",
+    "tipTime": "Take your time with your answers",
+    "tipPause": "You can pause at any time",
+    "tipPrivacy": "All data stays private",
+    "chat": {
+      "placeholder": "Tell me a bit about yourself...",
+      "initialMessage": "Good day! How would you like to be addressed – 'du' or 'Sie'? Your full name? And what style suits you: **prose** (narrative), **technical** (structured), or **casual** (relaxed)?",
+      "welcomeBack": "Welcome back! Let's continue where we left off.",
+      "loadingChat": "Loading chat...",
+      "assistantTitle": "Biography Assistant",
+      "resumed": "Resumed",
+      "tagline": "Just like a conversation among friends.",
+      "progress": "Progress",
+      "start": "Start",
+      "done": "Done",
+      "questionsAnswered": "{count} of ~{total} questions answered",
+      "send": "Send",
+      "processing": "Processing answer...",
+      "continueLater": "Continue session later",
+      "continueLaterDesc": "Your progress is saved automatically. You can always come back and continue the conversation exactly where you left off."
+    },
+    "sections": {
+      "identity": "Identity & Voice",
+      "origins": "Origins & Heritage",
+      "family": "Family Picture",
+      "education": "Education Path",
+      "career": "Career & Purpose",
+      "influences": "Influencial Voices",
+      "values": "Values & Motto"
     }
   },
   "profile": {
+    "emptyTitle": "Tell us who you are",
+    "emptySubtitle": "Your profile is empty. Add your values, influences, and life motto to give your timeline personality.",
+    "completeInChat": "Complete in Chat",
+    "completeProfile": "Complete Profile",
+    "defaultName": "My Profile",
+    "bornIn": "Born {year} in {place}",
+    "edit": "Edit",
+    "myValues": "My Values",
+    "influences": "Influences",
+    "roleModels": "Role Models",
+    "lifeMotto": "Life Motto",
     "influenceTypes": {
       "author": "Author",
       "philosopher": "Philosopher",
@@ -390,6 +630,53 @@
       "timeline": "Timeline",
       "chat": "Chat",
       "contact": "Contact"
+    },
+    "chat": {
+      "comingSoon": "Chat coming soon",
+      "subtitle": "You'll be able to discuss life events in real‑time with our AI assistant. Get help organizing memories, filling gaps in your timeline, and discovering new perspectives on your story.",
+      "startChat": "Start Chat (Coming Soon)",
+      "plannedFeatures": "Planned Features:",
+      "featureTimeline": "Natural conversation about your timeline",
+      "featureMemories": "Help finding and organizing memories",
+      "featureDescriptions": "Assistance with event descriptions",
+      "featureInsights": "Personalized timeline insights"
+    },
+    "dashboard": {
+      "label": "Your Journey",
+      "titlePrefix": "Your life,",
+      "titleSubtitle": "beautifully told.",
+      "statsTitle": "Your Story",
+      "memory": "Memory",
+      "memories": "Memories",
+      "captured": "Captured",
+      "acrossChapters": "Across {count} life chapters",
+      "addMemory": "Add Memory"
+    },
+    "chapters": {
+      "roots": {
+        "name": "Roots",
+        "subtitle": "Where I come from"
+      },
+      "growing_up": {
+        "name": "Growing Up",
+        "subtitle": "Who I became"
+      },
+      "learning": {
+        "name": "Learning",
+        "subtitle": "What shaped my mind"
+      },
+      "work": {
+        "name": "Work & Purpose",
+        "subtitle": "What I built"
+      },
+      "love": {
+        "name": "Love & Bonds",
+        "subtitle": "Who I loved"
+      },
+      "moments": {
+        "name": "Life Moments",
+        "subtitle": "What I experienced"
+      }
     },
     "profile": "Profile"
   }

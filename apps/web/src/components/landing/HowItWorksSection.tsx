@@ -1,34 +1,38 @@
 'use client'
 
-const steps = [
-  {
-    number: 1,
-    title: "Tell us your story",
-    description: "Chat naturally by voice or text. Our assistant asks friendly, specific questions to capture events."
-  },
-  {
-    number: 2,
-    title: "See your timeline grow",
-    description: "Moments become a living, editable timeline—with space for photos, videos, and audio notes."
-  },
-  {
-    number: 3,
-    title: "Add depth",
-    description: "Prefer a guided conversation? Book a session with a real interviewer. We handle everything."
-  },
-  {
-    number: 4,
-    title: "Save and share",
-    description: "Export a beautifully designed PDF that's ready to print or share with family."
-  }
-]
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function HowItWorksSection() {
+  const { t } = useI18n()
+
+  const steps = [
+    {
+      number: 1,
+      title: t('howItWorks.steps.0.title'),
+      description: t('howItWorks.steps.0.description')
+    },
+    {
+      number: 2,
+      title: t('howItWorks.steps.1.title'),
+      description: t('howItWorks.steps.1.description')
+    },
+    {
+      number: 3,
+      title: t('howItWorks.steps.2.title'),
+      description: t('howItWorks.steps.2.description')
+    },
+    {
+      number: 4,
+      title: t('howItWorks.steps.3.title'),
+      description: t('howItWorks.steps.3.description')
+    }
+  ]
+
   return (
     <section className="section">
       <div className="section-header">
-        <span className="section-label">Process</span>
-        <h2 className="section-title">How it works</h2>
+        <span className="section-label">{t('howItWorks.label')}</span>
+        <h2 className="section-title">{t('howItWorks.title')}</h2>
       </div>
 
       <div className="steps-container">

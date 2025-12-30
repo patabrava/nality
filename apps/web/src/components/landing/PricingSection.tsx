@@ -1,72 +1,12 @@
 'use client'
 
-const pricingTiers = [
-  {
-    name: "Explorer",
-    price: "Free",
-    period: "Forever",
-    description: "Start your life story journey today",
-    features: [
-      "AI-guided memory capture",
-      "Interactive timeline builder", 
-      "Up to 100 photos & documents",
-      "Basic privacy controls",
-      "Export to digital formats"
-    ],
-    limitations: ["Watermarked exports", "Community support only"],
-    buttonText: "Start Free Today",
-    buttonStyle: "secondary" as const,
-    popular: false,
-    savings: null
-  },
-  {
-    name: "Storyteller",
-    price: "€12",
-    period: "/ month",
-    yearlyPrice: "€99 / year",
-    description: "Everything you need for a complete memoir",
-    features: [
-      "Everything in Explorer",
-      "Unlimited photos & videos",
-      "AI gap detection & suggestions",
-      "Advanced timeline organization",
-      "Premium export templates",
-      "Professional book printing",
-      "Family sharing & collaboration",
-      "Priority email support"
-    ],
-    limitations: [],
-    buttonText: "Start 14-Day Free Trial",
-    buttonStyle: "primary" as const,
-    popular: true,
-    savings: "Save €45/year"
-  },
-  {
-    name: "Legacy",
-    price: "€39",
-    period: "/ month", 
-    yearlyPrice: "€399 / year",
-    description: "Professional storytelling with expert interviews",
-    features: [
-      "Everything in Storyteller",
-      "Expert interviewer sessions",
-      "Professional transcription",
-      "Custom book design service",
-      "Multi-format publishing",
-      "100-year preservation guarantee",
-      "Dedicated account manager",
-      "Phone & video support",
-      "Custom branding options"
-    ],
-    limitations: [],
-    buttonText: "Book Consultation",
-    buttonStyle: "primary" as const,
-    popular: false,
-    savings: "Save €69/year"
-  }
-]
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function PricingSection() {
+  const { t } = useI18n()
+
+  const pricingTiers = t('pricing.tiers')
+
   const handleSelectPlan = (planName: string) => {
     // Future: Navigate to signup with selected plan
     console.log(`Selected plan: ${planName}`)
@@ -77,7 +17,7 @@ export default function PricingSection() {
     <section id="pricing" className="section" style={{ padding: '80px 0' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 
+          <h2
             style={{
               fontSize: 'clamp(2rem, 4vw, 2.5rem)',
               fontWeight: '700',
@@ -85,9 +25,9 @@ export default function PricingSection() {
               marginBottom: '16px'
             }}
           >
-            Preserve your legacy, <span className="serif-text italic text-gold">affordably</span>
+            {t('pricing.titlePrefix')} <span className="serif-text italic text-gold">{t('pricing.titleHighlight')}</span>
           </h2>
-          <p 
+          <p
             style={{
               fontSize: '1.125rem',
               color: 'var(--md-sys-color-on-surface-variant)',
@@ -95,11 +35,11 @@ export default function PricingSection() {
               margin: '0 auto'
             }}
           >
-            Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.
+            {t('pricing.subtitle')}
           </p>
         </div>
 
-        <div 
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -108,15 +48,15 @@ export default function PricingSection() {
             margin: '0 auto'
           }}
         >
-          {pricingTiers.map((tier, index) => (
+          {Array.isArray(pricingTiers) && pricingTiers.map((tier: any, index: number) => (
             <div
               key={tier.name}
               style={{
                 background: 'var(--md-sys-color-surface-container)',
                 borderRadius: '20px',
                 padding: '32px',
-                border: tier.popular ? 
-                  '2px solid var(--md-sys-color-primary)' : 
+                border: tier.popular ?
+                  '2px solid var(--md-sys-color-primary)' :
                   '1px solid var(--md-sys-color-outline-variant)',
                 position: 'relative',
                 transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)',
@@ -135,7 +75,7 @@ export default function PricingSection() {
             >
               {/* Popular Badge */}
               {tier.popular && (
-                <div 
+                <div
                   style={{
                     position: 'absolute',
                     top: '-12px',
@@ -151,13 +91,13 @@ export default function PricingSection() {
                     letterSpacing: '0.5px'
                   }}
                 >
-                  Most Popular
+                  {t('pricing.badgePopular')}
                 </div>
               )}
 
               {/* Plan Header */}
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <h3 
+                <h3
                   style={{
                     fontSize: '1.5rem',
                     fontWeight: '700',
@@ -167,9 +107,9 @@ export default function PricingSection() {
                 >
                   {tier.name}
                 </h3>
-                
+
                 <div style={{ marginBottom: '8px' }}>
-                  <span 
+                  <span
                     style={{
                       fontSize: '3rem',
                       fontWeight: '700',
@@ -178,7 +118,7 @@ export default function PricingSection() {
                   >
                     {tier.price}
                   </span>
-                  <span 
+                  <span
                     style={{
                       fontSize: '1rem',
                       color: 'var(--md-sys-color-on-surface-variant)',
@@ -190,18 +130,18 @@ export default function PricingSection() {
                 </div>
 
                 {tier.yearlyPrice && (
-                  <p 
+                  <p
                     style={{
                       fontSize: '0.875rem',
                       color: 'var(--md-sys-color-on-surface-variant)',
                       marginBottom: '8px'
                     }}
                   >
-                    or {tier.yearlyPrice}
+                    {t('pricing.yearlyPrefix')} {tier.yearlyPrice}
                   </p>
                 )}
 
-                <p 
+                <p
                   style={{
                     fontSize: '1rem',
                     color: 'var(--md-sys-color-on-surface-variant)'
@@ -212,14 +152,14 @@ export default function PricingSection() {
               </div>
 
               {/* Features List */}
-              <ul 
+              <ul
                 style={{
                   listStyle: 'none',
                   padding: '0',
                   marginBottom: '32px'
                 }}
               >
-                {tier.features.map((feature, featureIndex) => (
+                {Array.isArray(tier.features) && tier.features.map((feature: string, featureIndex: number) => (
                   <li
                     key={featureIndex}
                     style={{
@@ -230,7 +170,7 @@ export default function PricingSection() {
                       color: 'var(--md-sys-color-on-surface)'
                     }}
                   >
-                    <span 
+                    <span
                       style={{
                         color: 'var(--md-sys-color-primary)',
                         marginRight: '12px',
@@ -257,13 +197,28 @@ export default function PricingSection() {
               >
                 {tier.buttonText}
               </button>
+
+              {/* Savings hint */}
+              {tier.savings && (
+                <div
+                  style={{
+                    textAlign: 'center',
+                    marginTop: '16px',
+                    fontSize: '12px',
+                    color: 'var(--md-sys-color-primary)',
+                    fontWeight: '600'
+                  }}
+                >
+                  {tier.savings}
+                </div>
+              )}
             </div>
           ))}
         </div>
 
         {/* Legal Note */}
         <div style={{ textAlign: 'center', marginTop: '48px' }}>
-          <p 
+          <p
             style={{
               fontSize: '0.875rem',
               color: 'var(--md-sys-color-on-surface-variant)',
@@ -271,7 +226,7 @@ export default function PricingSection() {
               margin: '0 auto'
             }}
           >
-            Prices include VAT where applicable. Interview sessions are billed separately if outside Pro plan.
+            {t('pricing.legalNote')}
           </p>
         </div>
       </div>

@@ -1,10 +1,13 @@
 'use client'
 
-interface Tab {
+import { motion } from 'framer-motion'
+import { LayoutGrid, Calendar, MessageSquare, Users, Settings, Loader2, AlertTriangle, type LucideIcon } from 'lucide-react'
+
+export interface Tab {
   id: string
   label: string
   route: string
-  icon: string
+  icon?: string
 }
 
 interface HeaderTabButtonProps {
@@ -15,6 +18,7 @@ interface HeaderTabButtonProps {
   onClick: () => void
   onFocus?: () => void
   tabIndex?: number
+  isMobile?: boolean
 }
 
 export function HeaderTabButton({ 
@@ -24,39 +28,84 @@ export function HeaderTabButton({
   hasError = false, 
   onClick,
   onFocus,
-  tabIndex = 0
+  tabIndex = 0,
+  isMobile = false
 }: HeaderTabButtonProps) {
+  
+  // Icon mapping
+  const getIcon = (id: string) => {
+    switch (id) {
+      case 'dashboard': return LayoutGrid
+      case 'timeline': return Calendar
+      case 'chat': return MessageSquare
+      case 'contact': return Users
+      case 'settings': return Settings
+      default: return LayoutGrid
+    }
+  }
+
+  const Icon = getIcon(tab.id)
+
   return (
     <button
-      className={`adaptive-tab ${isActive ? 'active' : ''}`}
       onClick={onClick}
       onFocus={onFocus}
       role="tab"
       tabIndex={tabIndex}
       aria-selected={isActive}
       aria-label={`Switch to ${tab.label}`}
+      className={`
+        relative group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-500
+        ${isMobile ? 'w-full justify-start p-4 hover:bg-white/5' : 'justify-center'}
+        ${isActive ? 'text-[#D4AF37]' : 'text-gray-400 hover:text-gray-100'}
+      `}
     >
-      {/* Icon with loading/error states */}
-      <span className="mr-1 md:mr-2 text-sm md:text-base relative">
-        {isLoading && (
-          <span className="absolute inset-0 animate-spin">⟳</span>
+      {/* Active Background/Glow (Desktop) */}
+      {!isMobile && isActive && (
+        <motion.div
+          layoutId="activeTabBg"
+          className="absolute inset-0 bg-[#D4AF37]/10 rounded-full blur-[1px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+
+      {/* Mobile Active Indicator */}
+      {isMobile && isActive && (
+        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+      )}
+
+      {/* Icon Wrapper */}
+      <div className="relative">
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : hasError ? (
+          <AlertTriangle className="w-4 h-4 text-red-500" />
+        ) : (
+          <Icon 
+            className={`
+              w-4 h-4 transition-transform duration-300
+              ${isActive ? 'scale-110' : 'group-hover:scale-110'}
+            `} 
+          />
         )}
-        {hasError && !isLoading && (
-          <span style={{ color: 'var(--c-accent-100)' }}>⚠</span>
-        )}
-        {!isLoading && !hasError && (
-          <>
-            {tab.icon === 'house' && '🏠'}
-            {tab.icon === 'timeline' && '📅'}
-            {tab.icon === 'chat' && '💬'}
-            {tab.icon === 'user' && '👤'}
-            {tab.icon === 'settings' && '⚙️'}
-          </>
-        )}
+      </div>
+      
+      {/* Label */}
+      <span className={`
+        text-sm font-medium tracking-wide transition-colors duration-300
+        ${isMobile ? 'text-base' : 'hidden sm:inline'}
+        ${isActive ? 'text-[#D4AF37]' : 'text-gray-400 group-hover:text-gray-100'}
+      `}>
+        {tab.label}
       </span>
       
-      {/* Label - responsive display */}
-      <span className="hidden sm:inline">{tab.label}</span>
+      {/* Subtle shine effect on hover */}
+      <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shine" />
+      </div>
     </button>
   )
 }

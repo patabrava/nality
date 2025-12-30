@@ -1,9 +1,11 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function FinalCTASection() {
   const { isAuthenticated } = useAuth()
+  const { t } = useI18n()
 
   const handleStartStory = () => {
     if (isAuthenticated) {
@@ -19,7 +21,7 @@ export default function FinalCTASection() {
   }
 
   return (
-    <section 
+    <section
       className="section"
       style={{
         padding: '80px 0',
@@ -30,7 +32,7 @@ export default function FinalCTASection() {
       }}
     >
       {/* Background Pattern */}
-      <div 
+      <div
         style={{
           position: 'absolute',
           top: '-50%',
@@ -46,7 +48,7 @@ export default function FinalCTASection() {
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center' }}>
-          <h2 
+          <h2
             style={{
               fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
               fontWeight: '700',
@@ -56,10 +58,10 @@ export default function FinalCTASection() {
               letterSpacing: '-0.02em'
             }}
           >
-            Start your story today
+            {t('finalCta.title')}
           </h2>
-          
-          <p 
+
+          <p
             style={{
               fontSize: 'clamp(1.125rem, 3vw, 1.375rem)',
               color: 'var(--md-sys-color-on-surface-variant)',
@@ -69,10 +71,10 @@ export default function FinalCTASection() {
               lineHeight: '1.5'
             }}
           >
-            It takes just a few minutes to begin. You can always come back to add more.
+            {t('finalCta.subtitle')}
           </p>
 
-          <div 
+          <div
             style={{
               display: 'flex',
               gap: '16px',
@@ -81,7 +83,7 @@ export default function FinalCTASection() {
               flexWrap: 'wrap'
             }}
           >
-            <button 
+            <button
               onClick={handleStartStory}
               className="form-button primary"
               style={{
@@ -92,10 +94,10 @@ export default function FinalCTASection() {
                 boxShadow: '0 8px 24px rgba(255, 255, 255, 0.15)'
               }}
             >
-              Start My Story
+              {t('finalCta.primaryCta')}
             </button>
-            
-            <button 
+
+            <button
               onClick={handleExploreTimeline}
               className="form-button secondary"
               style={{
@@ -105,12 +107,12 @@ export default function FinalCTASection() {
                 minWidth: '200px'
               }}
             >
-              Explore the Timeline
+              {t('finalCta.secondaryCta')}
             </button>
           </div>
 
           {/* Trust message */}
-          <div 
+          <div
             style={{
               marginTop: '40px',
               padding: '24px',
@@ -121,7 +123,7 @@ export default function FinalCTASection() {
               margin: '40px auto 0'
             }}
           >
-            <div 
+            <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -131,17 +133,17 @@ export default function FinalCTASection() {
               }}
             >
               <span style={{ fontSize: '20px' }}>🔒</span>
-              <span 
+              <span
                 style={{
                   fontSize: '1rem',
                   fontWeight: '600',
                   color: 'var(--md-sys-color-on-surface)'
                 }}
               >
-                Privacy guaranteed
+                {t('finalCta.privacyTitle')}
               </span>
             </div>
-            <p 
+            <p
               style={{
                 fontSize: '0.875rem',
                 color: 'var(--md-sys-color-on-surface-variant)',
@@ -149,12 +151,12 @@ export default function FinalCTASection() {
                 margin: '0'
               }}
             >
-              Your stories are private by default. Share only what you choose, with whom you choose.
+              {t('finalCta.privacyBody')}
             </p>
           </div>
 
           {/* Social proof numbers */}
-          <div 
+          <div
             style={{
               display: 'flex',
               justifyContent: 'center',
@@ -164,7 +166,7 @@ export default function FinalCTASection() {
             }}
           >
             <div style={{ textAlign: 'center' }}>
-              <div 
+              <div
                 style={{
                   fontSize: '2rem',
                   fontWeight: '700',
@@ -172,20 +174,20 @@ export default function FinalCTASection() {
                   marginBottom: '4px'
                 }}
               >
-                10K+
+                {t('finalCta.stats.stories.value')}
               </div>
-              <div 
+              <div
                 style={{
                   fontSize: '0.875rem',
                   color: 'var(--md-sys-color-on-surface-variant)'
                 }}
               >
-                Stories preserved
+                {t('finalCta.stats.stories.label')}
               </div>
             </div>
-            
+
             <div style={{ textAlign: 'center' }}>
-              <div 
+              <div
                 style={{
                   fontSize: '2rem',
                   fontWeight: '700',
@@ -193,20 +195,20 @@ export default function FinalCTASection() {
                   marginBottom: '4px'
                 }}
               >
-                500+
+                {t('finalCta.stats.books.value')}
               </div>
-              <div 
+              <div
                 style={{
                   fontSize: '0.875rem',
                   color: 'var(--md-sys-color-on-surface-variant)'
                 }}
               >
-                Books created
+                {t('finalCta.stats.books.label')}
               </div>
             </div>
-            
+
             <div style={{ textAlign: 'center' }}>
-              <div 
+              <div
                 style={{
                   fontSize: '2rem',
                   fontWeight: '700',
@@ -214,15 +216,15 @@ export default function FinalCTASection() {
                   marginBottom: '4px'
                 }}
               >
-                4.9
+                {t('finalCta.stats.rating.value')}
               </div>
-              <div 
+              <div
                 style={{
                   fontSize: '0.875rem',
                   color: 'var(--md-sys-color-on-surface-variant)'
                 }}
               >
-                Average rating
+                {t('finalCta.stats.rating.label')}
               </div>
             </div>
           </div>

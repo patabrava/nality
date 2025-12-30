@@ -1,40 +1,45 @@
-'use client'
+import { MessageSquare, Bot, Check } from 'lucide-react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 /**
  * Chat Module Placeholder
  * Preview interface for future chat functionality
  */
 export function ChatPlaceholder() {
+  const { t } = useI18n()
   console.log('[ChatPlaceholder] Component mounted')
 
   return (
-    <section 
+    <section
       className="flex h-full items-center justify-center p-8"
-      style={{ 
+      style={{
         backgroundColor: 'var(--c-primary-invert)',
         minHeight: '100vh'
       }}
     >
       <div className="text-center space-y-6 max-w-md">
-        <div className="text-6xl mb-4">🤖</div>
-        
-        <h2 
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
+            <Bot size={48} strokeWidth={1.5} />
+          </div>
+        </div>
+
+        <h2
           className="text-3xl font-semibold"
           style={{ color: 'var(--c-primary-100)' }}
         >
-          Chat coming soon
+          {t('dashboardNav.chat.comingSoon')}
         </h2>
-        
-        <p 
+
+        <p
           className="text-lg leading-relaxed"
           style={{ color: 'var(--c-neutral-dark)' }}
         >
-          You'll be able to discuss life events in real‑time with our AI assistant. 
-          Get help organizing memories, filling gaps in your timeline, and discovering new perspectives on your story.
+          {t('dashboardNav.chat.subtitle')}
         </p>
-        
+
         <div className="pt-4">
-          <button 
+          <button
             className="h-12 px-8 rounded-xl font-semibold text-lg transition-all duration-200 opacity-60 cursor-not-allowed"
             style={{
               backgroundColor: 'var(--c-neutral-medium)',
@@ -42,25 +47,25 @@ export function ChatPlaceholder() {
             }}
             disabled
           >
-            Start Chat (Coming Soon)
+            {t('dashboardNav.chat.startChat')}
           </button>
         </div>
-        
+
         <div className="pt-6 space-y-3">
-          <p 
+          <p
             className="text-sm font-medium"
             style={{ color: 'var(--c-primary-100)' }}
           >
-            Planned Features:
+            {t('dashboardNav.chat.plannedFeatures')}
           </p>
-          <ul 
-            className="text-sm space-y-1"
+          <ul
+            className="text-sm space-y-2 text-left inline-block mx-auto"
             style={{ color: 'var(--c-neutral-dark)' }}
           >
-            <li>💬 Natural conversation about your timeline</li>
-            <li>🔍 Help finding and organizing memories</li>
-            <li>📝 Assistance with event descriptions</li>
-            <li>🎯 Personalized timeline insights</li>
+            <li className="flex items-center gap-2"><Check size={14} className="text-[#D4AF37]" /> {t('dashboardNav.chat.featureTimeline')}</li>
+            <li className="flex items-center gap-2"><Check size={14} className="text-[#D4AF37]" /> {t('dashboardNav.chat.featureMemories')}</li>
+            <li className="flex items-center gap-2"><Check size={14} className="text-[#D4AF37]" /> {t('dashboardNav.chat.featureDescriptions')}</li>
+            <li className="flex items-center gap-2"><Check size={14} className="text-[#D4AF37]" /> {t('dashboardNav.chat.featureInsights')}</li>
           </ul>
         </div>
       </div>

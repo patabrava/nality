@@ -5,7 +5,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'roots',
     name: 'Roots',
     subtitle: 'Where I come from',
-    icon: '🌳',
+    icon: 'TreePine',
     primaryCategory: 'family',
     categories: ['family'],
     promptFile: 'roots.txt',
@@ -15,7 +15,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'growing_up',
     name: 'Growing Up',
     subtitle: 'Who I became',
-    icon: '🌅',
+    icon: 'Sunrise',
     primaryCategory: 'personal',
     categories: ['personal'],
     promptFile: 'growing_up.txt',
@@ -25,7 +25,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'learning',
     name: 'Learning',
     subtitle: 'What shaped my mind',
-    icon: '📚',
+    icon: 'BookOpen',
     primaryCategory: 'education',
     categories: ['education'],
     promptFile: 'learning.txt',
@@ -35,7 +35,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'work',
     name: 'Work & Purpose',
     subtitle: 'What I built',
-    icon: '🎯',
+    icon: 'Target',
     primaryCategory: 'career',
     categories: ['career', 'achievement'],
     promptFile: 'work.txt',
@@ -45,7 +45,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'love',
     name: 'Love & Bonds',
     subtitle: 'Who I loved',
-    icon: '💫',
+    icon: 'Heart',
     primaryCategory: 'relationship',
     categories: ['relationship'],
     promptFile: 'love.txt',
@@ -55,7 +55,7 @@ export const CHAPTERS: Record<ChapterId, Chapter> = {
     id: 'moments',
     name: 'Life Moments',
     subtitle: 'What I experienced',
-    icon: '✨',
+    icon: 'Sparkles',
     primaryCategory: 'travel',
     categories: ['travel', 'health', 'other'],
     promptFile: 'moments.txt',
@@ -72,7 +72,7 @@ export function getChapterById(id: ChapterId): Chapter | undefined {
 }
 
 export function getChapterByCategory(category: string): Chapter | undefined {
-  return CHAPTERS_ORDERED.find(ch => 
+  return CHAPTERS_ORDERED.find(ch =>
     ch.categories.includes(category as any)
   );
 }

@@ -1,51 +1,17 @@
 'use client'
 
-const testimonials = [
-  {
-    text: "I captured 40 years of my grandmother's stories in just two weekend sessions. The AI helped me ask questions I never would have thought of. The printed book is now our family's most treasured possession.",
-    author: "Sofia R.",
-    role: "Family Historian",
-    location: "Barcelona, Spain"
-  },
-  {
-    text: "As a documentary filmmaker, I was skeptical of AI storytelling. But Nality's interview structure and timeline organization saved me 80% of my prep time. Now I recommend it to all my clients.",
-    author: "Marcus Chen", 
-    role: "Documentary Filmmaker",
-    location: "San Francisco, CA"
-  },
-  {
-    text: "We used Nality to preserve my father's Holocaust survival story before he passed. The professional interviewer was incredibly sensitive, and the final book helps us share his legacy with future generations.",
-    author: "Rachel Goldstein",
-    role: "Holocaust Education Foundation",
-    location: "New York, NY"
-  },
-  {
-    text: "I've written three memoirs with Nality's platform. The AI suggests story connections I never saw, and the export quality rivals traditional publishers. It's revolutionized my writing process.",
-    author: "Dr. James Patterson",
-    role: "Former University President",
-    location: "Oxford, UK"
-  }
-]
-
-const partnerLogos = [
-  { name: "National Archives", placeholder: "NAT" },
-  { name: "Genealogy Society", placeholder: "GEN" },
-  { name: "Senior Living Corp", placeholder: "SLC" },
-  { name: "Memorial Foundation", placeholder: "MEM" },
-  { name: "Heritage Trust", placeholder: "HTR" }
-]
-
-const stats = [
-  { number: "50,000+", label: "Life stories preserved" },
-  { number: "2.3M+", label: "Photos & videos uploaded" },
-  { number: "15,000+", label: "Books printed & shared" },
-  { number: "99.9%", label: "Data preservation rate" }
-]
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function SocialProofSection() {
+  const { t } = useI18n()
+
+  const testimonials = t('socialProof.testimonials')
+  const partnerLogos = t('socialProof.partnerLogos')
+  const stats = t('socialProof.stats')
+
   return (
-    <section 
-      id="social-proof" 
+    <section
+      id="social-proof"
       className="section"
       style={{
         padding: '64px 0',
@@ -54,7 +20,7 @@ export default function SocialProofSection() {
       }}
     >
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-        <h2 
+        <h2
           style={{
             fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
             fontWeight: '700',
@@ -63,11 +29,11 @@ export default function SocialProofSection() {
             marginBottom: '48px'
           }}
         >
-          Trusted for the moments that matter
+          {t('socialProof.title')}
         </h2>
 
         {/* Partner Logos */}
-        <div 
+        <div
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -78,7 +44,7 @@ export default function SocialProofSection() {
             opacity: '0.6'
           }}
         >
-          {partnerLogos.map((logo, index) => (
+          {Array.isArray(partnerLogos) && partnerLogos.map((logo: any, index: number) => (
             <div
               key={index}
               style={{
@@ -93,15 +59,44 @@ export default function SocialProofSection() {
                 fontSize: '12px',
                 fontWeight: '600'
               }}
-              aria-label={`${logo.name} logo`}
+              aria-label={`${logo.name} ${t('socialProof.partnerAriaSuffix')}`}
             >
               {logo.placeholder}
             </div>
           ))}
         </div>
 
+        {/* Stats Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '32px',
+            marginBottom: '64px',
+            textAlign: 'center'
+          }}
+        >
+          {Array.isArray(stats) && stats.map((stat: any, index: number) => (
+            <div key={index}>
+              <div
+                style={{
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  color: 'var(--md-sys-color-primary)',
+                  marginBottom: '8px'
+                }}
+              >
+                {stat.number}
+              </div>
+              <div style={{ fontSize: '14px', color: 'var(--md-sys-color-on-surface-variant)' }}>
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Testimonials */}
-        <div 
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -110,7 +105,7 @@ export default function SocialProofSection() {
             margin: '0 auto'
           }}
         >
-          {testimonials.map((testimonial, index) => (
+          {Array.isArray(testimonials) && testimonials.map((testimonial: any, index: number) => (
             <blockquote
               key={index}
               style={{
@@ -121,7 +116,7 @@ export default function SocialProofSection() {
                 position: 'relative'
               }}
             >
-              <div 
+              <div
                 style={{
                   fontSize: '32px',
                   color: 'var(--md-sys-color-primary)',
@@ -133,7 +128,7 @@ export default function SocialProofSection() {
               >
                 "
               </div>
-              <p 
+              <p
                 style={{
                   fontSize: '16px',
                   color: 'var(--md-sys-color-on-surface)',
@@ -145,16 +140,23 @@ export default function SocialProofSection() {
               >
                 {testimonial.text}
               </p>
-              <cite 
-                style={{
-                  fontSize: '14px',
-                  color: 'var(--md-sys-color-on-surface-variant)',
-                  fontWeight: '600',
-                  fontStyle: 'normal'
-                }}
-              >
-                — {testimonial.author}
-              </cite>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <cite
+                  style={{
+                    fontSize: '14px',
+                    color: 'var(--md-sys-color-on-surface)',
+                    fontWeight: '600',
+                    fontStyle: 'normal'
+                  }}
+                >
+                  — {testimonial.author}
+                </cite>
+                {testimonial.role && (
+                  <span style={{ fontSize: '12px', color: 'var(--md-sys-color-on-surface-variant)' }}>
+                    {testimonial.role}, {testimonial.location}
+                  </span>
+                )}
+              </div>
             </blockquote>
           ))}
         </div>

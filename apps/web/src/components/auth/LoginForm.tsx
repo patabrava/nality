@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');
@@ -598,6 +599,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const { signInWithEmail, signInWithPassword, signUpWithPassword, signInWithGoogle, loading, error, isAuthenticated } = useAuth()
+  const { t } = useI18n()
   const router = useRouter()
 
   // Redirect authenticated users to dashboard
@@ -609,23 +611,23 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!email.trim()) return
-    
+
     let result
-    
+
     if (authMethod === 'magic-link') {
       result = await signInWithEmail(email)
     } else {
       if (!password.trim()) return
-      
+
       if (isSignUp) {
         result = await signUpWithPassword(email, password)
       } else {
         result = await signInWithPassword(email, password)
       }
     }
-    
+
     if (!result.error) {
       if (authMethod === 'magic-link' || isSignUp) {
         setIsSubmitted(true)
@@ -656,7 +658,7 @@ export function LoginForm() {
       hasUpperCase: /[A-Z]/.test(password),
       hasNumber: /\d/.test(password)
     }
-    
+
     return {
       isValid: Object.values(requirements).every(Boolean),
       requirements
@@ -666,7 +668,7 @@ export function LoginForm() {
   const getPasswordStrength = (password: string) => {
     const validation = validatePassword(password)
     const score = Object.values(validation.requirements).filter(Boolean).length
-    
+
     if (score < 2) return { strength: 'weak', color: '#ff4444' }
     if (score < 4) return { strength: 'medium', color: '#ffaa00' }
     return { strength: 'strong', color: '#00cc44' }
@@ -676,24 +678,24 @@ export function LoginForm() {
   const isButtonDisabled = (() => {
     // Always disable if loading
     if (loading) return true
-    
+
     // Always require valid email
     if (!email.trim() || !isValidEmail(email)) return true
-    
+
     // For password auth, require password
     if (authMethod === 'password') {
       if (!password.trim()) return true
       // Only validate password strength for sign up, not sign in
       if (isSignUp && !validatePassword(password).isValid) return true
     }
-    
+
     return false
   })()
 
   if (isSubmitted) {
     const isSignUpSuccess = authMethod === 'password' && isSignUp
     const isMagicLinkSent = authMethod === 'magic-link'
-    
+
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: styles }} />
@@ -701,27 +703,27 @@ export function LoginForm() {
           <div className="login-card">
             <div className="login-header">
               <h1 className="login-title">
-                {isSignUpSuccess ? 'Account Created!' : 'Check Your Email'}
+                {isSignUpSuccess ? t('auth.login.success.accountCreated') : t('auth.login.success.checkEmail')}
               </h1>
               <p className="login-subtitle">
-                {isSignUpSuccess 
-                  ? `Welcome to Nality! We've sent a confirmation email to `
-                  : `We've sent an Email Link to `
+                {isSignUpSuccess
+                  ? t('auth.login.success.signUpPrefix')
+                  : t('auth.login.success.magicLinkPrefix')
                 }
                 <span className="email-highlight">{email}</span>
-                {isSignUpSuccess 
-                  ? '. Please verify your email address to complete your account setup.'
-                  : ''
+                {isSignUpSuccess
+                  ? t('auth.login.success.signUpSuffix')
+                  : t('auth.login.success.magicLinkSuffix')
                 }
               </p>
               <p className="footer-text" style={{ marginTop: '16px' }}>
-                {isSignUpSuccess 
-                  ? 'Click the link in your email to verify your account'
-                  : 'Click the link in your email to sign in to Nality'
+                {isSignUpSuccess
+                  ? t('auth.login.success.signUpAction')
+                  : t('auth.login.success.magicLinkAction')
                 }
               </p>
             </div>
-            
+
             <button
               onClick={() => {
                 setIsSubmitted(false)
@@ -730,7 +732,7 @@ export function LoginForm() {
               }}
               className="secondary-button"
             >
-              Try Different Email
+              {t('auth.login.success.tryDifferentEmail')}
             </button>
           </div>
         </div>
@@ -744,9 +746,9 @@ export function LoginForm() {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1 className="login-title">Welcome to <span className="serif-accent">Nality</span></h1>
+            <h1 className="login-title">{t('auth.login.title')} <span className="serif-accent">Nality</span></h1>
             <p className="login-subtitle">
-              Your life story, beautifully preserved
+              {t('auth.login.subtitle')}
             </p>
           </div>
 
@@ -757,28 +759,28 @@ export function LoginForm() {
               className={`auth-method-option ${authMethod === 'password' ? 'active' : ''}`}
               onClick={() => setAuthMethod('password')}
             >
-              Password
+              {t('auth.login.methodPassword')}
             </button>
             <button
               type="button"
               className={`auth-method-option ${authMethod === 'magic-link' ? 'active' : ''}`}
               onClick={() => setAuthMethod('magic-link')}
             >
-              Email Link
+              {t('auth.login.methodMagicLink')}
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="input-group">
               <label htmlFor="email" className="input-label">
-                Email Address
+                {t('auth.login.emailLabel')}
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t('auth.login.emailPlaceholder')}
                 className="input-field"
                 required
                 disabled={loading}
@@ -788,7 +790,7 @@ export function LoginForm() {
             {authMethod === 'password' && (
               <div className="input-group">
                 <label htmlFor="password" className="input-label">
-                  Password
+                  {t('auth.login.passwordLabel')}
                 </label>
                 <div className="password-input-container">
                   <input
@@ -796,7 +798,7 @@ export function LoginForm() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={isSignUp ? 'Create a password' : 'Enter your password'}
+                    placeholder={isSignUp ? t('auth.login.passwordPlaceholderSignUp') : t('auth.login.passwordPlaceholderSignIn')}
                     className="input-field"
                     required
                     disabled={loading}
@@ -806,49 +808,49 @@ export function LoginForm() {
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={loading}
+                    title={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
                   >
                     {showPassword ? '👁️' : '👁️‍🗨️'}
                   </button>
                 </div>
-                
+
                 {isSignUp && password && (
                   <div className="password-requirements">
                     <div className="password-strength">
-                      <span style={{ fontSize: '12px', fontWeight: '500' }}>
-                        Password strength:
-                      </span>
-                      <div className="strength-bar">
-                        <div 
-                          className="strength-fill"
-                          style={{
-                            width: `${(Object.values(validatePassword(password).requirements).filter(Boolean).length / 4) * 100}%`,
-                            backgroundColor: getPasswordStrength(password).color
-                          }}
-                        />
-                      </div>
-                      <span style={{ fontSize: '12px', color: getPasswordStrength(password).color }}>
+                      <span style={{ fontWeight: 600 }}>{t('auth.login.passwordRequirements.strength')}:</span>
+                      <span style={{ color: getPasswordStrength(password).color, fontWeight: 700, textTransform: 'uppercase' }}>
                         {getPasswordStrength(password).strength}
                       </span>
                     </div>
-                    
-                    <div>
-                      {[
-                        { key: 'minLength', text: 'At least 8 characters' },
-                        { key: 'hasLowerCase', text: 'Lowercase letter' },
-                        { key: 'hasUpperCase', text: 'Uppercase letter' },
-                        { key: 'hasNumber', text: 'Number' }
-                      ].map(({ key, text }) => {
-                        const requirements = validatePassword(password).requirements
-                        const isRequirementMet = requirements[key as keyof typeof requirements]
-                        return (
-                          <div key={key} className={`requirement-item ${isRequirementMet ? 'met' : ''}`}>
-                            <div className={`requirement-icon ${isRequirementMet ? 'met' : ''}`}>
-                              {isRequirementMet ? '✓' : ''}
-                            </div>
-                            <span>{text}</span>
-                          </div>
-                        )
-                      })}
+                    <div className="strength-bar">
+                      <div
+                        className="strength-fill"
+                        style={{
+                          width: `${(Object.values(validatePassword(password).requirements).filter(Boolean).length / 4) * 100}%`,
+                          backgroundColor: getPasswordStrength(password).color
+                        }}
+                      />
+                    </div>
+                    <div style={{ marginTop: '12px' }}>
+                      <p style={{ margin: '0 0 8px 0', fontSize: '11px', fontWeight: 600, color: 'var(--md-sys-color-on-surface-variant)', textTransform: 'uppercase' }}>
+                        {t('auth.login.passwordRequirements.title')}
+                      </p>
+                      <div className={`requirement-item ${validatePassword(password).requirements.minLength ? 'met' : ''}`}>
+                        <div className="requirement-icon">{validatePassword(password).requirements.minLength ? '✓' : ''}</div>
+                        {t('auth.login.passwordRequirements.minLength')}
+                      </div>
+                      <div className={`requirement-item ${validatePassword(password).requirements.hasLowerCase ? 'met' : ''}`}>
+                        <div className="requirement-icon">{validatePassword(password).requirements.hasLowerCase ? '✓' : ''}</div>
+                        {t('auth.login.passwordRequirements.hasLowerCase')}
+                      </div>
+                      <div className={`requirement-item ${validatePassword(password).requirements.hasUpperCase ? 'met' : ''}`}>
+                        <div className="requirement-icon">{validatePassword(password).requirements.hasUpperCase ? '✓' : ''}</div>
+                        {t('auth.login.passwordRequirements.hasUpperCase')}
+                      </div>
+                      <div className={`requirement-item ${validatePassword(password).requirements.hasNumber ? 'met' : ''}`}>
+                        <div className="requirement-icon">{validatePassword(password).requirements.hasNumber ? '✓' : ''}</div>
+                        {t('auth.login.passwordRequirements.hasNumber')}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -868,58 +870,56 @@ export function LoginForm() {
               disabled={isButtonDisabled}
               className="submit-button"
             >
-              {loading 
-                ? (authMethod === 'magic-link' ? 'Sending Email Link...' : (isSignUp ? 'Creating Account...' : 'Signing In...'))
-                : (authMethod === 'magic-link' ? 'Continue with Email' : (isSignUp ? 'Create Account' : 'Sign In'))
+              {loading
+                ? (authMethod === 'magic-link' ? t('auth.login.sending') : t('auth.login.processing'))
+                : (authMethod === 'magic-link' ? t('auth.login.methodMagicLink') : (isSignUp ? t('auth.login.signUp') : t('auth.login.signIn')))
               }
             </button>
 
             {authMethod === 'password' && (
               <div className="auth-toggle">
-                <p className="auth-toggle-text">
-                  {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                  <span 
-                    className="auth-toggle-link"
+                <span className="auth-toggle-text">
+                  {isSignUp ? t('auth.login.haveAccount') : t('auth.login.needAccount')}{' '}
+                  <a
                     onClick={() => setIsSignUp(!isSignUp)}
+                    className="auth-toggle-link"
                   >
-                    {isSignUp ? 'Sign In' : 'Sign Up'}
-                  </span>
-                </p>
+                    {isSignUp ? t('auth.login.switchToSignIn') : t('auth.login.switchToSignUp')}
+                  </a>
+                </span>
               </div>
             )}
           </form>
 
           {/* OAuth Section */}
           <div className="oauth-separator">
-            <span>or continue with</span>
+            <span>{t('auth.login.or')}</span>
           </div>
 
           <div className="oauth-buttons">
             <button
               type="button"
-              className="oauth-button google"
               onClick={handleGoogleSignIn}
               disabled={loading || googleLoading}
+              className="oauth-button google"
             >
               <div className="oauth-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path fill="#ea4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  <path fill="#ea4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
               </div>
-              {googleLoading ? 'Connecting to Google...' : 'Continue with Google'}
+              {googleLoading ? t('auth.login.googleLoading') : t('auth.login.googleSignIn')}
             </button>
-
-
           </div>
 
           <div className="login-footer">
             <p className="footer-text">
-              {authMethod === 'magic-link' 
-                ? "We'll send you a secure link to sign in. No passwords required."
-                : "Your account is protected with enterprise-grade security."
+              {authMethod === 'magic-link'
+                ? t('auth.login.footerMagicLink')
+                : t('auth.login.footerPassword')
               }
             </p>
           </div>
