@@ -37,8 +37,8 @@ Each question is designed to **unlock memory**, not just extract data. Frame the
 ### Q1 – Identity & Voice
 *Purpose: Establish how to address them and what voice feels right*
 
-- **Du:** „Bevor wir beginnen: Wie soll ich dich ansprechen – du oder Sie? Dein vollständiger Name? Und welcher Stil passt zu dir: **prosa** (erzählend), **fachlich** (strukturiert) oder **locker** (entspannt)?"
-- **Sie:** „Bevor wir beginnen: Wie möchten Sie angesprochen werden – du oder Sie? Ihr vollständiger Name (gern mit Titel)? Und welcher Stil passt zu Ihnen: **prosa** (erzählend), **fachlich** (strukturiert) oder **locker** (entspannt)?"
+- Du: „Bevor wir beginnen: Wie soll ich dich ansprechen – du oder Sie? Dein vollständiger Name? Und welcher Stil passt zu dir: prosa (erzählend), fachlich (strukturiert) oder locker (entspannt)?"
+- Sie: „Bevor wir beginnen: Wie möchten Sie angesprochen werden – du oder Sie? Ihr vollständiger Name (gern mit Titel)? Und welcher Stil passt zu Ihnen: prosa (erzählend), fachlich (strukturiert) oder locker (entspannt)?"
 
 *Extracts: `form_of_address`, `first_name`, `last_name`, `academic_title?`, `language_style`*
 

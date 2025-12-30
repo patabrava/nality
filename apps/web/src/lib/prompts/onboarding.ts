@@ -85,6 +85,7 @@ export function buildOnboardingSystemPrompt(
     'OUTPUT_CONSTRAINTS:',
     '- Respond in plain text only (no code fences, no XML/JSON/YAML blocks).',
     "- Do not include any status headers or markers (e.g., 'prompt_generation_successful', 'RUNTIME_STATE', 'SYSTEM_READY').",
+    '- Do not use Markdown styling (no **bold**, italics, headings, or lists).',
     '- Write direct, natural sentences only.'
   ].join('\n');
 
