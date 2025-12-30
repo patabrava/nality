@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ChatInterface } from '@/components/chat/ChatInterface'
 import { useChat } from '@/hooks/useChat'
 import { useAuth } from '@/hooks/useAuth'
@@ -16,6 +17,8 @@ import OnboardingChatInterface from '@/components/onboarding/ChatInterface'
 export function ChatModule() {
   console.log('[ChatModule] Component mounted')
 
+  const router = useRouter()
+
   // Check authentication state
   const { isAuthenticated, loading: authLoading, user } = useAuth()
   
@@ -30,6 +33,14 @@ export function ChatModule() {
   const [showInterview, setShowInterview] = useState(false)
   const [showFreeTalk, setShowFreeTalk] = useState(false)
   const [activeMode, setActiveMode] = useState<VoiceMode | null>(null)
+
+  const handleCloseSelector = () => {
+    setShowVoiceSelector(false)
+    setShowInterview(false)
+    setShowFreeTalk(false)
+    setActiveMode(null)
+    router.push('/dash')
+  }
 
   // Open selector once auth/profile is resolved
   useEffect(() => {
@@ -128,7 +139,7 @@ export function ChatModule() {
                   break
               }
             }}
-            onClose={() => setShowVoiceSelector(false)}
+            onClose={handleCloseSelector}
           />
         )}
 

@@ -183,7 +183,7 @@ export default function DashboardPage() {
         setShowFreeTalk(true)
         break
       case 'text':
-        router.push('/dash/chat')
+        router.push('/dash')
         break
     }
   }
