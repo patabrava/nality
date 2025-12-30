@@ -21,17 +21,17 @@ interface HeaderTabButtonProps {
   isMobile?: boolean
 }
 
-export function HeaderTabButton({ 
-  tab, 
-  isActive, 
-  isLoading = false, 
-  hasError = false, 
+export function HeaderTabButton({
+  tab,
+  isActive,
+  isLoading = false,
+  hasError = false,
   onClick,
   onFocus,
   tabIndex = 0,
   isMobile = false
 }: HeaderTabButtonProps) {
-  
+
   // Icon mapping
   const getIcon = (id: string) => {
     switch (id) {
@@ -63,7 +63,6 @@ export function HeaderTabButton({
       {/* Active Background/Glow (Desktop) */}
       {!isMobile && isActive && (
         <motion.div
-          layoutId="activeTabBg"
           className="absolute inset-0 bg-[#D4AF37]/10 rounded-full blur-[1px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -84,15 +83,15 @@ export function HeaderTabButton({
         ) : hasError ? (
           <AlertTriangle className="w-4 h-4 text-red-500" />
         ) : (
-          <Icon 
+          <Icon
             className={`
               w-4 h-4 transition-transform duration-300
               ${isActive ? 'scale-110' : 'group-hover:scale-110'}
-            `} 
+            `}
           />
         )}
       </div>
-      
+
       {/* Label */}
       <span className={`
         text-sm font-medium tracking-wide transition-colors duration-300
@@ -101,7 +100,7 @@ export function HeaderTabButton({
       `}>
         {tab.label}
       </span>
-      
+
       {/* Subtle shine effect on hover */}
       <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shine" />

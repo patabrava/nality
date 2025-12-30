@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useRouter, usePathname } from 'next/navigation'
 import { ThemeToggleCompact } from '@/components/theme/ThemeToggle'
@@ -19,22 +19,28 @@ export function HeaderNavigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
-  const tabs = [
+  // Memoize tabs to avoid unnecessary re-renders
+  const tabs = useMemo(() => [
     { id: 'dashboard', label: t('dashboardNav.tabs.dashboard'), route: '/dash' },
     { id: 'timeline', label: t('dashboardNav.tabs.timeline'), route: '/dash/timeline' },
     { id: 'chat', label: t('dashboardNav.tabs.chat'), route: '/dash/chat' },
     { id: 'contact', label: t('dashboardNav.tabs.contact'), route: '/dash/contact' }
-  ] as const
+  ] as const, [t])
 
   // Sync activeModule with current pathname
   useEffect(() => {
-    const currentTab = tabs.find(tab => {
-      if (tab.route === '/dash') {
-        // Exact match for dashboard (avoid matching /dash/*)
-        return pathname === '/dash' || pathname === '/dash/'
-      }
-      return pathname?.startsWith(tab.route)
+    if (!pathname) return
+
+    // Sort tabs by route length (descending) to match most specific route first
+    // e.g. Match /dash/timeline before /dash
+    const sortedTabs = [...tabs].sort((a, b) => b.route.length - a.route.length)
+
+    // Normalize path to ignore potential locale prefixes (e.g. /en/dash -> /dash)
+    // We check if the path contains the route
+    const currentTab = sortedTabs.find(tab => {
+      return pathname.endsWith(tab.route) || pathname.includes(`${tab.route}/`)
     })
+
     if (currentTab && currentTab.id !== activeModule) {
       setActiveModule(currentTab.id)
     }

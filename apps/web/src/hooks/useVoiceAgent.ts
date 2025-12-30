@@ -57,6 +57,8 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   const [isMuted, setIsMuted] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const completionHandledRef = useRef(false);
+  const [onboardingSessionId, setOnboardingSessionId] = useState<string | null>(null);
+  const [isOnboardingResuming, setIsOnboardingResuming] = useState(false);
 
   // Refs for state machine control (avoid stale closures in callbacks)
   const processedMessageIdRef = useRef<string | null>(null);
@@ -82,10 +84,73 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
         role: 'assistant',
         content: chapterId 
           ? "Hallo! Ich helfe dir, deine Erinnerungen festzuhalten. Woran möchtest du dich heute erinnern?"
-          : "Hallo! Ich bin deine persönliche Erinnerungsassistentin. Erzähl mir von einem Moment, den du bewahren möchtest.",
+          : "Willkommen zum Onboarding. Ich sammle jetzt deine Basisdaten – Herkunft, wichtige Stationen und Rahmeninfos. Antworte einfach mündlich, ich führe dich Frage für Frage durch.",
       }
     ],
   });
+
+  // Ensure onboarding session exists (only for onboarding flow)
+  const ensureOnboardingSession = useCallback(async (): Promise<string | null> => {
+    if (chapterId) return null; // Only needed for onboarding flow
+    if (onboardingSessionId) return onboardingSessionId;
+
+    try {
+      const resp = await fetch('/api/onboarding/session', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!resp.ok) {
+        console.error('❌ Failed to load onboarding session');
+        return null;
+      }
+
+      const data = await resp.json();
+      const sessionId = data?.session?.id ?? null;
+      setOnboardingSessionId(sessionId);
+      setIsOnboardingResuming(Boolean(data?.isResuming));
+      return sessionId;
+    } catch (err) {
+      console.error('❌ Error ensuring onboarding session:', err);
+      return null;
+    }
+  }, [chapterId, onboardingSessionId]);
+
+  // Persist onboarding messages just like text onboarding does
+  const saveOnboardingMessage = useCallback(
+    async (role: 'user' | 'assistant', content: string) => {
+      if (chapterId) return; // Not an onboarding flow
+      const sanitized = content?.trim();
+      if (!sanitized) return;
+
+      const sessionId = onboardingSessionId ?? (await ensureOnboardingSession());
+      if (!sessionId) {
+        console.warn('⚠️ Cannot save onboarding message: no session available');
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/onboarding/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            role,
+            content: sanitized,
+            userId: user?.id,
+            accessToken: session?.access_token,
+          }),
+        });
+
+        if (!resp.ok) {
+          console.error('❌ Failed to save onboarding voice message');
+        }
+      } catch (err) {
+        console.error('❌ Error saving onboarding voice message:', err);
+      }
+    },
+    [chapterId, ensureOnboardingSession, onboardingSessionId, session?.access_token, user?.id],
+  );
 
   // Start listening helper - returns a promise that resolves when listening actually starts
   const startListeningInternal = useCallback((): Promise<void> => {
@@ -162,6 +227,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     setAgentState('thinking');
     
     try {
+      await saveOnboardingMessage('user', transcript);
       await append({
         role: 'user',
         content: transcript,
@@ -224,6 +290,17 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     },
   });
 
+  // End voice session
+  const endSession = useCallback(() => {
+    console.log('🛑 Ending voice session');
+    setIsActive(false);
+    isActiveRef.current = false;
+    isTransitioningRef.current = false;
+    voiceInput.stopListening();
+    audioPlayer.stop();
+    setAgentState('idle');
+  }, [voiceInput, audioPlayer]);
+
   // Handle new assistant messages - trigger TTS
   useEffect(() => {
     if (!isActive) return;
@@ -237,6 +314,13 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     const content = lastMessage.content.trim();
     if (!content) return;
+
+    // Persist assistant turn for onboarding flow
+    (async () => {
+      if (!chapterId) {
+        await saveOnboardingMessage('assistant', content);
+      }
+    })();
 
     // Detect onboarding completion markers (voice path lacks ChatInterface detection)
     const lower = content.toLowerCase();
@@ -264,14 +348,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       (async () => {
         try {
           const accessToken = session?.access_token;
-
-          // Ensure a chat session exists (GET will create if missing)
-          const sessionResp = await fetch('/api/onboarding/session', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
-          const sessionJson = sessionResp.ok ? await sessionResp.json() : null;
-          const chatSessionId = sessionJson?.session?.id;
+          const chatSessionId = onboardingSessionId ?? (await ensureOnboardingSession());
 
           if (chatSessionId) {
             await fetch('/api/onboarding/session', {
@@ -293,7 +370,8 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
             body: JSON.stringify({ userId: user?.id, accessToken }),
           });
 
-          // External callback if provided
+          // Stop session and bubble completion
+          endSession();
           await onComplete?.();
         } catch (err) {
           console.error('❌ Failed to finalize onboarding from voice path:', err);
@@ -322,7 +400,19 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       const idMatch = content.match(/event[_-]?id[:\s]+([a-z0-9-]+)/i);
       onMemorySaved?.(idMatch?.[1] || '');
     }
-  }, [messages, isThinking, isActive, isMuted, audioPlayer, startListeningInternal, onMemorySaved]);
+  }, [
+    messages,
+    isThinking,
+    isActive,
+    isMuted,
+    audioPlayer,
+    startListeningInternal,
+    onMemorySaved,
+    endSession,
+    onComplete,
+    ensureOnboardingSession,
+    onboardingSessionId,
+  ]);
 
   // Start voice session
   const startSession = useCallback(async () => {
@@ -330,6 +420,9 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     setError(null);
     processedMessageIdRef.current = null;
     voiceInput.resetTranscript();
+
+    // Ensure onboarding session exists before any turns are spoken
+    const onboardingSession = await ensureOnboardingSession();
     
     // Preflight: ensure microphone is available before any TTS
     try {
@@ -354,24 +447,26 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     if (welcomeMessage && welcomeMessage.role === 'assistant' && !isMuted) {
       console.log('🔊 Playing welcome message');
       processedMessageIdRef.current = welcomeMessage.id;
+      if (!chapterId && onboardingSession && !isOnboardingResuming) {
+        await saveOnboardingMessage('assistant', welcomeMessage.content);
+      }
       audioPlayer.playText(welcomeMessage.content);
       // onPlayEnd will call startListeningInternal
     } else {
       // No welcome or muted - start listening directly
       await startListeningInternal();
     }
-  }, [voiceInput, audioPlayer, messages, isMuted, startListeningInternal]);
-
-  // End voice session
-  const endSession = useCallback(() => {
-    console.log('🛑 Ending voice session');
-    setIsActive(false);
-    isActiveRef.current = false;
-    isTransitioningRef.current = false;
-    voiceInput.stopListening();
-    audioPlayer.stop();
-    setAgentState('idle');
-  }, [voiceInput, audioPlayer]);
+  }, [
+    voiceInput,
+    audioPlayer,
+    messages,
+    isMuted,
+    startListeningInternal,
+    ensureOnboardingSession,
+    saveOnboardingMessage,
+    chapterId,
+    isOnboardingResuming,
+  ]);
 
   // Toggle mute
   const toggleMute = useCallback(() => {

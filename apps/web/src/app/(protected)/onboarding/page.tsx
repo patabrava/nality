@@ -122,6 +122,11 @@ export default function OnboardingPage() {
                     setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
+                  onComplete={() => {
+                    setShowInterview(false)
+                    setActiveMode('text')
+                    setShowVoiceSelector(false)
+                  }}
                 />
               )}
 

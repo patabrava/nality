@@ -11,6 +11,7 @@ interface InterviewInterfaceProps {
   chapter?: Chapter | undefined;
   onClose: () => void;
   onMemorySaved?: () => void;
+  onComplete?: () => void;
 }
 
 /**
@@ -21,7 +22,8 @@ interface InterviewInterfaceProps {
 export function InterviewInterface({
   chapter,
   onClose,
-  onMemorySaved
+  onMemorySaved,
+  onComplete,
 }: InterviewInterfaceProps) {
   const { t } = useI18n();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,12 +38,14 @@ export function InterviewInterface({
     endSession,
     toggleMute,
     isMuted,
+    onComplete: onVoiceComplete,
   } = useVoiceAgent({
     chapterId: chapter?.id,
     onMemorySaved: () => {
       onMemorySaved?.();
     },
     autoStart: true,
+    onComplete: onComplete ?? (() => {}),
   });
 
   // Auto-scroll to bottom of conversation
