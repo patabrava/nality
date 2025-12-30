@@ -18,7 +18,27 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { text, voice = 'aura-asteria-en' } = await req.json();
+    const rawBody = await req.text();
+    if (!rawBody) {
+      console.error('❌ Empty TTS request body');
+      return NextResponse.json(
+        { error: 'Text is required' },
+        { status: 400 }
+      );
+    }
+
+    let parsed: { text?: string; voice?: string };
+    try {
+      parsed = JSON.parse(rawBody);
+    } catch (e) {
+      console.error('❌ Invalid JSON for TTS request:', e);
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
+
+    const { text, voice = 'aura-2-viktoria-de' } = parsed;
     
     if (!text || typeof text !== 'string') {
       return NextResponse.json(

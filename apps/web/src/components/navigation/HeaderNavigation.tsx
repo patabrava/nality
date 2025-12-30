@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useDashboard } from '@/hooks/useDashboard'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { ThemeToggleCompact } from '@/components/theme/ThemeToggle'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 import { HeaderTabButton } from './HeaderTabButton'
@@ -13,6 +13,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 
 export function HeaderNavigation() {
   const router = useRouter()
+  const pathname = usePathname()
   const { activeModule, setActiveModule } = useDashboard()
   const { t } = useI18n()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -24,6 +25,20 @@ export function HeaderNavigation() {
     { id: 'chat', label: t('dashboardNav.tabs.chat'), route: '/dash/chat' },
     { id: 'contact', label: t('dashboardNav.tabs.contact'), route: '/dash/contact' }
   ] as const
+
+  // Sync activeModule with current pathname
+  useEffect(() => {
+    const currentTab = tabs.find(tab => {
+      if (tab.route === '/dash') {
+        // Exact match for dashboard (avoid matching /dash/*)
+        return pathname === '/dash' || pathname === '/dash/'
+      }
+      return pathname?.startsWith(tab.route)
+    })
+    if (currentTab && currentTab.id !== activeModule) {
+      setActiveModule(currentTab.id)
+    }
+  }, [pathname, tabs, activeModule, setActiveModule])
 
   // Handle scroll effect for glass header
   useEffect(() => {

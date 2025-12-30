@@ -5,7 +5,7 @@ import { useState } from 'react'
 // BULLETPROOF HEADER - Zero external dependencies, all inline styles
 function DashboardHeader() {
   const [activeTab, setActiveTab] = useState('dashboard')
-  
+
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', path: '/dash' },
     { id: 'timeline', label: 'Timeline', path: '/dash/timeline' },
@@ -37,26 +37,26 @@ function DashboardHeader() {
       }}
     >
       {/* Logo */}
-      <div 
+      <div
         onClick={() => window.location.href = '/'}
-        style={{ 
+        style={{
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'baseline',
         }}
       >
-        <span style={{ 
-          color: '#FFFFFF', 
-          fontFamily: 'Georgia, serif', 
-          fontSize: '1.5rem', 
+        <span style={{
+          color: '#FFFFFF',
+          fontFamily: 'Georgia, serif',
+          fontSize: '1.5rem',
           fontWeight: 600,
           letterSpacing: '-0.02em',
         }}>
           NALITY
         </span>
-        <span style={{ 
-          color: '#D4AF37', 
-          fontSize: '0.6rem', 
+        <span style={{
+          color: '#D4AF37',
+          fontSize: '0.6rem',
           marginLeft: '2px',
           verticalAlign: 'super',
         }}>
@@ -134,8 +134,8 @@ function DashboardHeader() {
         aria-label="Profile"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
         </svg>
       </button>
     </header>
@@ -148,7 +148,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div style={{ 
+    <div style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -157,9 +157,9 @@ export default function DashboardLayout({
     }}>
       {/* Bulletproof Header */}
       <DashboardHeader />
-      
+
       {/* Main content area */}
-      <main style={{ 
+      <main style={{
         flex: 1,
         overflow: 'hidden',
         paddingTop: '80px',

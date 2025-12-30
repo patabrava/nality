@@ -80,6 +80,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
   const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const networkErrorCountRef = useRef(0);
   const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const preflightStreamRef = useRef<MediaStream | null>(null);
 
   // Cleanup function
   const cleanup = useCallback(() => {
@@ -100,6 +101,11 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
         // Ignore errors during cleanup
       }
       recognitionRef.current = null;
+    }
+    
+    if (preflightStreamRef.current) {
+      preflightStreamRef.current.getTracks().forEach(t => t.stop());
+      preflightStreamRef.current = null;
     }
     
     isListeningRef.current = false;
@@ -126,15 +132,48 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       return;
     }
 
-    setError(null);
-    setState('connecting');
-    transcriptRef.current = '';
-    setTranscript('');
-    setInterimTranscript('');
-
     try {
-      // Request microphone permission first
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Best-effort device enumeration for logging; do not hard-fail if empty (browser may hide devices pre-permission)
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices.filter(d => d.kind === 'audioinput');
+        if (audioInputs.length === 0) {
+          console.warn('⚠️ No audioinput devices reported before permission prompt; attempting getUserMedia anyway.');
+        }
+      } catch (e) {
+        console.warn('⚠️ enumerateDevices failed (continuing):', e);
+      }
+
+      setError(null);
+      setState('connecting');
+      transcriptRef.current = '';
+      setTranscript('');
+      setInterimTranscript('');
+
+      // Request microphone permission first (with retries and minimal constraints)
+      const requestMic = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } });
+          preflightStreamRef.current = stream;
+          stream.getTracks().forEach(t => t.stop()); // release device so SpeechRecognition can attach
+          preflightStreamRef.current = null;
+        } catch (err) {
+          console.warn('⚠️ getUserMedia with echoCancellation failed, retrying with plain audio:', err);
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          preflightStreamRef.current = stream;
+          stream.getTracks().forEach(t => t.stop()); // release device
+          preflightStreamRef.current = null;
+        }
+      };
+
+      try {
+        await requestMic();
+      } catch (err) {
+        // Retry once after a short delay in case the device list initializes late
+        console.warn('⚠️ getUserMedia failed, retrying once after delay:', err);
+        await new Promise(res => setTimeout(res, 400));
+        await requestMic();
+      }
       
       console.log('🎤 Starting Web Speech API recognition...');
       
@@ -201,6 +240,20 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
         if (event.error === 'not-allowed') {
           console.error('❌ Speech recognition error:', event.error);
           const err = new Error('Microphone access denied. Please allow microphone access.');
+          setError(err);
+          onError?.(err);
+          setState('error');
+          cleanup();
+        } else if (event.error === 'audio-capture') {
+          console.error('❌ Speech recognition error: audio-capture (mic busy or unavailable)');
+          const err = new Error('Microphone not available. Close other apps using the mic and retry.');
+          setError(err);
+          onError?.(err);
+          setState('error');
+          cleanup();
+        } else if (event.error === 'service-not-allowed') {
+          console.error('❌ Speech recognition error: service-not-allowed');
+          const err = new Error('Speech service blocked. Please allow microphone and retry.');
           setError(err);
           onError?.(err);
           setState('error');
