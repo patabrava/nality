@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { LayoutGrid, Calendar, MessageSquare, Users, Settings, Loader2, AlertTriangle, type LucideIcon } from 'lucide-react'
+import { LayoutGrid, Calendar, MessageSquare, Users, Settings, Loader2, AlertTriangle } from 'lucide-react'
 
 export interface Tab {
   id: string

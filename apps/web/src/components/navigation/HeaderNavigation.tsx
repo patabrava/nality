@@ -23,8 +23,7 @@ export function HeaderNavigation() {
     { id: 'feed', label: t('dashboardNav.tabs.feed') || 'Feed', route: '/dash' },
     { id: 'chapters', label: t('dashboardNav.tabs.chapters') || 'Chapters', route: '/dash/chapters' },
     { id: 'biography', label: t('dashboardNav.tabs.biography') || 'Biography', route: '/dash/biography' },
-    { id: 'contact', label: t('dashboardNav.tabs.contact') || 'Contact', route: '/dash/contact' },
-    { id: 'profile', label: t('dashboardNav.tabs.profile') || 'Profile', route: '/dash/profile' }
+    { id: 'contact', label: t('dashboardNav.tabs.contact') || 'Contact', route: '/dash/contact' }
   ] as const, [t])
 
   // Sync activeModule with current pathname

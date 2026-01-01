@@ -11,7 +11,6 @@ function DashboardHeader() {
     { id: 'chapters', label: 'Chapters', path: '/dash/chapters' },
     { id: 'biography', label: 'Biography', path: '/dash/biography' },
     { id: 'contact', label: 'Contact', path: '/dash/contact' },
-    { id: 'profile', label: 'Profile', path: '/dash/profile' },
   ]
 
   const navigate = (path: string, tabId: string) => {
