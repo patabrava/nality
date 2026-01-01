@@ -9,8 +9,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Heart, BookOpen, Quote, Sparkles, Users } from 'lucide-react';
-import type { ProfileAttributes } from '@/hooks/useUserProfile';
+import { User, Heart, BookOpen, Quote, Sparkles, Users, GraduationCap, Briefcase, Calendar } from 'lucide-react';
+import type { ProfileAttributes, LifeEventsData, LifeEvent } from '@/hooks/useUserProfile';
 import { useI18n } from '@/components/i18n/I18nProvider';
 
 // ──────────────────────
@@ -26,6 +26,8 @@ interface ProfileCardProps {
   };
   /** Profile attributes from user_profile table */
   attributes: ProfileAttributes | null;
+  /** Life events from life_event table */
+  lifeEvents?: LifeEventsData | null;
   /** Callback when edit button is clicked */
   onEdit?: () => void;
   /** Callback when navigating to chat for onboarding */
@@ -38,13 +40,20 @@ interface ProfileCardProps {
 // Main Component
 // ──────────────────────
 
-export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact = false }: ProfileCardProps) {
+export function ProfileCard({ user, attributes, lifeEvents, onEdit, onChatNavigate, compact = false }: ProfileCardProps) {
   const { t } = useI18n();
   const hasValues = attributes?.values && attributes.values.length > 0;
   const hasInfluences = attributes?.influences && attributes.influences.length > 0;
   const hasRoleModels = attributes?.role_models && attributes.role_models.length > 0;
   const hasMotto = attributes?.motto;
-  const hasAnyAttributes = hasValues || hasInfluences || hasRoleModels || hasMotto;
+  
+  // Life events checks
+  const hasFamily = lifeEvents?.family && lifeEvents.family.length > 0;
+  const hasEducation = lifeEvents?.education && lifeEvents.education.length > 0;
+  const hasCareer = lifeEvents?.career && lifeEvents.career.length > 0;
+  const hasAnyLifeEvents = hasFamily || hasEducation || hasCareer;
+  
+  const hasAnyAttributes = hasValues || hasInfluences || hasRoleModels || hasMotto || hasAnyLifeEvents;
 
   const translateInfluenceType = (type: string): string => {
     return t(`profile.influenceTypes.${type}`) || type;
@@ -409,6 +418,50 @@ export function ProfileCard({ user, attributes, onEdit, onChatNavigate, compact 
           </ProfileSection>
         </div>
       )}
+
+      {/* Life Events Section */}
+      {hasAnyLifeEvents && (
+        <div style={{ marginTop: '32px', position: 'relative', zIndex: 1 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: compact ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '24px',
+          }}>
+            {/* Family Section */}
+            {hasFamily && (
+              <ProfileSection
+                icon={<Users size={18} />}
+                title={t('profile.family') || 'Familie'}
+                compact={compact}
+              >
+                <FamilySection events={lifeEvents!.family} />
+              </ProfileSection>
+            )}
+
+            {/* Education Section */}
+            {hasEducation && (
+              <ProfileSection
+                icon={<GraduationCap size={18} />}
+                title={t('profile.education') || 'Bildung'}
+                compact={compact}
+              >
+                <TimelineSection events={lifeEvents!.education} />
+              </ProfileSection>
+            )}
+
+            {/* Career Section */}
+            {hasCareer && (
+              <ProfileSection
+                icon={<Briefcase size={18} />}
+                title={t('profile.career') || 'Beruf'}
+                compact={compact}
+              >
+                <CareerSection events={lifeEvents!.career} />
+              </ProfileSection>
+            )}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -454,12 +507,303 @@ function ProfileSection({
 }
 
 // ──────────────────────
+// Life Event Sub-components
+// ──────────────────────
+
+/**
+ * Displays family members (parents, siblings, children)
+ */
+function FamilySection({ events }: { events: LifeEvent[] }) {
+  // Group family members by relationship type based on title
+  const parents = events.filter(e => 
+    e.title.toLowerCase().includes('father') || 
+    e.title.toLowerCase().includes('mother') ||
+    e.title.toLowerCase().includes('vater') ||
+    e.title.toLowerCase().includes('mutter') ||
+    e.title.toLowerCase().includes('papa') ||
+    e.title.toLowerCase().includes('mama')
+  );
+  
+  const siblings = events.filter(e => 
+    e.title.toLowerCase().includes('brother') || 
+    e.title.toLowerCase().includes('sister') ||
+    e.title.toLowerCase().includes('bruder') ||
+    e.title.toLowerCase().includes('schwester') ||
+    e.title.toLowerCase().includes('sibling') ||
+    e.title.toLowerCase().includes('geschwister')
+  );
+  
+  const children = events.filter(e => 
+    e.title.toLowerCase().includes('son') || 
+    e.title.toLowerCase().includes('daughter') ||
+    e.title.toLowerCase().includes('sohn') ||
+    e.title.toLowerCase().includes('tochter') ||
+    e.title.toLowerCase().includes('child') ||
+    e.title.toLowerCase().includes('kind')
+  );
+  
+  // Remaining family members
+  const others = events.filter(e => 
+    !parents.includes(e) && !siblings.includes(e) && !children.includes(e)
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Parents */}
+      {parents.length > 0 && (
+        <FamilyGroup label="Eltern" members={parents} />
+      )}
+      
+      {/* Siblings */}
+      {siblings.length > 0 && (
+        <FamilyGroup label="Geschwister" members={siblings} />
+      )}
+      
+      {/* Children */}
+      {children.length > 0 && (
+        <FamilyGroup label="Kinder" members={children} />
+      )}
+      
+      {/* Others */}
+      {others.length > 0 && (
+        <FamilyGroup label="Familie" members={others} />
+      )}
+    </div>
+  );
+}
+
+function FamilyGroup({ label, members }: { label: string; members: LifeEvent[] }) {
+  return (
+    <div>
+      <div style={{
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        color: 'var(--md-sys-color-on-surface-variant)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        marginBottom: '6px',
+      }}>
+        {label}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {members.map((member) => {
+          // Extract name from title (e.g., "Father named Camillo" -> "Camillo")
+          const nameMatch = member.title.match(/named?\s+(\w+)/i) || 
+                           member.title.match(/heißt\s+(\w+)/i) ||
+                           member.title.match(/(\w+)$/);
+          const name = nameMatch ? nameMatch[1] : member.title;
+          
+          return (
+            <div
+              key={member.id}
+              style={{
+                padding: '8px 12px',
+                background: 'var(--md-sys-color-surface-container-high)',
+                borderRadius: '8px',
+                color: 'var(--md-sys-color-on-surface)',
+                fontSize: '0.9375rem',
+              }}
+            >
+              {name}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Displays education or general timeline events
+ */
+function TimelineSection({ events }: { events: LifeEvent[] }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {events.map((event) => (
+        <div
+          key={event.id}
+          style={{
+            padding: '12px 16px',
+            background: 'var(--md-sys-color-surface-container-high)',
+            borderRadius: '12px',
+            borderLeft: '3px solid var(--md-sys-color-tertiary)',
+          }}
+        >
+          <div style={{
+            fontWeight: 500,
+            color: 'var(--md-sys-color-on-surface)',
+            fontSize: '0.9375rem',
+            marginBottom: '4px',
+          }}>
+            {event.title}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.8125rem',
+            color: 'var(--md-sys-color-on-surface-variant)',
+          }}>
+            <Calendar size={14} />
+            <span>{formatDateRange(event.start_date, event.end_date, event.is_ongoing)}</span>
+            {event.location && (
+              <>
+                <span>•</span>
+                <span>{event.location}</span>
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Displays career with current position highlighted
+ */
+function CareerSection({ events }: { events: LifeEvent[] }) {
+  // Sort by date, most recent first, with ongoing jobs at top
+  const sortedEvents = [...events].sort((a, b) => {
+    if (a.is_ongoing && !b.is_ongoing) return -1;
+    if (!a.is_ongoing && b.is_ongoing) return 1;
+    const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+    const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  const currentJob = sortedEvents.find(e => e.is_ongoing);
+  const pastJobs = sortedEvents.filter(e => !e.is_ongoing);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Current Position - Highlighted */}
+      {currentJob && (
+        <div
+          style={{
+            padding: '16px',
+            background: 'linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary-container))',
+            borderRadius: '16px',
+            border: '1px solid var(--md-sys-color-outline-variant)',
+          }}
+        >
+          <div style={{
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            color: 'var(--md-sys-color-on-primary-container)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            marginBottom: '8px',
+          }}>
+            Aktuelle Position
+          </div>
+          <div style={{
+            fontWeight: 600,
+            color: 'var(--md-sys-color-on-primary-container)',
+            fontSize: '1rem',
+            marginBottom: '4px',
+          }}>
+            {extractJobTitle(currentJob.title)}
+          </div>
+          {extractCompany(currentJob.title) && (
+            <div style={{
+              fontSize: '0.875rem',
+              color: 'var(--md-sys-color-on-primary-container)',
+              opacity: 0.9,
+            }}>
+              {extractCompany(currentJob.title)}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Previous Positions */}
+      {pastJobs.length > 0 && (
+        <div>
+          <div style={{
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            color: 'var(--md-sys-color-on-surface-variant)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            marginBottom: '8px',
+          }}>
+            Frühere Positionen
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {pastJobs.map((job) => (
+              <div
+                key={job.id}
+                style={{
+                  padding: '10px 14px',
+                  background: 'var(--md-sys-color-surface-container-high)',
+                  borderRadius: '10px',
+                }}
+              >
+                <div style={{
+                  fontWeight: 500,
+                  color: 'var(--md-sys-color-on-surface)',
+                  fontSize: '0.875rem',
+                }}>
+                  {job.title}
+                </div>
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--md-sys-color-on-surface-variant)',
+                  marginTop: '2px',
+                }}>
+                  {formatDateRange(job.start_date, job.end_date, job.is_ongoing)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────
 // Helpers
 // ──────────────────────
 
 function formatYear(dateStr: string): string {
   const match = dateStr.match(/^(\d{4})/);
   return match && match[1] ? match[1] : dateStr;
+}
+
+function formatDateRange(startDate: string | null, endDate: string | null, isOngoing: boolean): string {
+  if (!startDate) return isOngoing ? 'Aktuell' : '';
+  
+  const start = formatYear(startDate);
+  
+  if (isOngoing) {
+    return `${start} – heute`;
+  }
+  
+  if (endDate) {
+    const end = formatYear(endDate);
+    return start === end ? start : `${start} – ${end}`;
+  }
+  
+  return start;
+}
+
+function extractJobTitle(title: string): string {
+  // Try to extract job title from formats like "Head of X at Company"
+  const atMatch = title.match(/^(.+?)\s+(?:at|bei)\s+/i);
+  if (atMatch && atMatch[1]) return atMatch[1];
+  
+  // Return full title if no pattern matches
+  return title;
+}
+
+function extractCompany(title: string): string | null {
+  // Try to extract company from formats like "Title at Company"
+  const atMatch = title.match(/\s+(?:at|bei)\s+(.+)$/i);
+  if (atMatch && atMatch[1]) return atMatch[1];
+  
+  return null;
 }
 
 export default ProfileCard;

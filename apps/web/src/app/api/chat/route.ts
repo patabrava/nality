@@ -157,33 +157,46 @@ export async function POST(req: Request) {
         // Insert only if we have an answer text
         if (answerText && answerText.trim().length > 0) {
           // Map question content to valid onboarding_topic enum values
-          // Valid values: 'identity', 'family', 'education', 'career', 'influences'
+          // Valid values: 'identity', 'origins', 'family', 'education', 'career', 'influences', 'values'
           const inferQuestionTopic = (questionText: string | null): string => {
             if (!questionText) return 'identity';
             const q = questionText.toLowerCase();
             
-            // Family-related topics
+            // Q7 Values - MUST check before other topics (contains 'werte', 'motto')
+            if (q.includes('werte') || q.includes('values')) return 'values';
+            if (q.includes('motto') && q.includes('abschluss')) return 'values';
+            if (q.includes('drei werte') || q.includes('three values')) return 'values';
+            
+            // Q2 Origins - birth date/place (check before identity default)
+            if (q.includes('geburt') || q.includes('geboren')) return 'origins';
+            if (q.includes('anfang') && (q.includes('wann') || q.includes('wo'))) return 'origins';
+            if (q.includes('birth') && (q.includes('year') || q.includes('place'))) return 'origins';
+            
+            // Q3 Family-related topics
             if (q.includes('geschwister') || q.includes('bruder') || q.includes('schwester')) return 'family';
             if (q.includes('kinder') || q.includes('children')) return 'family';
             if (q.includes('eltern') || q.includes('mutter') || q.includes('vater') || q.includes('parents')) return 'family';
             if (q.includes('partner') || q.includes('verheiratet') || q.includes('ehe') || q.includes('marriage')) return 'family';
-            if (q.includes('familie')) return 'family';
+            if (q.includes('familie') && !q.includes('ursprünglichen')) return 'family';
+            if (q.includes('ursprünglichen familie')) return 'family';
             
-            // Education-related topics
+            // Q4 Education-related topics
             if (q.includes('schule') || q.includes('grundschule') || q.includes('gymnasium')) return 'education';
             if (q.includes('studium') || q.includes('universität') || q.includes('university')) return 'education';
-            if (q.includes('abschluss') || q.includes('abitur') || q.includes('bildung')) return 'education';
+            if (q.includes('abschluss') || q.includes('abitur')) return 'education';
+            if (q.includes('bildung') && q.includes('weg')) return 'education';
             
-            // Career-related topics
+            // Q5 Career-related topics
             if (q.includes('beruf') || q.includes('arbeit') || q.includes('job') || q.includes('career')) return 'career';
             if (q.includes('rolle') || q.includes('position') || q.includes('firma') || q.includes('unternehmen')) return 'career';
             
-            // Influences-related topics
-            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss') || q.includes('geprägt')) return 'influences';
-            if (q.includes('bewunder') || q.includes('person') || q.includes('admire') || q.includes('vorbild')) return 'influences';
-            if (q.includes('werte') || q.includes('motto') || q.includes('values')) return 'influences';
+            // Q6 Influences-related topics (authors, thinkers, NOT values)
+            if (q.includes('autor') || q.includes('buch') || q.includes('einfluss')) return 'influences';
+            if (q.includes('stimmen') && q.includes('weiter')) return 'influences';
+            if (q.includes('denker') || q.includes('geprägt')) return 'influences';
+            if (q.includes('bewunder') || q.includes('admire') || q.includes('vorbild')) return 'influences';
             
-            // Identity is the default for: name, address preference, birth date/place, style
+            // Q1 Identity is the default for: name, address preference, style
             return 'identity';
           };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ChatInterface from '@/components/onboarding/ChatInterface';
 import ProgressIndicator from '@/components/onboarding/ProgressIndicator';
 import { fetchUserProfile } from '@/lib/supabase/client'
@@ -19,6 +19,14 @@ export default function OnboardingPage() {
   const [activeMode, setActiveMode] = useState<VoiceMode>('text')
   const [showInterview, setShowInterview] = useState(false)
   const [showFreeTalk, setShowFreeTalk] = useState(false)
+
+  const handleVoiceCompletion = useCallback(() => {
+    setShowInterview(false)
+    setShowFreeTalk(false)
+    setShowVoiceSelector(false)
+    setActiveMode('text')
+    router.push('/dash')
+  }, [router])
 
   useEffect(() => {
     if (!loading && isAuthenticated && user?.id) {
@@ -122,11 +130,7 @@ export default function OnboardingPage() {
                     setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
-                  onComplete={() => {
-                    setShowInterview(false)
-                    setActiveMode('text')
-                    setShowVoiceSelector(false)
-                  }}
+                  onComplete={handleVoiceCompletion}
                 />
               )}
 

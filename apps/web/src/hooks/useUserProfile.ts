@@ -22,6 +22,20 @@ export interface UserData {
 }
 
 /**
+ * Life event from life_event table
+ */
+export interface LifeEvent {
+  id: string;
+  title: string;
+  description: string | null;
+  category: 'family' | 'education' | 'career' | 'personal' | 'travel' | 'achievement' | 'health' | 'relationship' | 'other';
+  start_date: string | null;
+  end_date: string | null;
+  is_ongoing: boolean;
+  location: string | null;
+}
+
+/**
  * Profile attributes from the user_profile table
  */
 export interface ProfileAttributes {
@@ -41,10 +55,20 @@ export interface ProfileAttributes {
 }
 
 /**
- * Combined user profile (users + user_profile tables)
+ * Life events grouped by category
+ */
+export interface LifeEventsData {
+  family: LifeEvent[];
+  education: LifeEvent[];
+  career: LifeEvent[];
+}
+
+/**
+ * Combined user profile (users + user_profile + life_event tables)
  */
 export interface UserProfile extends UserData {
   attributes: ProfileAttributes | null;
+  lifeEvents: LifeEventsData | null;
 }
 
 interface UseUserProfileReturn {
@@ -91,6 +115,14 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
         .eq('user_id', userId)
         .maybeSingle();
 
+      // Fetch life events from life_event table
+      const { data: lifeEventsData, error: lifeEventsError } = await supabase
+        .from('life_event')
+        .select('id, title, description, category, start_date, end_date, is_ongoing, location')
+        .eq('user_id', userId)
+        .in('category', ['family', 'education', 'career'])
+        .order('start_date', { ascending: true });
+
       if (userError) {
         // If user doesn't exist in users table, they need onboarding
         if (userError.code === 'PGRST116') {
@@ -105,6 +137,7 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
             birth_date: null,
             birth_place: null,
             attributes: null,
+            lifeEvents: null,
           });
         } else {
           throw new Error(userError.message);
@@ -119,21 +152,36 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
           favorite_authors: profileData.favorite_authors || [],
         } : null;
 
+        // Group life events by category
+        const lifeEvents: LifeEventsData | null = lifeEventsData && lifeEventsData.length > 0 ? {
+          family: lifeEventsData.filter((e: LifeEvent) => e.category === 'family'),
+          education: lifeEventsData.filter((e: LifeEvent) => e.category === 'education'),
+          career: lifeEventsData.filter((e: LifeEvent) => e.category === 'career'),
+        } : null;
+
         console.log('✅ User profile loaded:', { 
           id: userData.id, 
           onboarding_complete: userData.onboarding_complete,
           hasAttributes: !!attributes,
+          hasLifeEvents: !!lifeEvents,
+          familyCount: lifeEvents?.family.length || 0,
+          educationCount: lifeEvents?.education.length || 0,
+          careerCount: lifeEvents?.career.length || 0,
         });
         
         setProfile({
           ...userData,
           attributes,
+          lifeEvents,
         } as UserProfile);
       }
 
       // Log profile error separately (not critical)
       if (profileError && profileError.code !== 'PGRST116') {
         console.warn('⚠️ Could not fetch profile attributes:', profileError.message);
+      }
+      if (lifeEventsError) {
+        console.warn('⚠️ Could not fetch life events:', lifeEventsError.message);
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch profile');
