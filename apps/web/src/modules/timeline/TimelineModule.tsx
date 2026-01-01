@@ -833,7 +833,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       {/* Chapter Chat Modal */}
       {showChat && chapter && (
         <ChapterChatInterface
-          chapter={chapter}
+          chapter={chapter as any}
           onClose={() => setShowChat(false)}
           onEventCreated={handleMemoryComplete}
         />
@@ -850,7 +850,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       {/* Voice Interview Interface */}
       {showInterview && (
         <InterviewInterface
-          chapter={chapter || undefined}
+          chapter={chapter as any}
           onClose={() => setShowInterview(false)}
           onMemorySaved={handleMemoryComplete}
         />
@@ -859,7 +859,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       {/* Free Talk Interface */}
       {showFreeTalk && (
         <FreeTalkInterface
-          chapter={chapter || undefined}
+          chapter={chapter as any}
           onClose={() => setShowFreeTalk(false)}
           onComplete={handleMemoryComplete}
         />

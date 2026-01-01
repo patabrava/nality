@@ -4,13 +4,14 @@ import { useState } from 'react'
 
 // BULLETPROOF HEADER - Zero external dependencies, all inline styles
 function DashboardHeader() {
-  const [activeTab, setActiveTab] = useState('dashboard')
+  const [activeTab, setActiveTab] = useState('feed')
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', path: '/dash' },
-    { id: 'timeline', label: 'Timeline', path: '/dash/timeline' },
-    { id: 'chat', label: 'Chat', path: '/dash/chat' },
+    { id: 'feed', label: 'Feed', path: '/dash' },
+    { id: 'chapters', label: 'Chapters', path: '/dash/chapters' },
+    { id: 'biography', label: 'Biography', path: '/dash/biography' },
     { id: 'contact', label: 'Contact', path: '/dash/contact' },
+    { id: 'profile', label: 'Profile', path: '/dash/profile' },
   ]
 
   const navigate = (path: string, tabId: string) => {

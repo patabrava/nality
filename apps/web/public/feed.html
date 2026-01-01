@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NALITY | Stream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#050505',
+                        surface: '#0A0A0A',
+                        border: 'rgba(255, 255, 255, 0.08)',
+                        gold: { DEFAULT: '#D4AF37', dim: '#8a7020', glow: 'rgba(212, 175, 55, 0.15)' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    backgroundImage: {
+                        'gold-gradient': 'linear-gradient(135deg, #fbf5b7 0%, #D4AF37 50%, #b38728 100%)',
+                        'dark-gradient': 'linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(20,20,20,0) 100%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: #e0e0e0; }
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-32">
+
+    <div class="grain-overlay"></div>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 inset-x-0 h-20 flex items-center justify-between px-6 z-30 pointer-events-none bg-gradient-to-b from-[#050505] to-transparent">
+        <a href="chapters.html" class="pointer-events-auto p-2 bg-[#0A0A0A]/80 backdrop-blur-md rounded-full border border-white/10 text-stone-400 hover:text-gold transition-colors">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+        </a>
+        <div class="pointer-events-auto flex items-center gap-2 bg-[#0A0A0A]/80 px-5 py-2 rounded-full backdrop-blur-md border border-white/10 shadow-lg">
+            <span class="font-display font-medium text-sm tracking-wide text-stone-200">The Stream</span>
+        </div>
+        <div class="w-9"></div>
+    </header>
+
+    <!-- FEED -->
+    <main class="relative z-10 max-w-md mx-auto pt-28 px-4 space-y-10">
+        
+        <!-- TODAY -->
+        <section>
+            <div class="sticky top-20 z-10 py-4 mb-2 bg-gradient-to-b from-[#050505] via-[#050505] to-transparent">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-[10px] font-bold text-gold tracking-[0.2em] uppercase pl-1">Today</h2>
+                    <div class="h-[1px] flex-1 bg-gradient-to-r from-gold/20 to-transparent"></div>
+                </div>
+            </div>
+            
+            <div class="space-y-6">
+                <article class="group bg-dark-gradient p-6 rounded-sm border border-border hover:border-gold/30 hover:bg-[#0A0A0A] transition-all duration-500 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">10:42 AM</span>
+                        <i data-lucide="align-left" class="w-4 h-4 text-stone-600"></i>
+                    </div>
+                    <p class="text-stone-300 text-xl leading-relaxed font-serif font-light">Met Sarah for coffee. We talked about how weirdly fast 2024 flew by. She noticed I seemed lighter.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- EMERGENT UI: SOFT TRIGGER -->
+        <div class="py-2">
+            <div class="group bg-gradient-to-br from-gold/10 to-transparent p-8 rounded-sm border border-gold/20 relative overflow-hidden transition-all duration-500 hover:border-gold/40">
+                <!-- Decorative Icon -->
+                <div class="absolute -right-6 -top-6 opacity-5 rotate-12 group-hover:rotate-45 transition-transform duration-700">
+                    <i data-lucide="network" class="w-32 h-32 text-gold"></i>
+                </div>
+                
+                <h3 class="text-gold font-display text-lg mb-2 relative z-10">Pattern Detected</h3>
+                <p class="text-lg font-serif font-light text-stone-400 leading-relaxed mb-6 relative z-10">
+                    We've noticed meaningful periods forming around <span class="text-stone-200 italic">"Stability"</span> in your recent memories.
+                </p>
+                
+                <div class="flex gap-4 relative z-10 items-center">
+                    <a href="chapters.html" class="px-5 py-2 bg-gold text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-white transition-colors">
+                        View Chapters
+                    </a>
+                    <button class="text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-300 transition-colors">
+                        Dismiss
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- YESTERDAY -->
+        <section>
+            <div class="sticky top-20 z-10 py-4 mb-2">
+                 <div class="flex items-center gap-4">
+                    <h2 class="text-[10px] font-bold text-stone-600 tracking-[0.2em] uppercase pl-1">Yesterday</h2>
+                    <div class="h-[1px] flex-1 bg-gradient-to-r from-stone-800 to-transparent"></div>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <article class="group bg-dark-gradient p-6 rounded-sm border border-border hover:border-gold/30 hover:bg-[#0A0A0A] transition-all duration-500 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">9:30 PM</span>
+                        <i data-lucide="book" class="w-4 h-4 text-stone-600"></i>
+                    </div>
+                    <p class="text-stone-300 text-xl leading-relaxed font-serif font-light">Quiet day. Read 30 pages of Dune. The rain against the window felt like a barrier against the world.</p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FAB -->
+    <div class="fixed bottom-10 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <button class="pointer-events-auto bg-gold text-black flex items-center gap-3 px-8 py-4 rounded-full shadow-[0_0_30px_rgba(212,175,55,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold uppercase tracking-widest">Log Memory</span>
+        </button>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

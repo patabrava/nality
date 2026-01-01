@@ -20,10 +20,11 @@ export function HeaderNavigation() {
 
   // Memoize tabs to avoid unnecessary re-renders
   const tabs = useMemo(() => [
-    { id: 'dashboard', label: t('dashboardNav.tabs.dashboard'), route: '/dash' },
-    { id: 'timeline', label: t('dashboardNav.tabs.timeline'), route: '/dash/timeline' },
-    { id: 'chat', label: t('dashboardNav.tabs.chat'), route: '/dash/chat' },
-    { id: 'contact', label: t('dashboardNav.tabs.contact'), route: '/dash/contact' }
+    { id: 'feed', label: t('dashboardNav.tabs.feed') || 'Feed', route: '/dash' },
+    { id: 'chapters', label: t('dashboardNav.tabs.chapters') || 'Chapters', route: '/dash/chapters' },
+    { id: 'biography', label: t('dashboardNav.tabs.biography') || 'Biography', route: '/dash/biography' },
+    { id: 'contact', label: t('dashboardNav.tabs.contact') || 'Contact', route: '/dash/contact' },
+    { id: 'profile', label: t('dashboardNav.tabs.profile') || 'Profile', route: '/dash/profile' }
   ] as const, [t])
 
   // Sync activeModule with current pathname

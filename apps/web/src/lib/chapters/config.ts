@@ -1,6 +1,6 @@
-import type { Chapter, ChapterId, LifeEventCategoryType } from '@nality/schema';
+import type { LegacyChapter, ChapterId } from '@nality/schema';
 
-export const CHAPTERS: Record<ChapterId, Chapter> = {
+export const CHAPTERS: Record<ChapterId, LegacyChapter> = {
   roots: {
     id: 'roots',
     name: 'Roots',
@@ -67,11 +67,11 @@ export const CHAPTERS_ORDERED = Object.values(CHAPTERS).sort(
   (a, b) => a.displayOrder - b.displayOrder
 );
 
-export function getChapterById(id: ChapterId): Chapter | undefined {
+export function getChapterById(id: ChapterId): LegacyChapter | undefined {
   return CHAPTERS[id];
 }
 
-export function getChapterByCategory(category: string): Chapter | undefined {
+export function getChapterByCategory(category: string): LegacyChapter | undefined {
   return CHAPTERS_ORDERED.find(ch =>
     ch.categories.includes(category as any)
   );

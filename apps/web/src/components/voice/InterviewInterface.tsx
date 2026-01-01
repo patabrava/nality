@@ -38,7 +38,6 @@ export function InterviewInterface({
     endSession,
     toggleMute,
     isMuted,
-    onComplete: onVoiceComplete,
   } = useVoiceAgent({
     chapterId: chapter?.id,
     onMemorySaved: () => {
@@ -97,7 +96,6 @@ export function InterviewInterface({
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {chapter && (
             <>
-              <span style={{ fontSize: '1.5rem' }}>{chapter.icon}</span>
               <div>
                 <h1
                   style={{
@@ -116,7 +114,7 @@ export function InterviewInterface({
                     color: 'var(--md-sys-color-on-surface-variant)',
                   }}
                 >
-                  {chapter.name}
+                  {chapter.title}
                 </p>
               </div>
             </>

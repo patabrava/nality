@@ -50,7 +50,7 @@ export function ChapterChatInterface({
       {
         id: 'welcome',
         role: 'assistant',
-        content: `${chapter.icon} Let's add a memory to your "${chapter.name}" chapter. ${chapter.subtitle}. What moment would you like to capture?`,
+        content: `Let's add a memory to your "${chapter.title}" chapter. ${chapter.summary || 'Share what you remember.'}. What moment would you like to capture?`,
       }
     ],
   })
@@ -155,13 +155,12 @@ export function ChapterChatInterface({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '1.5rem' }}>{chapter.icon}</span>
-            <div>
+                        <div>
               <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: 'var(--md-sys-color-on-surface)' }}>
                 Add Memory
               </h2>
               <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--md-sys-color-on-surface-variant)' }}>
-                {chapter.name}
+                {chapter.title}
               </p>
             </div>
           </div>

@@ -18,146 +18,62 @@ export default function FAQSection() {
   }
 
   return (
-    <section id="faq" className="section" style={{ padding: '80px 0' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2
-            style={{
-              fontSize: 'clamp(2rem, 4vw, 2.5rem)',
-              fontWeight: '700',
-              color: 'var(--md-sys-color-on-surface)',
-              marginBottom: '16px'
-            }}
-          >
-            {t('faq.title')}
-          </h2>
-          <p
-            style={{
-              fontSize: '1.125rem',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              maxWidth: '600px',
-              margin: '0 auto'
-            }}
-          >
-            {t('faq.subtitle')}
-          </p>
-        </div>
+    <section id="faq" className="section">
+      <div className="section-header mx-auto text-center" style={{ maxWidth: 800 }}>
+        <span className="section-label">{t('faq.label')}</span>
+        <h2 className="section-title">
+          {t('faq.title')}
+        </h2>
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          {t('faq.subtitle')}
+        </p>
+      </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {Array.isArray(faqData) && faqData.map((item: any, index: number) => (
-            <div
-              key={index}
-              id={`faq-${index}`}
-              style={{
-                background: 'var(--md-sys-color-surface-container)',
-                borderRadius: '16px',
-                border: '1px solid var(--md-sys-color-outline-variant)',
-                overflow: 'hidden',
-                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)'
-              }}
+      <div className="max-w-3xl mx-auto flex flex-col gap-4">
+        {Array.isArray(faqData) && faqData.map((item: any, index: number) => (
+          <div
+            key={index}
+            className={`glass-card overflow-hidden transition-all duration-300 ${openItems.includes(index) ? 'border-opacity-20 border-white' : ''}`}
+          >
+            <button
+              onClick={() => toggleItem(index)}
+              aria-expanded={openItems.includes(index)}
+              aria-controls={`faq-answer-${index}`}
+              className="w-full p-6 bg-transparent border-none text-left cursor-pointer flex justify-between items-center text-lg font-medium text-white transition-colors hover:text-gold"
             >
-              <button
-                onClick={() => toggleItem(index)}
-                aria-expanded={openItems.includes(index)}
-                aria-controls={`faq-answer-${index}`}
-                style={{
-                  width: '100%',
-                  padding: '24px',
-                  background: 'transparent',
-                  border: 'none',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: 'var(--md-sys-color-on-surface)',
-                  transition: 'color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--md-sys-color-primary)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--md-sys-color-on-surface)'
-                }}
+              <span>{item.question}</span>
+              <span
+                className={`text-2xl text-gold transition-transform duration-300 ${openItems.includes(index) ? 'rotate-45' : ''}`}
               >
-                <span>{item.question}</span>
-                <span
-                  style={{
-                    fontSize: '20px',
-                    transition: 'transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)',
-                    transform: openItems.includes(index) ? 'rotate(45deg)' : 'rotate(0deg)',
-                    color: 'var(--md-sys-color-primary)'
-                  }}
-                >
-                  +
-                </span>
-              </button>
+                +
+              </span>
+            </button>
 
-              <div
-                id={`faq-answer-${index}`}
-                style={{
-                  maxHeight: openItems.includes(index) ? '400px' : '0',
-                  overflow: 'hidden',
-                  transition: 'max-height var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)'
-                }}
-              >
-                <div
-                  style={{
-                    padding: '0 24px 24px',
-                    fontSize: '1rem',
-                    color: 'var(--md-sys-color-on-surface-variant)',
-                    lineHeight: '1.6'
-                  }}
-                >
-                  {item.answer}
-                </div>
+            <div
+              id={`faq-answer-${index}`}
+              className={`transition-all duration-300 ease-in-out ${openItems.includes(index) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <div className="px-6 pb-6 text-gray-400 leading-relaxed">
+                {item.answer}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
-        {/* Still have questions CTA */}
-        <div
-          style={{
-            textAlign: 'center',
-            marginTop: '48px',
-            padding: '32px',
-            background: 'var(--md-sys-color-surface-container)',
-            borderRadius: '16px',
-            border: '1px solid var(--md-sys-color-outline-variant)'
-          }}
-        >
-          <h3
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '600',
-              color: 'var(--md-sys-color-on-surface)',
-              marginBottom: '16px'
-            }}
-          >
+      {/* Still have questions CTA */}
+      <div className="mt-16 text-center">
+        <div className="glass-card inline-block p-8 max-w-2xl mx-auto">
+          <h3 className="text-xl font-serif mb-4 text-white">
             {t('faq.ctaTitle')}
           </h3>
-          <p
-            style={{
-              fontSize: '1rem',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              marginBottom: '24px'
-            }}
-          >
+          <p className="text-gray-400 mb-6">
             {t('faq.ctaText')}
           </p>
           <button
-            className="form-button secondary"
+            className="btn btn-secondary"
             onClick={() => {
-              // Future: Open contact form or navigate to contact page
               window.location.href = 'mailto:support@nality.app'
-            }}
-            style={{
-              fontSize: '16px',
-              padding: '12px 24px',
-              height: 'auto'
             }}
           >
             {t('faq.ctaButton')}
@@ -167,3 +83,4 @@ export default function FAQSection() {
     </section>
   )
 }
+

@@ -210,7 +210,6 @@ export function FreeTalkInterface({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {chapter && <span style={{ fontSize: '1.5rem' }}>{chapter.icon}</span>}
           <div>
             <h1
               style={{
@@ -229,7 +228,7 @@ export function FreeTalkInterface({
                 color: 'var(--md-sys-color-on-surface-variant)',
               }}
             >
-              {chapter?.name || t('voice.freeTalk.subtitle')}
+              {chapter?.title || t('voice.freeTalk.subtitle')}
             </p>
           </div>
         </div>
