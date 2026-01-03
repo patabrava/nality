@@ -6,8 +6,10 @@ import ProgressIndicator from '@/components/onboarding/ProgressIndicator';
 import { fetchUserProfile } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function OnboardingPage() {
+  usePageTitle('Getting Started')
   const { user, isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const [progress, setProgress] = useState(0)

@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '@/components/i18n/useLocale'
+
 const galleryImages = [
   {
     title: "Book Cover",
@@ -19,66 +21,28 @@ const galleryImages = [
 ]
 
 export default function OutcomesGallerySection() {
+  const { t } = useLocale()
+
   return (
     <section 
       id="gallery" 
-      className="section" 
-      style={{ 
-        padding: '80px 0',
-        margin: '0 -24px'
-      }}
+      className="section outcomes-section"
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 
-            style={{
-              fontSize: 'clamp(2rem, 4vw, 2.5rem)',
-              fontWeight: '700',
-              color: 'var(--md-sys-color-on-surface)',
-              marginBottom: '16px'
-            }}
-          >
-            A keepsake you can hold
+      <div className="outcomes-container">
+        <div className="outcomes-header">
+          <h2 className="outcomes-title">
+            {t('outcomes.title')}
           </h2>
-          <p 
-            style={{
-              fontSize: '1.125rem',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              maxWidth: '600px',
-              margin: '0 auto'
-            }}
-          >
-            Nality turns your timeline into a polished, print-ready PDF. Choose cover styles and share digitally or order prints.
+          <p className="outcomes-subtitle">
+            {t('outcomes.subtitle')}
           </p>
         </div>
 
-        <div 
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '32px',
-            maxWidth: '1000px',
-            margin: '0 auto'
-          }}
-        >
+        <div className="outcomes-gallery">
           {galleryImages.map((image, index) => (
             <div
               key={index}
-              style={{
-                position: 'relative',
-                background: 'var(--md-sys-color-surface-container)',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                border: '1px solid var(--md-sys-color-outline-variant)',
-                transition: 'transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.02)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'
-              }}
+              className="gallery-card"
             >
               {/* Mock book preview */}
               <div 

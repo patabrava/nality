@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useLocale } from '@/components/i18n/useLocale'
 import HeroCanvas from './HeroCanvas'
 
 interface HeroSectionProps {
@@ -9,6 +10,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
   const { isAuthenticated } = useAuth()
+  const { t } = useLocale()
 
   const handleStartStory = () => {
     if (isAuthenticated) {
@@ -29,17 +31,17 @@ export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
 
       <div className="hero-content">
         <div>
-          <h1 className="hero-title">Your life,<br/><span className="serif-text italic text-gradient-gold">beautifully told.</span></h1>
+          <h1 className="hero-title">{t('hero.title.main')}<br/><span className="serif-text italic text-gradient-gold">{t('hero.title.highlight')}</span></h1>
           <p className="hero-subtitle">
-            Nality helps you turn memories into a living timeline and a gorgeous Life Book—guided by an
-            intelligent companion and, if you like, a real interviewer.
+            {t('hero.subtitle')}
           </p>
           <div className="hero-actions">
-            <button onClick={handleStartStory} className="btn btn-primary">Start My Story</button>
-            <button onClick={handleSampleBook} className="btn btn-secondary">View Sample Book</button>
+            <button onClick={handleStartStory} className="btn btn-primary">{t('hero.cta.primary')}</button>
+            <button onClick={handleSampleBook} className="btn btn-secondary">{t('hero.cta.sample')}</button>
           </div>
+          
           <p className="mt-8 text-xs text-gray-500 tracking-widest uppercase opacity-0 animate-[fadeUp_1s_ease-out_1.2s_forwards]">
-            Private by design. You control who sees your story.
+            {t('hero.privacyText')}
           </p>
         </div>
 

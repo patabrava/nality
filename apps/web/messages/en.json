@@ -6,7 +6,53 @@
       "en": "English",
       "de": "Deutsch"
     },
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "cancel": "Cancel",
+    "required": "Required",
+    "yes": "Yes",
+    "no": "No",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "hero": {
+    "announcement": {
+      "badge": "New",
+      "text": "Now with AI assistant and live interview"
+    },
+    "title": {
+      "main": "Your life,",
+      "highlight": "beautifully told."
+    },
+    "subtitle": "Nality helps you turn memories into a living timeline and a gorgeous Life Book—guided by an intelligent companion and, if you like, a real interviewer.",
+    "privacyText": "Private by design. You control who sees your story.",
+    "values": {
+      "interview": "Personal Interview",
+      "ai": "AI Assistant",
+      "book": "Beautiful Book"
+    },
+    "cta": {
+      "primary": "Start My Story",
+      "booking": "Book Appointment",
+      "sample": "View Sample Book"
+    },
+    "prototype": {
+      "link": "View Live Demo"
+    },
+    "trust": {
+      "privacy": "Privacy first. You control who sees your story.",
+      "secure": "100% Secure",
+      "gdpr": "GDPR Compliant",
+      "instant": "Start Instantly"
+    },
+    "visual": {
+      "beginning": "The Beginning",
+      "legacy": "Legacy",
+      "quote": "It was a moment of absolute clarity...",
+      "recording": "Recording Session...",
+      "bookTitle": "My Life",
+      "yourName": "Your Name",
+      "aiMessage": "Tell me about your childhood..."
+    }
   },
   "header": {
     "nav": {
@@ -19,19 +65,6 @@
     "start": "Start My Story",
     "myTimeline": "My Timeline",
     "mobileMenuAria": "Toggle navigation menu"
-  },
-  "hero": {
-    "title": "Your life, beautifully told.",
-    "subtitle": "Nality helps you turn memories into a living timeline and a gorgeous Life Book—guided by an intelligent companion and, if you like, a real interviewer.",
-    "primaryCta": "Start My Story",
-    "secondaryCta": "See a sample Life Book",
-    "trust": "Private by design. You control who sees your story.",
-    "timelinePreview": {
-      "graduation": "🎓 College Graduation - 2020",
-      "firstJob": "💼 First Job - 2021",
-      "marriage": "❤️ Marriage - 2023"
-    },
-    "bookPreview": "Life Book Preview"
   },
   "socialProof": {
     "title": "Trusted for the moments that matter",
@@ -72,6 +105,36 @@
   "productHighlights": {
     "title": "Features designed for your story",
     "subtitle": "Every tool thoughtfully crafted to help you capture, organize, and share your life's most important moments",
+    "sectionLabel": "Technology & Features",
+    "sectionTitle": "Enterprise-grade tools for",
+    "sectionTitleHighlight": "personal heritage",
+    "sectionDescription": "Combining AI storytelling, professional services, and preservation technology to create the most comprehensive life documentation platform ever built.",
+    "detailedFeatures": [
+      {
+        "title": "AI-Powered Memory Assistant",
+        "description": "Our intelligent chat guides you through your life story with personalized questions. Voice or text input, automatic structuring, and smart gap detection to ensure nothing important is forgotten."
+      },
+      {
+        "title": "Interactive Life Timeline",
+        "description": "Beautiful, drag-and-drop timeline with rich media support. Organize by decades, themes, or relationships. Real-time collaboration and automatic backups ensure your story is always safe."
+      },
+      {
+        "title": "Expert Interview Service",
+        "description": "Professional storytellers and journalists help capture deeper narratives. Seamless booking, HD recording, AI transcription, and integration into your timeline. Perfect for family elders."
+      },
+      {
+        "title": "Premium Publishing Suite",
+        "description": "Transform your timeline into a stunning hardbound book, digital memoir, or shareable family archive. Custom layouts, professional printing, and secure family sharing options."
+      },
+      {
+        "title": "Rich Media Library",
+        "description": "Upload photos, videos, documents, and audio recordings. Smart organization, facial recognition, and automatic metadata extraction. Cloud storage with family access controls."
+      },
+      {
+        "title": "Legacy Preservation Technology",
+        "description": "Bank-grade security, automatic backups, and 100-year digital preservation guarantee. Your family's stories will outlast generations with our quantum-resistant encryption."
+      }
+    ],
     "features": [
       {
         "title": "Smart onboarding",
@@ -108,7 +171,55 @@
       "response": "When I graduated college, I felt like..."
     }
   },
+  "customerValue": {
+    "sectionLabel": "For Every Story",
+    "sectionTitle": "Tailored for",
+    "sectionTitleHighlight": "every storyteller",
+    "sectionDescription": "Whether you're preserving family heritage, crafting professional memoirs, or capturing institutional knowledge, Nality adapts to your unique storytelling needs.",
+    "segments": [
+      {
+        "title": "Families & Elders",
+        "subtitle": "Preserve generational wisdom",
+        "description": "Capture grandparents' stories before they're lost forever. Our AI guides elderly users through gentle conversations, while family members can collaborate on shared memories.",
+        "benefits": [
+          "Easy voice recording for seniors",
+          "Family collaboration tools",
+          "Automated organization by decades",
+          "Beautiful printed books for generations"
+        ],
+        "testimonial": "We preserved 80 years of my grandmother's stories in just three sessions.",
+        "author": "Maria Santos"
+      },
+      {
+        "title": "Authors & Creatives",
+        "subtitle": "Professional memoir tools",
+        "description": "Transform your life experiences into compelling narratives. AI-powered story structure analysis, professional interview support, and publishing-quality exports.",
+        "benefits": [
+          "AI story arc analysis",
+          "Professional transcript services",
+          "Multi-format publishing",
+          "Collaborative editing features"
+        ],
+        "testimonial": "Nality helped me structure my memoir in ways I never imagined.",
+        "author": "Dr. James Patterson"
+      },
+      {
+        "title": "Organizations & Institutions",
+        "subtitle": "Institutional memory capture",
+        "description": "Preserve organizational history, capture retiring executives' knowledge, and create institutional legacies. Enterprise-grade security and collaboration.",
+        "benefits": [
+          "Enterprise security & compliance",
+          "Bulk user management",
+          "Custom branding options",
+          "API integrations available"
+        ],
+        "testimonial": "We've preserved 200+ years of institutional knowledge effortlessly.",
+        "author": "Heritage Foundation"
+      }
+    ]
+  },
   "howItWorks": {
+    "sectionLabel": "Process",
     "title": "How it works",
     "subtitle": "Four simple steps to transform your memories into a beautiful, lasting story",
     "steps": [
@@ -135,8 +246,9 @@
     ]
   },
   "pricing": {
-    "title": "Simple, flexible plans",
-    "subtitle": "Start free. Upgrade when you're ready to export or book an interview.",
+    "title": "Preserve your legacy,",
+    "titleHighlight": "affordably",
+    "subtitle": "Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.",
     "badgePopular": "Most Popular",
     "yearlyPrefix": "or",
     "legalNote": "Prices include VAT where applicable. Interview sessions are billed separately if outside Pro plan.",
@@ -298,12 +410,583 @@
   "profile": {
     "influenceTypes": {
       "author": "Author",
-      "philosopher": "Philosopher",
+      "philosopher": "Philosopher", 
       "person": "Person",
       "mentor": "Mentor",
       "public_figure": "Public figure",
       "historical": "Historical",
       "other": "Other"
+    }
+  },
+  "booking": {
+    "cta": "Book a call",
+    "modalTitle": "Free consultation call",
+    "modalSubtitle": "Speak with our team about your life story",
+    "consentRequired": "We need your consent for external services to load the booking calendar.",
+    "consentButton": "Grant consent",
+    "externalLinkFallback": "Or book directly here:",
+    "externalLinkText": "Book appointment (external page)",
+    "loading": "Loading calendar...",
+    "error": "Failed to load calendar. Please try again later.",
+    "title": "Book Appointment",
+    "subtitle": "Speak with our expert about your life story",
+    "availability": {
+      "available": "Available now",
+      "busy": "Currently busy"
+    },
+    "consent": {
+      "message": "To load the booking calendar, we need your consent for external services like Calendly."
+    },
+    "alternative": {
+      "calendly": "Use Calendly",
+      "calcom": "Use Cal.com"
+    },
+    "info": {
+      "duration": "30 min consultation",
+      "timezone": "In your timezone",
+      "type": "Video call"
+    },
+    "benefits": {
+      "title": "What to expect:",
+      "personal": "Personal guidance for your life story",
+      "guidance": "Help getting started",
+      "questions": "Answers to all your questions"
+    },
+    "footer": {
+      "note": "Free and non-binding. Cancel anytime."
+    }
+  },
+  "prototype": {
+    "badge": "Live Demo",
+    "title": "A look inside the platform",
+    "subtitle": "See how Nality transforms memories into a living timeline",
+    "video": {
+      "title": "Platform Demo",
+      "description": "See how easy it is to capture your life story",
+      "consent": "To play the video, we need your consent for external video services.",
+      "fallback": "View video externally",
+      "play": "Play video",
+      "pause": "Pause video"
+    },
+    "features": {
+      "timeline": {
+        "title": "Interactive Timeline",
+        "description": "Navigate through your life with our user-friendly timeline"
+      },
+      "interview": {
+        "title": "AI Interview",
+        "description": "Let our AI assistant guide you through your memories"
+      },
+      "book": {
+        "title": "Digital Book",
+        "description": "Transform your timeline into a beautiful digital book"
+      }
+    },
+    "testimonials": {
+      "sarah": {
+        "quote": "The AI helped me discover memories I thought were lost forever.",
+        "role": "Mother of three"
+      },
+      "michael": {
+        "quote": "Finally I can show my grandchildren what my life was really like.",
+        "role": "Retiree"
+      },
+      "elena": {
+        "quote": "The timeline makes it so easy to organize my story.",
+        "role": "Author"
+      }
+    },
+    "slides": [
+      {
+        "title": "Guided sessions",
+        "caption": "AI-assisted conversations help recall memories"
+      },
+      {
+        "title": "Chapter structure",
+        "caption": "Organize your story into thematic chapters"
+      },
+      {
+        "title": "Access controls", 
+        "caption": "Control who sees which parts of your story"
+      },
+      {
+        "title": "Review & edit",
+        "caption": "Refine your story with simple editing tools"
+      },
+      {
+        "title": "Export options",
+        "caption": "Create beautiful PDF books or digital archives"
+      }
+    ]
+  },
+  "problem": {
+    "title": "The challenge of capturing life stories",
+    "subtitle": "Traditional approaches have limitations",
+    "points": [
+      {
+        "title": "Fragmented memories",
+        "description": "Photos here, notes there, videos elsewhere. Your stories are scattered across platforms.",
+        "icon": "🧩"
+      },
+      {
+        "title": "Time-intensive manual work",
+        "description": "Collecting and organizing memories manually takes enormous effort and time.",
+        "icon": "⏰"
+      },
+      {
+        "title": "Too chronological",
+        "description": "Pure timelines miss important themes and connections in your life.",
+        "icon": "📅"
+      },
+      {
+        "title": "No access control",
+        "description": "Hard to control who can see what parts of your personal story.",
+        "icon": "🔒"
+      }
+    ]
+  },
+  "solution": {
+    "title": "Our solution: Structured, personal and secure", 
+    "subtitle": "Nality combines AI guidance with human expertise",
+    "cards": [
+      {
+        "title": "Structured",
+        "description": "AI-guided prompts systematically walk you through your life story.",
+        "icon": "🎯",
+        "features": [
+          "Smart conversation flow",
+          "Structured chapter approach",
+          "Automatic theme detection"
+        ]
+      },
+      {
+        "title": "Personal",
+        "description": "Adapts to your unique storytelling style and preferences.",
+        "icon": "👤",
+        "features": [
+          "Adaptive AI prompts",
+          "Individual chapter structures",
+          "Flexible export formats"
+        ]
+      },
+      {
+        "title": "Access control",
+        "description": "Granular control over privacy and access to your stories.",
+        "icon": "🛡️",
+        "features": [
+          "Chapter-based permissions",
+          "Family sharing options",
+          "Private archives"
+        ]
+      }
+    ]
+  },
+  "differentiators": {
+    "title": "What makes Nality different",
+    "subtitle": "Unique features that set us apart",
+    "points": [
+      {
+        "title": "AI + Human",
+        "description": "Smart AI assistance combined with optional professional interviews",
+        "icon": "🤝"
+      },
+      {
+        "title": "Privacy-first", 
+        "description": "GDPR compliant, European hosting, full data control",
+        "icon": "🔐"
+      },
+      {
+        "title": "Multi-format",
+        "description": "Digital and print — from interactive timelines to printed books",
+        "icon": "📱"
+      },
+      {
+        "title": "Professional interviews",
+        "description": "Book experienced interviewers for deeper, richer stories",
+        "icon": "🎙️"
+      },
+      {
+        "title": "100-year guarantee",
+        "description": "Long-term archiving and accessibility of your stories",
+        "icon": "⏳"
+      },
+      {
+        "title": "No subscriptions",
+        "description": "Pay only for what you use — no hidden costs",
+        "icon": "💳"
+      }
+    ]
+  },
+  "trust": {
+    "title": "Trust and quality",
+    "subtitle": "Your stories in safe hands",
+    "pillars": [
+      {
+        "title": "Discretion",
+        "description": "GDPR compliance, end-to-end encryption, secure European servers",
+        "icon": "🔒",
+        "features": [
+          "GDPR compliant",
+          "Encrypted transmission", 
+          "European servers"
+        ]
+      },
+      {
+        "title": "Quality process",
+        "description": "Professional standards, review cycles, continuous improvement",
+        "icon": "⭐",
+        "features": [
+          "Quality checks",
+          "Professional transcription",
+          "Continuous feedback"
+        ]
+      },
+      {
+        "title": "Sovereignty",
+        "description": "Your data belongs to you, export rights, no vendor lock-in",
+        "icon": "👑",
+        "features": [
+          "Full data ownership",
+          "Export anytime",
+          "No dependencies"
+        ]
+      }
+    ]
+  },
+  "legal": {
+    "placeholder": "Placeholder – will be replaced before launch",
+    "impressum": {
+      "title": "Legal Notice",
+      "sections": {
+        "responsible": "Responsible Person",
+        "contact": "Contact Information", 
+        "hosting": "Hosting Information",
+        "disclaimer": "Disclaimer"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": {
+        "overview": "Data Processing Overview",
+        "tracking": "Tracking and Analytics",
+        "external": "External Services",
+        "rights": "Your Rights",
+        "retention": "Data Retention"
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "sections": {
+        "scope": "Scope of Services",
+        "data": "Data Ownership",
+        "liability": "Liability",
+        "termination": "Termination"
+      }
+    }
+  },
+  "consent": {
+    "title": "Cookie Settings",
+    "description": "We use cookies and similar technologies to improve your experience.",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "manageSettings": "Manage settings", 
+    "saveSettings": "Save settings",
+    "serviceSpecific": "We need your consent for external services to load {{service}}.",
+    "externalServicesRequired": "External services require your consent to load.",
+    "permissionRequired": "Permission required to load this content.",
+    "loadService": "Load {{service}}",
+    "loadExternalContent": "Load external content",
+    "loadContent": "Load content",
+    "denyAccess": "Deny access",
+    "grantAccess": "Grant access",
+    "deny": "Deny",
+    "allow": "Allow",
+    "learnMore": "Learn more",
+    "categories": {
+      "necessary": {
+        "title": "Necessary",
+        "description": "Required for basic website functionality",
+        "required": true
+      },
+      "external": {
+        "title": "External Services",
+        "description": "For booking appointments and analytics (Calendly, Google Analytics)",
+        "required": false
+      }
+    },
+    "moreInfo": "More information in our privacy policy."
+  },
+  "problemframework": {
+    "badge": "The Challenge",
+    "title": "Why life stories often remain untold",
+    "subtitle": "Understand the common barriers and how Nality overcomes them",
+    "tabs": {
+      "problem": "Problems",
+      "solution": "Solutions"
+    },
+    "section": {
+      "title": "The most common challenges",
+      "subtitle": "These barriers prevent people from sharing their stories"
+    },
+    "points": {
+      "fragmented": {
+        "title": "Fragmented Memories",
+        "description": "Photos, videos, and documents are scattered across different devices and platforms, making it difficult to create a coherent picture."
+      },
+      "forgotten": {
+        "title": "Forgotten Details",
+        "description": "Important memories and details are lost over time when not systematically documented."
+      },
+      "overwhelming": {
+        "title": "Overwhelming Task",
+        "description": "The thought of documenting an entire life seems so extensive that you never get started."
+      },
+      "nostructure": {
+        "title": "Lack of Structure",
+        "description": "Without a clear framework or guidance, you don't know where to start or how to proceed."
+      },
+      "timepressure": {
+        "title": "Time Constraints",
+        "description": "Daily life leaves little room for the time-consuming task of story documentation."
+      },
+      "familygap": {
+        "title": "Generation Gap",
+        "description": "Difficulties in sharing and transferring stories between different generations and family members."
+      }
+    },
+    "severity": {
+      "high": "High Priority",
+      "medium": "Medium Priority",
+      "low": "Low Priority"
+    },
+    "impact": {
+      "high": "Critical",
+      "medium": "Important",
+      "low": "Minor"
+    },
+    "solution": {
+      "section": {
+        "title": "How Nality solves these problems",
+        "subtitle": "Our thoughtful solutions for every challenge"
+      },
+      "benefits": {
+        "aiassistant": {
+          "title": "AI-Powered Assistant",
+          "description": "Our intelligent assistant helps recall forgotten details through targeted questions and prompts."
+        },
+        "structured": {
+          "title": "Structured Approach",
+          "description": "Clearly defined chapters and themes give you a roadmap through your life story."
+        },
+        "flexible": {
+          "title": "Flexible Scheduling",
+          "description": "Work at your own pace - pause and resume whenever you want."
+        },
+        "collaborative": {
+          "title": "Collaborative Platform",
+          "description": "Involve family members and share memories together in a secure environment."
+        },
+        "preservation": {
+          "title": "Permanent Preservation",
+          "description": "Your stories are safely stored and preserved in various formats for the future."
+        },
+        "multimedia": {
+          "title": "Multimedia Integration",
+          "description": "Seamlessly connect photos, videos, documents, and audio with your written memories."
+        }
+      },
+      "addresses": "Solves"
+    },
+    "cta": {
+      "title": "Ready to tell your story?",
+      "subtitle": "Overcome these barriers with Nality's thoughtful approach",
+      "primary": "Start for Free",
+      "secondary": "Learn More"
+    }
+  },
+  "enhancedcta": {
+    "title": "Ready to tell your story?",
+    "subtitle": "Start your personal timeline today and preserve your memories for the future.",
+    "primary": "Start Free Now",
+    "secondary": "Watch Live Demo",
+    "urgency": {
+      "text": "Limited Beta Access",
+      "timer": "Only few spots remaining"
+    },
+    "socialproof": {
+      "users": {
+        "value": "2,500+",
+        "label": "Active Users",
+        "growth": "+45% this month"
+      },
+      "stories": {
+        "value": "8,200+",
+        "label": "Stories Created",
+        "growth": "+120% this year"
+      },
+      "satisfaction": {
+        "value": "4.9/5",
+        "label": "User Satisfaction",
+        "growth": "Based on 1,200+ reviews"
+      },
+      "countries": {
+        "value": "23",
+        "label": "Countries Worldwide"
+      }
+    },
+    "trust": {
+      "title": "Trusted & Secure",
+      "subtitle": "Your privacy is our highest priority",
+      "gdpr": {
+        "name": "GDPR Compliant",
+        "description": "Full compliance with European General Data Protection Regulation"
+      },
+      "security": {
+        "name": "256-Bit SSL",
+        "description": "Bank-grade encryption for all your data"
+      },
+      "privacy": {
+        "name": "Privacy First",
+        "description": "You control completely who sees your stories"
+      },
+      "support": {
+        "name": "24/7 Support",
+        "description": "Personal customer support in your language"
+      }
+    },
+    "riskfree": "100% free, no credit card required",
+    "accessibility": {
+      "primary": "Start your free registration",
+      "secondary": "Watch a platform demonstration"
+    }
+  },
+  "trustsignals": {
+    "ariaLabel": "Trust signals and social proof",
+    "logos": {
+      "title": "Trusted by families like yours",
+      "family1": {
+        "name": "The Johnson Family",
+        "industry": "Family History"
+      },
+      "author": {
+        "name": "Mary Smith",
+        "industry": "Author & Biographer"
+      },
+      "elder": {
+        "name": "Robert Wilson",
+        "industry": "Historical Witness"
+      },
+      "community": {
+        "name": "Heritage Society",
+        "industry": "Cultural Institution"
+      }
+    },
+    "stats": {
+      "title": "Impressive Numbers",
+      "stories": {
+        "value": "8,247",
+        "label": "Stories Preserved"
+      },
+      "users": {
+        "value": "2,560",
+        "label": "Active Families"
+      },
+      "satisfaction": {
+        "value": "98%",
+        "label": "Satisfaction Rate"
+      },
+      "retention": {
+        "value": "94%",
+        "label": "Stay with Us"
+      }
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "navLabel": "Switch to testimonial",
+      "sarah": {
+        "quote": "Nality helped me preserve my grandmother's stories before it was too late. A true treasure for our family.",
+        "author": "Sarah K.",
+        "role": "Granddaughter"
+      },
+      "michael": {
+        "quote": "As a retiree, I wanted to capture my experiences for my grandchildren. Nality made it so simple and intuitive.",
+        "author": "Michael R.",
+        "role": "Grandfather"
+      },
+      "elena": {
+        "quote": "The AI assistance helped me find memories I had completely forgotten. Incredibly valuable.",
+        "author": "Elena M.",
+        "role": "Family Mother"
+      }
+    },
+    "security": {
+      "title": "Security & Compliance",
+      "gdpr": {
+        "name": "GDPR",
+        "description": "Full compliance with EU Data Protection Regulation",
+        "certification": "Certified"
+      },
+      "iso27001": {
+        "name": "ISO 27001",
+        "description": "International security standards",
+        "certification": "In Progress"
+      },
+      "encryption": {
+        "name": "End-to-End",
+        "description": "Complete data encryption",
+        "certification": "AES-256"
+      },
+      "backup": {
+        "name": "Backup",
+        "description": "Multiple data backup",
+        "certification": "99.9% Uptime"
+      }
+    },
+    "awards": {
+      "title": "Awards",
+      "innovation": {
+        "title": "Innovation Award",
+        "organization": "TechCrunch Disrupt"
+      },
+      "privacy": {
+        "title": "Privacy by Design",
+        "organization": "European Privacy Council"
+      }
+    }
+  },
+  "booking": {
+    "modal": {
+      "title": "Book Your Free Discovery Call",
+      "description": "Schedule a 30-minute session to explore your personal story and learn about our methodology.",
+      "closeLabel": "Close booking form"
+    },
+    "consent": {
+      "title": "External Services Required",
+      "description": "We use Calendly for appointment booking. Would you like to enable external services for this session?",
+      "allowButton": "Enable External Services",
+      "externalLink": "Go to Calendly Directly"
+    },
+    "loading": "Loading booking form...",
+    "error": {
+      "title": "Booking Form Unavailable",
+      "description": "The booking form could not be loaded. Please use the direct link as an alternative.",
+      "fallbackLink": "Book Directly with Calendly"
+    },
+    "cta": {
+      "default": "Book Discovery Call",
+      "hero": "Book Your Free Discovery Call",
+      "minimal": "Book Call",
+      "floating": "Talk Now",
+      "loading": "Loading...",
+      "subtext": "30 Minutes • Free • No Commitment",
+      "ariaLabel": "Opens the appointment booking form",
+      "urgency": {
+        "banner": "Limited appointments available this week",
+        "label": "Time remaining:",
+        "days": "D",
+        "hours": "Hrs",
+        "minutes": "Min"
+      }
     }
   }
 }

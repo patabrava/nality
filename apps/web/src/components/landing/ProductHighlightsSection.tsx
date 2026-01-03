@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '@/components/i18n/useLocale'
+
 const features = [
   {
     title: "AI-Powered Memory Assistant",
@@ -73,21 +75,24 @@ const features = [
 ]
 
 export default function ProductHighlightsSection() {
+  const { t } = useLocale()
+  const detailedFeatures = t('productHighlights.detailedFeatures') as Array<{ title: string; description: string }>
+
   return (
     <section className="section">
       <div className="section-header">
-        <span className="section-label">Technology & Features</span>
-        <h2 className="section-title">Enterprise-grade tools for <span className="serif-text italic text-gold">personal heritage</span></h2>
+        <span className="section-label">{t('productHighlights.sectionLabel')}</span>
+        <h2 className="section-title">{t('productHighlights.sectionTitle')} <span className="serif-text italic text-gold">{t('productHighlights.sectionTitleHighlight')}</span></h2>
         <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
-          Combining AI storytelling, professional services, and preservation technology to create the most comprehensive life documentation platform ever built.
+          {t('productHighlights.sectionDescription')}
         </p>
       </div>
 
       <div className="feature-grid">
-        {features.map((feature, index) => (
+        {detailedFeatures.map((feature, index) => (
           <div key={index} className="feature-card">
             <div className="feature-icon">
-              {feature.icon}
+              {features[index]?.icon}
             </div>
             <h3 className="text-2xl font-serif mb-4">{feature.title}</h3>
             <p className="text-gray-400 leading-relaxed">{feature.description}</p>

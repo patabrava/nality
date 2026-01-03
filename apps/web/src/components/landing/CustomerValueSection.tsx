@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '@/components/i18n/useLocale'
+
 const customerSegments = [
   {
     title: "Families & Elders",
@@ -68,39 +70,49 @@ const customerSegments = [
 ]
 
 export default function CustomerValueSection() {
+  const { t } = useLocale()
+  const segments = t('customerValue.segments') as Array<{
+    title: string
+    subtitle: string
+    description: string
+    benefits: string[]
+    testimonial: string
+    author: string
+  }>
+
   return (
     <section className="section">
       <div className="section-header">
-        <span className="section-label">For Every Story</span>
-        <h2 className="section-title">Tailored for <span className="serif-text italic text-gold">every storyteller</span></h2>
+        <span className="section-label">{t('customerValue.sectionLabel')}</span>
+        <h2 className="section-title">{t('customerValue.sectionTitle')} <span className="serif-text italic text-gold">{t('customerValue.sectionTitleHighlight')}</span></h2>
         <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
-          Whether you're preserving family heritage, crafting professional memoirs, or capturing institutional knowledge, Nality adapts to your unique storytelling needs.
+          {t('customerValue.sectionDescription')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {customerSegments.map((segment, index) => (
+        {segments.map((segment, index) => (
           <div
             key={index}
-            className="bg-white p-8 text-center group hover:transform hover:scale-105 transition-all duration-500 rounded-lg border border-gray-200 shadow-lg"
+            className="customer-value-card"
           >
             {/* Icon */}
-            <div className="feature-icon text-4xl mb-6 text-gold">
-              {segment.icon}
+            <div className="customer-value-icon">
+              {customerSegments[index]?.icon}
             </div>
 
             {/* Title */}
-            <h3 className="text-2xl font-serif mb-2 text-gray-900">{segment.title}</h3>
-            <h4 className="text-lg mb-4 text-gold font-medium">{segment.subtitle}</h4>
+            <h3 className="customer-value-title">{segment.title}</h3>
+            <h4 className="customer-value-subtitle">{segment.subtitle}</h4>
             
             {/* Description */}
-            <p className="text-gray-700 mb-6 leading-relaxed">{segment.description}</p>
+            <p className="customer-value-description">{segment.description}</p>
             
             {/* Benefits */}
-            <ul className="text-sm text-gray-600 mb-6 space-y-2">
+            <ul className="customer-value-benefits">
               {segment.benefits.map((benefit, benefitIndex) => (
-                <li key={benefitIndex} className="flex items-center">
-                  <svg className="w-4 h-4 mr-3 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px' }}>
+                <li key={benefitIndex} className="customer-value-benefit-item">
+                  <svg className="customer-value-benefit-check" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   {benefit}
@@ -109,9 +121,9 @@ export default function CustomerValueSection() {
             </ul>
 
             {/* Testimonial */}
-            <blockquote className="border-l-4 border-gold pl-4 italic text-gray-600 text-sm">
-              <p>{segment.testimonial}</p>
-              <cite className="block mt-2 text-gold font-medium">— {segment.author}</cite>
+            <blockquote className="customer-value-testimonial">
+              <p>"{segment.testimonial}"</p>
+              <cite className="customer-value-author">— {segment.author}</cite>
             </blockquote>
           </div>
         ))}

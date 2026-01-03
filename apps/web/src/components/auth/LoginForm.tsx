@@ -7,49 +7,50 @@ import { useAuth } from '@/hooks/useAuth'
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');
 
-  :root {
-    /* Design Preview Color Scheme */
+  :root,
+  [data-theme="dark"] {
+    /* Luxury Design System - Dark Theme */
     --bg-color: #050505;
     --text-color: #e0e0e0;
     --accent-gold: #D4AF37;
     --accent-gold-dim: #8a7020;
-    --surface-color: #0f0f0f;
+    --surface-color: rgba(20, 20, 20, 0.4);
     --border-color: rgba(255, 255, 255, 0.08);
     
     /* Material Design 3 Compatible Variables */
     --md-sys-color-primary: #D4AF37;
-    --md-sys-color-on-primary: #000000;
-    --md-sys-color-primary-container: #1a1a1a;
+    --md-sys-color-on-primary: #050505;
+    --md-sys-color-primary-container: rgba(20, 20, 20, 0.4);
     --md-sys-color-on-primary-container: #D4AF37;
     
-    --md-sys-color-secondary: #e5e5e5;
-    --md-sys-color-on-secondary: #000000;
-    --md-sys-color-secondary-container: #2a2a2a;
-    --md-sys-color-on-secondary-container: #e5e5e5;
+    --md-sys-color-secondary: #D4AF37;
+    --md-sys-color-on-secondary: #050505;
+    --md-sys-color-secondary-container: rgba(20, 20, 20, 0.4);
+    --md-sys-color-on-secondary-container: #e0e0e0;
     
     --md-sys-color-surface: #050505;
     --md-sys-color-surface-dim: #000000;
-    --md-sys-color-surface-bright: #1a1a1a;
+    --md-sys-color-surface-bright: #0f0f0f;
     --md-sys-color-surface-container-lowest: #000000;
     --md-sys-color-surface-container-low: #0f0f0f;
     --md-sys-color-surface-container: rgba(20, 20, 20, 0.4);
-    --md-sys-color-surface-container-high: #2a2a2a;
-    --md-sys-color-surface-container-highest: #333333;
+    --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.03);
+    --md-sys-color-surface-container-highest: rgba(255, 255, 255, 0.05);
     
     --md-sys-color-on-surface: #e0e0e0;
     --md-sys-color-on-surface-variant: #a0a0a0;
-    --md-sys-color-surface-variant: #1a1a1a;
+    --md-sys-color-surface-variant: rgba(255, 255, 255, 0.03);
     
-    --md-sys-color-outline: rgba(255, 255, 255, 0.15);
-    --md-sys-color-outline-variant: rgba(255, 255, 255, 0.08);
+    --md-sys-color-outline: rgba(255, 255, 255, 0.08);
+    --md-sys-color-outline-variant: rgba(255, 255, 255, 0.05);
     
     --md-sys-color-background: #050505;
     --md-sys-color-on-background: #e0e0e0;
     
-    --md-sys-color-error: #ff4444;
-    --md-sys-color-on-error: #000000;
-    --md-sys-color-error-container: rgba(255, 68, 68, 0.1);
-    --md-sys-color-on-error-container: #ff4444;
+    --md-sys-color-error: #ff6b6b;
+    --md-sys-color-on-error: #050505;
+    --md-sys-color-error-container: rgba(255, 107, 107, 0.1);
+    --md-sys-color-on-error-container: #ff6b6b;
     
     /* Animation Tokens */
     --md-sys-motion-duration-short1: 100ms;
@@ -63,6 +64,51 @@ const styles = `
     --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
     --md-sys-motion-easing-decelerated: cubic-bezier(0, 0, 0, 1);
     --md-sys-motion-easing-accelerated: cubic-bezier(0.3, 0, 1, 1);
+  }
+
+  [data-theme="light"] {
+    /* Luxury Design System - Light Theme */
+    --bg-color: #fafafa;
+    --text-color: #1a1a1a;
+    --accent-gold: #8a7020;
+    --accent-gold-dim: #6b5a1a;
+    --surface-color: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(0, 0, 0, 0.1);
+    
+    /* Material Design 3 Compatible Variables - Light Mode */
+    --md-sys-color-primary: #8a7020;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: rgba(255, 255, 255, 0.8);
+    --md-sys-color-on-primary-container: #6b5a1a;
+    
+    --md-sys-color-secondary: #8a7020;
+    --md-sys-color-on-secondary: #ffffff;
+    --md-sys-color-secondary-container: rgba(255, 255, 255, 0.8);
+    --md-sys-color-on-secondary-container: #1a1a1a;
+    
+    --md-sys-color-surface: #fafafa;
+    --md-sys-color-surface-dim: #e0e0e0;
+    --md-sys-color-surface-bright: #ffffff;
+    --md-sys-color-surface-container-lowest: #ffffff;
+    --md-sys-color-surface-container-low: #f5f5f5;
+    --md-sys-color-surface-container: rgba(255, 255, 255, 0.8);
+    --md-sys-color-surface-container-high: rgba(0, 0, 0, 0.02);
+    --md-sys-color-surface-container-highest: rgba(0, 0, 0, 0.04);
+    
+    --md-sys-color-on-surface: #1a1a1a;
+    --md-sys-color-on-surface-variant: #666666;
+    --md-sys-color-surface-variant: rgba(0, 0, 0, 0.02);
+    
+    --md-sys-color-outline: rgba(0, 0, 0, 0.1);
+    --md-sys-color-outline-variant: rgba(0, 0, 0, 0.06);
+    
+    --md-sys-color-background: #fafafa;
+    --md-sys-color-on-background: #1a1a1a;
+    
+    --md-sys-color-error: #c62828;
+    --md-sys-color-on-error: #ffffff;
+    --md-sys-color-error-container: rgba(198, 40, 40, 0.1);
+    --md-sys-color-on-error-container: #c62828;
   }
 
   .login-container {

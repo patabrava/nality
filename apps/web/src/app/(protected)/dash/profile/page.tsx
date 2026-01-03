@@ -3,6 +3,7 @@
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useRouter } from 'next/navigation'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import { ProfileCard } from '@/components/profile/ProfileCard'
 import { User, Mail, Calendar, Shield, LogOut, ArrowLeft, Sparkles, Edit3, MapPin, Users, GraduationCap, Briefcase, BookOpen, Heart } from 'lucide-react'
 import { useState } from 'react'
@@ -11,6 +12,7 @@ import { useState } from 'react'
 export const dynamic = 'force-dynamic'
 
 export default function ProfilePage() {
+  usePageTitle('Profile')
   const { user, signOut, loading } = useAuth()
   const { profile, isLoading: profileLoading } = useUserProfile(user?.id)
   const router = useRouter()

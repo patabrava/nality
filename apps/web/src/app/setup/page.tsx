@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function DatabaseSetupPage() {
+  usePageTitle('Database Setup')
   const [logs, setLogs] = useState<string[]>([])
   const [databaseStatus, setDatabaseStatus] = useState<{
     ready: boolean

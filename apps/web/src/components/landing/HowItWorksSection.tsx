@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '@/components/i18n/useLocale'
+
 const steps = [
   {
     number: 1,
@@ -24,16 +26,23 @@ const steps = [
 ]
 
 export default function HowItWorksSection() {
+  const { t } = useLocale()
+  const translatedSteps = t('howItWorks.steps') as Array<{ title: string; description: string; icon: string }>
+
   return (
     <section className="section">
       <div className="section-header">
-        <span className="section-label">Process</span>
-        <h2 className="section-title">How it works</h2>
+        <span className="section-label">{t('howItWorks.sectionLabel')}</span>
+        <h2 className="section-title">{t('howItWorks.title')}</h2>
       </div>
 
       <div className="steps-container">
-        {steps.map((step, index) => (
+        {translatedSteps.map((step, index) => (
           <div key={index} className="step-item">
+            <div className="step-number-wrapper">
+              <span className="step-number">0{index + 1}</span>
+              <div className="step-line"></div>
+            </div>
             <h3 className="text-xl font-serif mb-3 text-gray-900">{step.title}</h3>
             <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
           </div>

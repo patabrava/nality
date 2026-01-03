@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { Roboto } from "next/font/google"
 import "../styles/tokens.css"
 import "../styles/utilities.css"
@@ -21,13 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies()
   const localeCookie = cookieStore.get("locale")?.value
   const locale = resolveLocale(localeCookie)
-  const heroTitle = messages[locale]?.hero?.title ?? "Nality — Your life, beautifully told"
   const heroDescription =
     messages[locale]?.hero?.subtitle ??
     "Turn memories into a living timeline and a beautiful Life Book. Private by design. Start in minutes."
 
   return {
-    title: `Nality — ${heroTitle}`,
+    title: {
+      template: '%s | Nality',
+      default: 'Nality — Your Life, Beautifully Told',
+    },
     description: heroDescription,
     keywords: [
       "life story",
@@ -48,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: false,
     },
     openGraph: {
-      title: `Nality — ${heroTitle}`,
+      title: 'Nality — Your Life, Beautifully Told',
       description: heroDescription,
       type: "website",
       images: [
@@ -62,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `Nality — ${heroTitle}`,
+      title: 'Nality — Your Life, Beautifully Told',
       description: heroDescription,
       images: ["/hero/hero-timeline-book.png"],
     },
@@ -86,8 +88,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies()
+  const headersList = await headers()
   const localeCookie = cookieStore.get("locale")?.value
-  const locale = resolveLocale(localeCookie)
+  const localeHeader = headersList.get("x-locale")
+  const pathname = headersList.get("x-pathname") || headersList.get("x-invoke-path") || ""
+  
+  // Extract locale from pathname if available (e.g., /de or /en)
+  let localeFromPath: string | null = null
+  const pathMatch = pathname.match(/^\/(de|en)(?:\/|$)/)
+  if (pathMatch && pathMatch[1]) {
+    localeFromPath = pathMatch[1]
+  }
+  
+  // Priority: pathname > header (middleware) > cookie
+  const locale = resolveLocale(localeFromPath || localeHeader || localeCookie)
 
   return (
     <html lang={locale} data-theme="dark" suppressHydrationWarning>

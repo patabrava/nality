@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '@/components/i18n/useLocale'
+
 const pricingTiers = [
   {
     name: "Explorer",
@@ -67,6 +69,8 @@ const pricingTiers = [
 ]
 
 export default function PricingSection() {
+  const { t } = useLocale()
+
   const handleSelectPlan = (planName: string) => {
     // Future: Navigate to signup with selected plan
     console.log(`Selected plan: ${planName}`)
@@ -74,7 +78,7 @@ export default function PricingSection() {
   }
 
   return (
-    <section id="pricing" className="section" style={{ padding: '80px 0' }}>
+    <section id="pricing" className="section">
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
           <h2 
@@ -85,7 +89,7 @@ export default function PricingSection() {
               marginBottom: '16px'
             }}
           >
-            Preserve your legacy, <span className="serif-text italic text-gold">affordably</span>
+            {t('pricing.title')} <span className="serif-text italic text-gold">{t('pricing.titleHighlight')}</span>
           </h2>
           <p 
             style={{
@@ -95,7 +99,7 @@ export default function PricingSection() {
               margin: '0 auto'
             }}
           >
-            Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.
+            {t('pricing.subtitle')}
           </p>
         </div>
 

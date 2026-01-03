@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@/lib/i18n'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -52,6 +53,36 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname
 
+  // Handle locale routing
+  const pathnameHasLocale = SUPPORTED_LOCALES.some(
+    (locale) => path.startsWith(`/${locale}/`) || path === `/${locale}`
+  )
+
+  // If it's the root path without locale, redirect to default locale (German)
+  if (path === '/') {
+    // Check if authenticated user should be redirected first
+    if (user) {
+      const url = request.nextUrl.clone()
+      url.pathname = onboardingComplete ? '/dash' : '/onboarding'
+      return NextResponse.redirect(url)
+    }
+    // Redirect to German locale for landing page
+    const url = request.nextUrl.clone()
+    url.pathname = `/de`
+    return NextResponse.redirect(url)
+  }
+
+  // Handle locale paths - check for authenticated user redirection
+  if (path === '/de' || path === '/en') {
+    if (user) {
+      const url = request.nextUrl.clone()
+      url.pathname = onboardingComplete ? '/dash' : '/onboarding'
+      return NextResponse.redirect(url)
+    }
+    // Let the [locale] route handle the rendering
+    return NextResponse.next()
+  }
+
   // Protected routes - redirect to login if not authenticated
   const protectedPaths = ['/dash', '/chat', '/onboarding']
   const isProtectedPath = protectedPaths.some(protectedPath =>
@@ -75,19 +106,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is authenticated and hits the landing page, send them to the right place
-  if (user && path === '/') {
-    const url = request.nextUrl.clone()
-    url.pathname = onboardingComplete ? '/dash' : '/onboarding'
-    return NextResponse.redirect(url)
-  }
-
   return supabaseResponse
 }
 
 export const config = {
   matcher: [
     '/',
+    '/de',
+    '/en',
     '/login',
     '/auth/:path*',
     '/onboarding',

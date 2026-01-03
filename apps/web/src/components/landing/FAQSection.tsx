@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLocale } from '@/components/i18n/useLocale'
 
 const faqData = [
   {
@@ -47,6 +48,7 @@ const faqData = [
 
 export default function FAQSection() {
   const [openItems, setOpenItems] = useState<number[]>([])
+  const { t } = useLocale()
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -57,77 +59,35 @@ export default function FAQSection() {
   }
 
   return (
-    <section id="faq" className="section" style={{ padding: '80px 0' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h2 
-            style={{
-              fontSize: 'clamp(2rem, 4vw, 2.5rem)',
-              fontWeight: '700',
-              color: 'var(--md-sys-color-on-surface)',
-              marginBottom: '16px'
-            }}
-          >
-            Frequently asked questions
+    <section id="faq" className="section faq-section">
+      <div className="faq-container">
+        <div className="faq-header">
+          <h2 className="faq-title">
+            {t('faq.title')}
           </h2>
-          <p 
-            style={{
-              fontSize: '1.125rem',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              maxWidth: '600px',
-              margin: '0 auto'
-            }}
-          >
-            Everything you need to know about preserving your life story
+          <p className="faq-subtitle">
+            {t('faq.subtitle')}
           </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="faq-list">
           {faqData.map((item, index) => (
             <div
               key={index}
               id={`faq-${index}`}
-              style={{
-                background: 'var(--md-sys-color-surface-container)',
-                borderRadius: '16px',
-                border: '1px solid var(--md-sys-color-outline-variant)',
-                overflow: 'hidden',
-                transition: 'all var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)'
-              }}
+              className="faq-item"
             >
               <button
                 onClick={() => toggleItem(index)}
                 aria-expanded={openItems.includes(index)}
                 aria-controls={`faq-answer-${index}`}
-                style={{
-                  width: '100%',
-                  padding: '24px',
-                  background: 'transparent',
-                  border: 'none',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: 'var(--md-sys-color-on-surface)',
-                  transition: 'color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--md-sys-color-primary)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--md-sys-color-on-surface)'
-                }}
+                className="faq-question"
               >
                 <span>{item.question}</span>
                 <span 
+                  className="faq-icon"
                   style={{
-                    fontSize: '20px',
-                    transition: 'transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)',
-                    transform: openItems.includes(index) ? 'rotate(45deg)' : 'rotate(0deg)',
-                    color: 'var(--md-sys-color-primary)'
+                    transform: openItems.includes(index) ? 'rotate(45deg)' : 'rotate(0deg)'
                   }}
                 >
                   +
@@ -136,20 +96,12 @@ export default function FAQSection() {
 
               <div
                 id={`faq-answer-${index}`}
+                className="faq-answer"
                 style={{
-                  maxHeight: openItems.includes(index) ? '200px' : '0',
-                  overflow: 'hidden',
-                  transition: 'max-height var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard)'
+                  maxHeight: openItems.includes(index) ? '200px' : '0'
                 }}
               >
-                <div 
-                  style={{
-                    padding: '0 24px 24px',
-                    fontSize: '1rem',
-                    color: 'var(--md-sys-color-on-surface-variant)',
-                    lineHeight: '1.6'
-                  }}
-                >
+                <div className="faq-answer-content">
                   {item.answer}
                 </div>
               </div>

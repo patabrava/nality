@@ -4,6 +4,7 @@ import { use, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TimelineModule } from '@/modules/timeline/TimelineModule'
 import { getChapterById, isValidChapterId } from '@/lib/chapters'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import type { ChapterId } from '@nality/schema'
 
 interface ChapterPageProps {
@@ -18,6 +19,9 @@ export default function ChapterPage({ params }: ChapterPageProps) {
   const isValid = isValidChapterId(chapterParam)
   const chapterId = isValid ? (chapterParam as ChapterId) : null
   const chapter = chapterId ? getChapterById(chapterId) : null
+
+  // Set page title based on chapter name
+  usePageTitle(chapter?.name || 'Chapter')
 
   useEffect(() => {
     if (!isValid || !chapter) {

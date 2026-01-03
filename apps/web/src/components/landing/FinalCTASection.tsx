@@ -1,9 +1,11 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useLocale } from '@/components/i18n/useLocale'
 
 export default function FinalCTASection() {
   const { isAuthenticated } = useAuth()
+  const { t } = useLocale()
 
   const handleStartStory = () => {
     if (isAuthenticated) {
@@ -22,9 +24,6 @@ export default function FinalCTASection() {
     <section 
       className="section"
       style={{
-        padding: '80px 0',
-        margin: '0 -24px',
-        borderRadius: '0',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -56,7 +55,7 @@ export default function FinalCTASection() {
               letterSpacing: '-0.02em'
             }}
           >
-            Start your story today
+            {t('finalCta.title')}
           </h2>
           
           <p 
@@ -69,7 +68,7 @@ export default function FinalCTASection() {
               lineHeight: '1.5'
             }}
           >
-            It takes just a few minutes to begin. You can always come back to add more.
+            {t('finalCta.subtitle')}
           </p>
 
           <div 
@@ -92,7 +91,7 @@ export default function FinalCTASection() {
                 boxShadow: '0 8px 24px rgba(255, 255, 255, 0.15)'
               }}
             >
-              Start My Story
+              {t('finalCta.primaryCta')}
             </button>
             
             <button 
@@ -105,7 +104,7 @@ export default function FinalCTASection() {
                 minWidth: '200px'
               }}
             >
-              Explore the Timeline
+              {t('finalCta.secondaryCta')}
             </button>
           </div>
 
