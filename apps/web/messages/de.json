@@ -520,21 +520,21 @@
   },
   "voice": {
     "selector": {
-      "title": "Erinnerung hinzufügen",
-      "subtitle": "Wähle, wie du deine Geschichte teilen möchtest",
+      "title": "Dein persönliches Onboarding",
+      "subtitle": "In wenigen Minuten entsteht eine erste Skizze deiner Biografie. Wähle, wie du erzählen möchtest – wir führen dich Schritt für Schritt.",
       "cancel": "Abbrechen",
       "recommended": "Empfohlen",
       "interview": {
         "title": "Geführtes Interview",
-        "description": "Führe ein Sprachgespräch mit unserem KI-Biografen. Sprich ganz natürlich und wir erfassen deine Erinnerungen."
+        "description": "Unsere KI-Biografin stellt dir die wichtigsten Fragen. Du sprichst frei, wir halten alles sicher fest und sortieren es für dich."
       },
       "freeTalk": {
-        "title": "Freies Sprechen",
-        "description": "Nimm deine Gedanken frei auf. Sprich so lange du möchtest und wir extrahieren die Erinnerungen."
+        "title": "Freies Erzählen",
+        "description": "Starte eine spontane Sprachnotiz. Ideal, wenn du einfach erzählen willst – wir bringen deine Geschichte später in Form."
       },
       "text": {
         "title": "Texteingabe",
-        "description": "Schreibe in deinem eigenen Tempo. Fülle ein Formular aus, um deine Erinnerung manuell hinzuzufügen."
+        "description": "Schreibe in deinem Tempo, pausiere jederzeit und prüfe alles vor dem Speichern. Perfekt, wenn du jedes Wort bewusst wählen möchtest."
       }
     },
     "interview": {

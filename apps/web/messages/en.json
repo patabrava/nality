@@ -495,21 +495,21 @@
   },
   "voice": {
     "selector": {
-      "title": "Add a Memory",
-      "subtitle": "Choose how you'd like to share your story",
+      "title": "Your Personal Onboarding",
+      "subtitle": "In just a few minutes we'll sketch the first chapter of your biography. Choose how you'd like to share—we'll guide every step.",
       "cancel": "Cancel",
       "recommended": "Recommended",
       "interview": {
         "title": "Guided Interview",
-        "description": "Have a voice conversation with our AI biographer. Speak naturally and we'll capture your memories."
+        "description": "Let our AI biographer lead the key questions. Speak naturally while we capture and organize every detail for you."
       },
       "freeTalk": {
         "title": "Free Talk",
-        "description": "Record your thoughts freely. Speak for as long as you'd like and we'll extract the memories."
+        "description": "Start a spontaneous voice note. Ideal when you just want to talk—we'll structure the story afterward."
       },
       "text": {
         "title": "Text Entry",
-        "description": "Type at your own pace. Fill out a form to add your memory manually."
+        "description": "Write at your own pace, pause anytime, and review before saving. Perfect if you prefer to choose every word carefully."
       }
     },
     "interview": {
