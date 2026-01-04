@@ -1,403 +1,513 @@
 'use client'
 
+import { useState } from 'react'
+import { Send, Calendar, Wrench, MessageSquare, Lightbulb, Mail } from 'lucide-react'
+
 /**
- * Contact Module Placeholder  
- * Preview interface for future contact functionality
- * Elegant luxury design matching landing page aesthetic
+ * Contact Module
+ * Clean, functional contact interface matching dash page design
  */
 export function ContactPlaceholder() {
   console.log('[ContactPlaceholder] Component mounted')
 
-  return (
-    <>
-      {/* Luxury design styling matching landing page */}
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');
-        
-        .contact-container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 5vw;
-          background: #050505;
-          color: #e0e0e0;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          gap: 4rem;
-          font-family: 'Inter', sans-serif;
-          position: relative;
-          -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Grain overlay for luxury texture */
-        .contact-container::before {
-          content: '';
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: 1;
-          opacity: 0.04;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-        
-        .contact-hero {
-          text-align: center;
-          padding: 4rem 0;
-          background: rgba(20, 20, 20, 0.4);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-          position: relative;
-          overflow: hidden;
-          z-index: 2;
-        }
-        
-        .contact-hero::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
-          background-size: 40px 40px;
-          animation: float 8s ease-in-out infinite alternate;
-        }
-        
-        .contact-icon {
-          font-size: 4rem;
-          margin-bottom: 2rem;
-          position: relative;
-          z-index: 1;
-          color: #D4AF37;
-        }
-        
-        .contact-title {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(2.5rem, 4vw, 4rem);
-          font-weight: 400;
-          color: #e0e0e0;
-          margin-bottom: 2rem;
-          position: relative;
-          z-index: 1;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-        }
-        
-        .contact-subtitle {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(1.1rem, 1.5vw, 1.4rem);
-          font-weight: 300;
-          color: #a0a0a0;
-          line-height: 1.6;
-          position: relative;
-          z-index: 1;
-          max-width: 500px;
-          margin: 0 auto;
-        }
-        
-        .contact-card {
-          background: rgba(20, 20, 20, 0.4);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-          padding: 3rem;
-          transition: all 0.5s ease;
-          position: relative;
-          overflow: hidden;
-          z-index: 2;
-        }
-        
-        .contact-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, #D4AF37, transparent);
-          transform: scaleX(0);
-          transition: transform 0.5s ease;
-        }
-        
-        .contact-card:hover {
-          transform: translateY(-10px);
-          border-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .contact-card:hover::before {
-          transform: scaleX(1);
-        }
-        
-        .form-group {
-          margin-bottom: 2rem;
-        }
-        
-        .form-label {
-          display: block;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.9rem;
-          font-weight: 500;
-          color: #e0e0e0;
-          margin-bottom: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-        
-        .form-textarea {
-          width: 100%;
-          min-height: 150px;
-          padding: 1.5rem;
-          border-radius: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(15, 15, 15, 0.8);
-          color: #e0e0e0;
-          font-family: 'Inter', sans-serif;
-          font-size: 1rem;
-          line-height: 1.6;
-          resize: vertical;
-          transition: all 0.4s ease;
-        }
-        
-        .form-textarea:focus {
-          outline: none;
-          border-color: #D4AF37;
-          box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
-        }
-        
-        .form-textarea::placeholder {
-          color: #666;
-          font-style: italic;
-        }
-        
-        .button-primary {
-          width: 100%;
-          padding: 1rem 2.5rem;
-          background: #e0e0e0;
-          color: #050505;
-          border: 1px solid #e0e0e0;
-          border-radius: 0;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.9rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          cursor: not-allowed;
-          transition: all 0.4s ease;
-          opacity: 0.6;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .button-primary:hover {
-          background: transparent;
-          color: #e0e0e0;
-        }
-        
-        .button-secondary {
-          padding: 0.9rem 2rem;
-          background: transparent;
-          color: #e0e0e0;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 0;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          cursor: not-allowed;
-          transition: all 0.4s ease;
-          opacity: 0.6;
-        }
-        
-        .button-secondary:hover {
-          border-color: #e0e0e0;
-        }
-        
-        .button-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
-        }
-        
-        .button-group {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        
-        .support-info {
-          text-align: center;
-          padding: 2rem;
-          background: rgba(20, 20, 20, 0.2);
-          border: 1px solid rgba(255, 255, 255, 0.03);
-          border-radius: 4px;
-          z-index: 2;
-          position: relative;
-        }
-        
-        .support-title {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 500;
-          color: #D4AF37;
-          margin-bottom: 1.5rem;
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-        }
-        
-        .support-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.9rem;
-          color: #a0a0a0;
-          line-height: 1.8;
-        }
-        
-        .support-list li {
-          margin-bottom: 0.75rem;
-          padding-left: 1.5rem;
-          position: relative;
-        }
-        
-        .support-list li::before {
-          content: "—";
-          position: absolute;
-          left: 0;
-          color: #D4AF37;
-        }
-        
-        /* Animation keyframes */
-        @keyframes float {
-          from {
-            transform: translateY(0px);
-          }
-          to {
-            transform: translateY(-10px);
-          }
-        }
-        
-        /* Responsive design */
-        @media (max-width: 1024px) {
-          .contact-container {
-            padding: 3rem 2rem;
-            gap: 3rem;
-          }
-          
-          .contact-hero {
-            padding: 3rem 2rem;
-          }
-          
-          .contact-card {
-            padding: 2rem;
-          }
-          
-          .contact-title {
-            font-size: clamp(2rem, 5vw, 3rem);
-          }
-          
-          .contact-icon {
-            font-size: 3rem;
-          }
-          
-          .button-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .contact-container {
-            padding: 2rem 1rem;
-            gap: 2rem;
-          }
-          
-          .contact-hero {
-            padding: 2rem 1rem;
-          }
-          
-          .contact-card {
-            padding: 1.5rem;
-          }
-          
-          .support-info {
-            padding: 1.5rem;
-          }
-        }
-      `}</style>
+  const [formData, setFormData] = useState({
+    category: '',
+    name: '',
+    email: '',
+    message: ''
+  })
+  
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false)
+
+  const categories = [
+    { id: 'technical', label: 'Technical Issues', icon: Wrench },
+    { id: 'feedback', label: 'Feedback', icon: MessageSquare },
+    { id: 'feature', label: 'Feature Request', icon: Lightbulb },
+    { id: 'general', label: 'General Inquiry', icon: Mail }
+  ]
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email'
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required'
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters'
+    }
+    
+    if (!formData.category) {
+      setFormData(prev => ({ ...prev, category: 'general' }))
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('[ContactForm] Form submitted', formData)
+    
+    if (!validateForm()) {
+      console.log('[ContactForm] Validation failed', errors)
+      return
+    }
+    
+    setSubmitting(true)
+    
+    // TODO: API integration - placeholder for future backend
+    setTimeout(() => {
+      console.log('[ContactForm] Message sent successfully')
+      setSubmitted(true)
+      setSubmitting(false)
+      setFormData({ category: '', name: '', email: '', message: '' })
       
-      <section className="contact-container">
-        {/* Hero Section */}
-        <div className="contact-hero">
-          <div className="contact-icon">✉</div>
-          
-          <h1 className="contact-title">
-            Connect with <span style={{fontFamily: 'Cormorant Garamond', fontStyle: 'italic', background: 'linear-gradient(135deg, #fbf5b7 0%, #bf953f 50%, #b38728 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>elegance</span>
-          </h1>
-          
-          <p className="contact-subtitle">
-            Whether you need guidance crafting your legacy or technical support for your timeline, our dedicated team is here to ensure your story receives the attention it deserves.
-          </p>
-        </div>
+      setTimeout(() => setSubmitted(false), 5000)
+    }, 1000)
+  }
 
-        {/* Contact Form Card */}
-        <div className="contact-card">
-          <form>
-            <div className="form-group">
-              <label className="form-label">
-                Your Message
-              </label>
-              <textarea 
-                placeholder="Share how we can assist with your autobiography journey..."
-                className="form-textarea"
-                disabled
-              />
-            </div>
+  const handleCalendarClick = () => {
+    console.log('[CalendarBooking] Calendar popup opened')
+    setShowCalendar(true)
+  }
 
-            <div className="button-group">
-              <button 
-                className="button-primary"
-                disabled
-              >
-                Send Message (Coming Soon)
-              </button>
-              
-              <div className="button-grid">
-                <button 
-                  className="button-secondary"
-                  disabled
-                >
-                  Schedule Consultation
-                </button>
-                
-                <button 
-                  className="button-secondary"
-                  disabled
-                >
-                  Request Callback
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+  return (
+    <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Hero Section - Clean design without box */}
+      <header style={{
+        textAlign: 'center',
+        marginBottom: '48px',
+      }}>
+        <h1 style={{ 
+          margin: 0, 
+          fontSize: '1.75rem', 
+          fontFamily: 'var(--font-playfair, Playfair Display, serif)',
+          color: '#fff',
+          marginBottom: '12px',
+        }}>
+          Get in Touch
+        </h1>
+        <p style={{ 
+          margin: 0,
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.95rem',
+          lineHeight: 1.6,
+          maxWidth: '600px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          fontWeight: 300,
+        }}>
+          Whether you need guidance crafting your legacy or technical support for your timeline, 
+          our dedicated team is here to ensure your story receives the attention it deserves.
+        </p>
+      </header>
+
+      {/* Calendar Booking Section */}
+      <section style={{
+        padding: '32px',
+        background: 'rgba(255, 255, 255, 0.02)',
+        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        textAlign: 'center',
+        marginBottom: '48px',
+      }}>
+        <h2 style={{
+          fontSize: '1.1rem',
+          fontFamily: 'var(--font-playfair, Playfair Display, serif)',
+          color: '#fff',
+          marginBottom: '12px',
+          marginTop: 0,
+        }}>
+          Work with Our Biography Experts
+        </h2>
+        <p style={{
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.9rem',
+          marginBottom: '24px',
+          lineHeight: 1.6,
+          maxWidth: '500px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}>
+          Schedule a professional interview session with our experienced team to capture your life story. 
+          We'll guide you through the process of creating your personalized autobiography.
+        </p>
+        <button
+          type="button"
+          onClick={handleCalendarClick}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '16px 32px',
+            background: 'linear-gradient(135deg, #D4AF37, rgba(180, 140, 20, 1))',
+            border: 'none',
+            borderRadius: '100px',
+            color: '#050505',
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontSize: '1rem',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+          }}
+        >
+          <Calendar size={20} />
+          Book Your Interview Session
+        </button>
+      </section>
+
+      {/* Category Selection */}
+      <section style={{ marginBottom: '32px' }}>
+        <h2 style={{
+          fontSize: '0.85rem',
+          color: '#D4AF37',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          marginBottom: '16px',
+          fontWeight: 500,
+        }}>
+          How can we help?
+        </h2>
         
-        {/* Support Information */}
-        <div className="support-info">
-          <p className="support-title">
-            Premium Support Services
-          </p>
-          <ul className="support-list">
-            <li>Personal story consultation and guidance</li>
-            <li>Technical assistance for timeline management</li>
-            <li>Priority scheduling for narrative interviews</li>
-            <li>Dedicated support for complex family histories</li>
-          </ul>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '12px',
+        }}>
+          {categories.map((category) => {
+            const Icon = category.icon
+            const isActive = formData.category === category.id
+            
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, category: category.id }))
+                  setErrors(prev => ({ ...prev, category: '' }))
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 16px',
+                  background: isActive 
+                    ? 'linear-gradient(135deg, #D4AF37, rgba(180, 140, 20, 1))'
+                    : 'rgba(255, 255, 255, 0.05)',
+                  color: isActive ? '#050505' : 'rgba(255, 255, 255, 0.7)',
+                  border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: isActive ? 600 : 500,
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                  }
+                }}
+              >
+                <Icon size={16} />
+                {category.label}
+              </button>
+            )
+          })}
         </div>
       </section>
-    </>
+
+      {/* Contact Form */}
+      <form onSubmit={handleSubmit} style={{ marginBottom: '32px' }}>
+        {/* Name Field */}
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.9)',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            Name
+          </label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, name: e.target.value }))
+              setErrors(prev => ({ ...prev, name: '' }))
+            }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: errors.name ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              transition: 'border-color 0.2s ease',
+            }}
+            onFocus={(e) => {
+              if (!errors.name) e.currentTarget.style.borderColor = '#D4AF37'
+            }}
+            onBlur={(e) => {
+              if (!errors.name) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+            }}
+          />
+          {errors.name && (
+            <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', marginBottom: 0 }}>
+              {errors.name}
+            </p>
+          )}
+        </div>
+
+        {/* Email Field */}
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.9)',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            Email
+          </label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, email: e.target.value }))
+              setErrors(prev => ({ ...prev, email: '' }))
+            }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: errors.email ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              transition: 'border-color 0.2s ease',
+            }}
+            onFocus={(e) => {
+              if (!errors.email) e.currentTarget.style.borderColor = '#D4AF37'
+            }}
+            onBlur={(e) => {
+              if (!errors.email) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+            }}
+          />
+          {errors.email && (
+            <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', marginBottom: 0 }}>
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        {/* Message Field */}
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.9)',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            Message
+          </label>
+          <textarea
+            value={formData.message}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, message: e.target.value }))
+              setErrors(prev => ({ ...prev, message: '' }))
+            }}
+            rows={6}
+            placeholder="Tell us how we can help you..."
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: errors.message ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              resize: 'vertical',
+              fontFamily: 'inherit',
+              lineHeight: 1.6,
+              transition: 'border-color 0.2s ease',
+            }}
+            onFocus={(e) => {
+              if (!errors.message) e.currentTarget.style.borderColor = '#D4AF37'
+            }}
+            onBlur={(e) => {
+              if (!errors.message) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+            }}
+          />
+          {errors.message && (
+            <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', marginBottom: 0 }}>
+              {errors.message}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={submitting}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            width: '100%',
+            padding: '16px 32px',
+            background: submitting 
+              ? 'rgba(212, 175, 55, 0.5)'
+              : 'linear-gradient(135deg, #D4AF37, rgba(180, 140, 20, 1))',
+            border: 'none',
+            borderRadius: '100px',
+            color: '#050505',
+            fontWeight: 600,
+            cursor: submitting ? 'not-allowed' : 'pointer',
+            fontSize: '1rem',
+            transition: 'transform 0.2s ease, opacity 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (!submitting) e.currentTarget.style.transform = 'translateY(-2px)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+          }}
+        >
+          {submitting ? (
+            'Sending...'
+          ) : (
+            <>
+              <Send size={18} />
+              Send Message
+            </>
+          )}
+        </button>
+
+        {/* Success Message */}
+        {submitted && (
+          <div style={{
+            marginTop: '16px',
+            padding: '12px 16px',
+            background: 'rgba(34, 197, 94, 0.1)',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            borderRadius: '8px',
+            color: '#22c55e',
+            fontSize: '0.9rem',
+            textAlign: 'center',
+          }}>
+            ✓ Message sent successfully! We'll get back to you soon.
+          </div>
+        )}
+      </form>
+
+      {/* Calendar Popup Modal */}
+      {showCalendar && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '20px',
+          }}
+          onClick={() => setShowCalendar(false)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '900px',
+              height: '90vh',
+              maxHeight: '700px',
+              background: '#fff',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowCalendar(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: 'rgba(0, 0, 0, 0.5)',
+                border: 'none',
+                color: '#fff',
+                fontSize: '24px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10000,
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)'
+              }}
+            >
+              ×
+            </button>
+            <iframe
+              src="https://calendar.app.google/hTLQhe9koce2qVXp9"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+              }}
+              title="Book Interview Session"
+            />
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

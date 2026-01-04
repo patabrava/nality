@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export default function SocialProofSection() {
+export default function LegacyStoriesSection() {
   const { t } = useI18n()
 
-  const testimonials = t('socialProof.testimonials')
+  const stories = t('legacyStories.stories')
   const stats = t('socialProof.stats')
   
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -15,23 +15,23 @@ export default function SocialProofSection() {
 
   // Auto-advance carousel
   useEffect(() => {
-    if (!isAutoPlaying || !Array.isArray(testimonials)) return
+    if (!isAutoPlaying || !Array.isArray(stories)) return
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length)
+      setCurrentIndex((prev) => (prev + 1) % stories.length)
     }, 5000)
     
     return () => clearInterval(interval)
-  }, [isAutoPlaying, testimonials])
+  }, [isAutoPlaying, stories])
 
   const handlePrevious = () => {
     setIsAutoPlaying(false)
-    setCurrentIndex((prev) => (prev - 1 + (testimonials?.length || 0)) % (testimonials?.length || 1))
+    setCurrentIndex((prev) => (prev - 1 + (stories?.length || 0)) % (stories?.length || 1))
   }
 
   const handleNext = () => {
     setIsAutoPlaying(false)
-    setCurrentIndex((prev) => (prev + 1) % (testimonials?.length || 1))
+    setCurrentIndex((prev) => (prev + 1) % (stories?.length || 1))
   }
 
   const handleDotClick = (index: number) => {
@@ -40,26 +40,33 @@ export default function SocialProofSection() {
   }
 
   return (
-    <section className="section social-proof-section">
-      <div className="social-proof-container">
-        <h2 className="section-title text-center mb-16">
-          {t('socialProof.title')}
+    <section className="section" style={{ background: 'var(--md-sys-color-surface-dim)' }}>
+      {/* Legacy Stories Headline Design */}
+      <div className="section-header">
+        <span className="section-label">{t('legacyStories.label')}</span>
+        <h2 className="section-title">
+          {t('legacyStories.title')}{' '}
+          <span className="serif-text italic text-gold">{t('legacyStories.titleHighlight')}</span>
         </h2>
+        <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
+          {t('legacyStories.description')}
+        </p>
+      </div>
 
-        {/* Stats Grid - Refined */}
-        <div className="social-proof-stats">
-          {Array.isArray(stats) && stats.map((stat: any, index: number) => (
-            <div key={index} className="stat-item">
-              <div className="stat-number">{stat.number}</div>
-              <div className="stat-label">{stat.label}</div>
-            </div>
-          ))}
-        </div>
+      {/* Stats Grid from Social Proof */}
+      <div className="social-proof-stats" style={{ marginBottom: '4rem' }}>
+        {Array.isArray(stats) && stats.map((stat: any, index: number) => (
+          <div key={index} className="stat-item">
+            <div className="stat-number">{stat.number}</div>
+            <div className="stat-label">{stat.label}</div>
+          </div>
+        ))}
+      </div>
 
-        {/* Testimonials Carousel */}
-        <div className="testimonials-carousel-container">
+      {/* Testimonials Carousel from Social Proof */}
+      <div className="testimonials-carousel-container">
           <div className="testimonials-carousel-wrapper">
-            {Array.isArray(testimonials) && testimonials.map((testimonial: any, index: number) => (
+            {Array.isArray(stories) && stories.map((story: any, index: number) => (
               <blockquote
                 key={index}
                 className={`editorial-testimonial-carousel ${index === currentIndex ? 'active' : ''}`}
@@ -70,15 +77,13 @@ export default function SocialProofSection() {
               >
                 <div className="editorial-quote-mark">"</div>
                 <p className="editorial-quote-text">
-                  {testimonial.text}
+                  {story.quote}
                 </p>
                 <footer className="editorial-attribution">
-                  <cite className="editorial-author">— {testimonial.author}</cite>
-                  {testimonial.role && (
-                    <span className="editorial-context">
-                      {testimonial.role}, {testimonial.location}
-                    </span>
-                  )}
+                  <cite className="editorial-author">— {story.author}</cite>
+                  <span className="editorial-context">
+                    {story.context}
+                  </span>
                 </footer>
               </blockquote>
             ))}
@@ -102,17 +107,16 @@ export default function SocialProofSection() {
 
           {/* Dots Navigation */}
           <div className="carousel-dots">
-            {Array.isArray(testimonials) && testimonials.map((_, index) => (
+            {Array.isArray(stories) && stories.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleDotClick(index)}
                 className={`carousel-dot ${index === currentIndex ? 'active' : ''}`}
-                aria-label={`Go to testimonial ${index + 1}`}
+                aria-label={`Go to story ${index + 1}`}
               />
             ))}
           </div>
         </div>
-      </div>
     </section>
   )
 }

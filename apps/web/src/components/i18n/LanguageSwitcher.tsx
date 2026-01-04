@@ -2,77 +2,62 @@
 
 import { useI18n } from './I18nProvider'
 import { Locale, SUPPORTED_LOCALES } from '@/lib/i18n'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Languages, ChevronDown, Check } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
 
 export function LanguageSwitcher() {
     const { locale, setLocale, t } = useI18n()
-    const [isOpen, setIsOpen] = useState(false)
-    const dropdownRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
 
     const languages = {
-        en: { name: t('common.languageOptions.en'), flag: '🇬🇧' },
-        de: { name: t('common.languageOptions.de'), flag: '🇩🇪' },
+        en: { code: 'EN', name: t('common.languageOptions.en') },
+        de: { code: 'DE', name: t('common.languageOptions.de') },
     }
 
     return (
-        <div className="relative" ref={dropdownRef}>
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300 group"
-                aria-expanded={isOpen}
-                aria-haspopup="listbox"
-                aria-label={t('common.language')}
-            >
-                <Languages className="w-4 h-4 text-gray-400 group-hover:text-[#D4AF37] transition-colors" />
-                <span className="text-sm font-medium text-gray-300 uppercase">{locale}</span>
-                <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.ul
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: 'easeOut' }}
-                        className="absolute right-0 mt-2 w-40 py-2 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[10001] overflow-hidden"
-                        role="listbox"
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+        }}>
+            {SUPPORTED_LOCALES.map((lang, index) => (
+                <div key={lang} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <button
+                        onClick={() => setLocale(lang as Locale)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            fontFamily: locale === lang ? 'var(--font-serif)' : 'var(--font-sans)',
+                            fontSize: locale === lang ? '1rem' : '0.875rem',
+                            fontWeight: locale === lang ? '400' : '300',
+                            color: locale === lang ? '#D4AF37' : 'rgba(255, 255, 255, 0.5)',
+                            cursor: 'pointer',
+                            padding: '0.25rem 0.75rem',
+                            transition: 'color 0.2s ease',
+                            letterSpacing: '0.05em',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (locale !== lang) {
+                                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (locale !== lang) {
+                                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
+                            }
+                        }}
+                        aria-label={`Switch to ${languages[lang as Locale].name}`}
+                        aria-pressed={locale === lang}
                     >
-                        {SUPPORTED_LOCALES.map((lang) => (
-                            <li key={lang}>
-                                <button
-                                    onClick={() => {
-                                        setLocale(lang as Locale)
-                                        setIsOpen(false)
-                                    }}
-                                    className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors hover:bg-white/5 ${locale === lang ? 'text-[#D4AF37]' : 'text-gray-300'
-                                        }`}
-                                    role="option"
-                                    aria-selected={locale === lang}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <span>{languages[lang as Locale].flag}</span>
-                                        <span>{languages[lang as Locale].name}</span>
-                                    </div>
-                                    {locale === lang && <Check className="w-4 h-4" />}
-                                </button>
-                            </li>
-                        ))}
-                    </motion.ul>
-                )}
-            </AnimatePresence>
+                        {languages[lang as Locale].code}
+                    </button>
+                    {index < SUPPORTED_LOCALES.length - 1 && (
+                        <span style={{
+                            color: 'rgba(212, 175, 55, 0.3)',
+                            fontSize: '0.875rem',
+                            fontWeight: '300',
+                        }}>|</span>
+                    )}
+                </div>
+            ))}
         </div>
     )
 }
+

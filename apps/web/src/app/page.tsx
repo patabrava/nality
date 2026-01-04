@@ -6,11 +6,11 @@ import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 
 // Import landing page components
+import { LandingHeader } from '@/components/landing/LandingHeader'
 import HeroSection from '@/components/landing/HeroSection'
-import SocialProofSection from '@/components/landing/SocialProofSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import ProductHighlightsSection from '@/components/landing/ProductHighlightsSection'
-import CustomerValueSection from '@/components/landing/CustomerValueSection'
+import LegacyStoriesSection from '@/components/landing/LegacyStoriesSection'
 import OutcomesGallerySection from '@/components/landing/OutcomesGallerySection'
 import PricingSection from '@/components/landing/PricingSection'
 import FAQSection from '@/components/landing/FAQSection'
@@ -60,6 +60,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Landing Page Header */}
+      <LandingHeader />
+
       {/* Grain Overlay */}
       <div className="grain-overlay"></div>
 
@@ -95,22 +98,25 @@ export default function Home() {
         <HeroSection onSecondaryAction={handleSampleBook} />
         
         {/* Features Section */}
-        <ProductHighlightsSection />
+        <section id="features">
+          <ProductHighlightsSection />
+        </section>
         
-        {/* Customer Value Propositions */}
-        <CustomerValueSection />
+        {/* Legacy Stories & Social Proof (Merged) */}
+        <LegacyStoriesSection />
         
         {/* How It Works */}
-        <HowItWorksSection />
-        
-        {/* Social Proof & Testimonials */}
-        <SocialProofSection />
+        <section id="how-it-works">
+          <HowItWorksSection />
+        </section>
         
         {/* Outcomes Gallery */}
         <OutcomesGallerySection />
         
         {/* Pricing */}
-        <PricingSection />
+        <section id="pricing">
+          <PricingSection />
+        </section>
         
         {/* FAQ */}
         <FAQSection />

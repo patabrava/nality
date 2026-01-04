@@ -114,58 +114,11 @@
       }
     ]
   },
-  "customerValue": {
-    "label": "For Every Story",
-    "title": "Tailored for",
-    "highlight": "every storyteller",
-    "description": "Whether you're preserving family heritage, crafting professional memoirs, or capturing institutional knowledge, Nality adapts to your unique storytelling needs.",
-    "segments": [
-      {
-        "title": "Families & Elders",
-        "subtitle": "Preserve generational wisdom",
-        "description": "Capture grandparents' stories before they're lost forever. Our AI guides elderly users through gentle conversations, while family members can collaborate on shared memories.",
-        "benefits": [
-          "Easy voice recording for seniors",
-          "Family collaboration tools",
-          "Automated organization by decades",
-          "Beautiful printed books for generations"
-        ],
-        "testimonial": "\"We preserved 80 years of my grandmother's stories in just three sessions.\"",
-        "author": "Maria Santos",
-        "icon": "👵"
-      },
-      {
-        "title": "Authors & Creatives",
-        "subtitle": "Professional memoir tools",
-        "description": "Transform your life experiences into compelling narratives with AI-powered structure, interview support, and publishing-quality exports.",
-        "benefits": [
-          "AI story arc analysis",
-          "Professional transcript services",
-          "Multi-format publishing",
-          "Collaborative editing features"
-        ],
-        "testimonial": "\"Nality helped me structure my memoir in ways I never imagined.\"",
-        "author": "Dr. James Patterson",
-        "icon": "✍️"
-      },
-      {
-        "title": "Organizations & Institutions",
-        "subtitle": "Institutional memory capture",
-        "description": "Preserve organizational history, capture retiring executives' knowledge, and create institutional legacies with enterprise-grade security.",
-        "benefits": [
-          "Enterprise security & compliance",
-          "Bulk user management",
-          "Custom branding options",
-          "API integrations available"
-        ],
-        "testimonial": "\"We've preserved 200+ years of institutional knowledge effortlessly.\"",
-        "author": "Heritage Foundation",
-        "icon": "🏛️"
-      }
-    ]
-  },
+
   "outcomes": {
-    "title": "A keepsake you can hold",
+    "label": "The Life Book",
+    "title": "A keepsake you can",
+    "titleHighlight": "hold",
     "subtitle": "Nality turns your timeline into a polished, print-ready PDF. Choose cover styles and share digitally or order prints.",
     "zoomHint": "Click to zoom",
     "ctaText": "See your story come to life in print",
@@ -191,40 +144,61 @@
     ]
   },
   "productHighlights": {
-    "label": "Technology & Features",
-    "titlePrefix": "Enterprise-grade tools for",
-    "titleHighlight": "personal heritage",
-    "description": "Combining AI storytelling, professional services, and preservation technology to create the most comprehensive life documentation platform ever built.",
+    "label": "The Experience",
+    "titlePrefix": "Features designed for",
+    "titleHighlight": "your legacy",
+    "description": "Every tool thoughtfully crafted to help you capture, organize, and share your life's most important moments with uncompromising quality.",
     "features": [
       {
-        "title": "AI-Powered Memory Assistant",
-        "description": "Our intelligent chat guides you through your life story with personalized questions. Voice or text input, automatic structuring, and smart gap detection to ensure nothing important is forgotten."
+        "title": "Smart Onboarding",
+        "description": "Start with a guided chat that turns your memories into structured events. Edit anytime with ease."
       },
       {
-        "title": "Interactive Life Timeline",
-        "description": "Beautiful, drag-and-drop timeline with rich media support. Organize by decades, themes, or relationships. Real-time collaboration and automatic backups ensure your story is always safe."
+        "title": "Living Timeline",
+        "description": "Clean, alternating layout. Drag, categorize, and tag important moments. See photos and clips in context."
       },
       {
-        "title": "Expert Interview Service",
-        "description": "Professional storytellers and journalists help capture deeper narratives. Seamless booking, HD recording, AI transcription, and integration into your timeline. Perfect for family elders."
+        "title": "Professional Interviews",
+        "description": "Professional interviewers can help you go deeper—especially for elder stories. We'll handle scheduling."
       },
       {
-        "title": "Premium Publishing Suite",
-        "description": "Transform your timeline into a stunning hardbound book, digital memoir, or shareable family archive. Custom layouts, professional printing, and secure family sharing options."
+        "title": "The Life Book",
+        "description": "Export a beautiful, polished PDF designed for printing and sharing. Your legacy, immortalized."
+      }
+    ]
+  },
+  "legacyStories": {
+    "label": "Stories That Last",
+    "title": "Legacies",
+    "titleHighlight": "masterfully preserved",
+    "description": "Discover how extraordinary individuals are capturing their most precious memories for eternity with Nality.",
+    "stories": [
+      {
+        "quote": "In just three weekends, we captured eighty years of my grandmother's history. The finished book is now our family's most treasured possession.",
+        "author": "Sofia R.",
+        "context": "Family Historian, Barcelona"
       },
       {
-        "title": "Rich Media Library",
-        "description": "Upload photos, videos, documents, and audio recordings. Smart organization, facial recognition, and automatic metadata extraction. Cloud storage with family access controls."
+        "quote": "The AI-powered structure saved me 80% of my preparation time. I now recommend Nality to all my documentary clients.",
+        "author": "Marcus Chen",
+        "context": "Documentary Filmmaker, San Francisco"
       },
       {
-        "title": "Legacy Preservation Technology",
-        "description": "Bank-grade security, automatic backups, and 100-year digital preservation guarantee. Your family's stories will outlast generations with our quantum-resistant encryption."
+        "quote": "We preserved my father's Holocaust survival story before he passed. The book helps us share his legacy with future generations.",
+        "author": "Rachel Goldstein",
+        "context": "Holocaust Education Foundation, New York"
+      },
+      {
+        "quote": "I've written three memoirs with Nality. The export quality rivals traditional publishers. It's revolutionized my writing process.",
+        "author": "Dr. James Patterson",
+        "context": "Former University President, Oxford"
       }
     ]
   },
   "howItWorks": {
     "label": "Process",
-    "title": "How it works",
+    "title": "How NALITY supports ",
+    "titleHighlight": "your biography work",
     "subtitle": "Four simple steps to transform your memories into a beautiful, lasting story",
     "steps": [
       {
@@ -250,6 +224,7 @@
     ]
   },
   "pricing": {
+    "label": "Pricing",
     "titlePrefix": "Preserve your legacy,",
     "titleHighlight": "affordably",
     "subtitle": "Start free and create unlimited memories. Upgrade for professional features, expert interviews, and heirloom-quality books.",
