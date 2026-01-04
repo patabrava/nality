@@ -5,7 +5,6 @@ import { buildOnboardingSystemPrompt } from '@/lib/prompts/onboarding';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 
-export const runtime = 'nodejs';
 export const dynamic = "force-dynamic";
 
 function sanitizeContent(raw: string): string {

@@ -65,20 +65,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   const isTransitioningRef = useRef(false);
   const isActiveRef = useRef(false);
   const isMutedRef = useRef(false);
-  const thinkingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Handle chat errors - recover by returning to listening state
-  const handleChatError = useCallback((err: Error) => {
-    console.error('❌ Chat API error:', err);
-    setError(err);
-    setAgentState('error');
-    onError?.(err);
-    // Clear any pending timeout
-    if (thinkingTimeoutRef.current) {
-      clearTimeout(thinkingTimeoutRef.current);
-      thinkingTimeoutRef.current = null;
-    }
-  }, [onError]);
 
   // Initialize chat with AI SDK
   const { 
@@ -101,7 +87,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
           : "Willkommen zum Onboarding. Ich sammle jetzt deine Basisdaten – Herkunft, wichtige Stationen und Rahmeninfos. Antworte einfach mündlich, ich führe dich Frage für Frage durch.",
       }
     ],
-    onError: handleChatError,
   });
 
   // Ensure onboarding session exists (only for onboarding flow)
@@ -241,18 +226,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     console.log('🎯 Processing utterance:', transcript);
     setAgentState('thinking');
     
-    // Set a timeout to recover if AI doesn't respond within 30 seconds
-    if (thinkingTimeoutRef.current) {
-      clearTimeout(thinkingTimeoutRef.current);
-    }
-    thinkingTimeoutRef.current = setTimeout(() => {
-      console.warn('⚠️ AI response timeout - recovering to listening state');
-      if (isActiveRef.current) {
-        setAgentState('listening');
-        startListeningInternal().catch(console.error);
-      }
-    }, 30000);
-    
     try {
       await saveOnboardingMessage('user', transcript);
       await append({
@@ -263,15 +236,10 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       console.error('❌ Failed to send message:', err);
       setError(err instanceof Error ? err : new Error('Failed to process speech'));
       onError?.(err as Error);
-      // Clear timeout on error
-      if (thinkingTimeoutRef.current) {
-        clearTimeout(thinkingTimeoutRef.current);
-        thinkingTimeoutRef.current = null;
-      }
       // Return to listening on error
       startListeningInternal();
     }
-  }, [append, onError, startListeningInternal, saveOnboardingMessage]);
+  }, [append, onError, startListeningInternal]);
 
   // Store voiceInput in ref so callbacks can access it
   const voiceInputRef = useRef<ReturnType<typeof useVoiceInput> | null>(null);
@@ -328,11 +296,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     setIsActive(false);
     isActiveRef.current = false;
     isTransitioningRef.current = false;
-    // Clear any pending timeout
-    if (thinkingTimeoutRef.current) {
-      clearTimeout(thinkingTimeoutRef.current);
-      thinkingTimeoutRef.current = null;
-    }
     voiceInput.stopListening();
     audioPlayer.stop();
     setAgentState('idle');
@@ -351,12 +314,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     const content = lastMessage.content.trim();
     if (!content) return;
-
-    // Clear thinking timeout - we got a response
-    if (thinkingTimeoutRef.current) {
-      clearTimeout(thinkingTimeoutRef.current);
-      thinkingTimeoutRef.current = null;
-    }
 
     // Persist assistant turn for onboarding flow
     (async () => {
@@ -535,11 +492,6 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      // Clear any pending timeout
-      if (thinkingTimeoutRef.current) {
-        clearTimeout(thinkingTimeoutRef.current);
-        thinkingTimeoutRef.current = null;
-      }
       voiceInput.stopListening();
       audioPlayer.stop();
     };
