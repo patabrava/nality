@@ -47,20 +47,24 @@ const applyTheme = (theme: ResolvedTheme) => {
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      mode: 'system', // Default to system preference
-      resolvedTheme: 'dark', // Default fallback
+      mode: 'dark', // Force dark mode
+      resolvedTheme: 'dark', // Force dark theme
       systemPreference: 'dark', // Default fallback
       
       setMode: (mode: ThemeMode) => {
-        const { systemPreference } = get()
+        // Disabled: Force dark mode
+        return
+        /* const { systemPreference } = get()
         const resolvedTheme = resolveTheme(mode, systemPreference)
         
         set({ mode, resolvedTheme })
-        applyTheme(resolvedTheme)
+        applyTheme(resolvedTheme) */
       },
       
       setSystemPreference: (preference: ResolvedTheme) => {
-        const { mode } = get()
+        // Disabled: Force dark mode
+        return
+        /* const { mode } = get()
         const resolvedTheme = resolveTheme(mode, preference)
         
         set({ systemPreference: preference, resolvedTheme })
@@ -68,13 +72,16 @@ export const useThemeStore = create<ThemeState>()(
         // Only apply if user hasn't explicitly chosen a theme
         if (mode === 'system') {
           applyTheme(resolvedTheme)
-        }
+        } */
       },
       
       initializeTheme: () => {
         if (typeof window === 'undefined') return
         
-        const systemPreference = getSystemPreference()
+        // Force dark theme
+        applyTheme('dark')
+        
+        /* const systemPreference = getSystemPreference()
         const { mode } = get()
         const resolvedTheme = resolveTheme(mode, systemPreference)
         
@@ -91,7 +98,7 @@ export const useThemeStore = create<ThemeState>()(
         mediaQuery.addEventListener('change', handleChange)
         
         // Cleanup function (will be called when component unmounts)
-        return () => mediaQuery.removeEventListener('change', handleChange)
+        return () => mediaQuery.removeEventListener('change', handleChange) */
       }
     }),
     {
