@@ -21,8 +21,11 @@ export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
   }
 
   const handleSampleBook = () => {
+    const outcomesSection = document.getElementById('outcomes')
+    if (outcomesSection) {
+      outcomesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
     onSecondaryAction?.()
-    console.log('Sample book clicked')
   }
 
   return (
@@ -52,7 +55,7 @@ export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full max-w-md mx-auto">
               {/* Background Glow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-900 rounded-full blur-[100px] opacity-20"></div>
+              
 
               {/* Floating Cards (Mock UI) */}
               <div className="glass-card absolute top-10 left-0 w-64 p-6 transform -rotate-6 animate-[float_6s_ease-in-out_infinite]">
@@ -67,19 +70,22 @@ export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
                 <div className="h-2 w-full bg-white/10 rounded"></div>
               </div>
 
-              <div className="glass-card absolute bottom-10 left-10 w-56 p-4 transform -rotate-3 z-10 animate-[float_8s_ease-in-out_infinite_0.5s]">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                      <line x1="12" y1="19" x2="12" y2="23" />
-                      <line x1="8" y1="23" x2="16" y2="23" />
-                    </svg>
-                  </div>
-                  <div className="text-sm text-gray-300">{t('hero.recordingStatus')}</div>
-                </div>
-              </div>
+              <div
+                            className="glass-card absolute bottom-10 left-10 w-56 p-4 transform -rotate-3 z-10 animate-[float_8s_ease-in-out_infinite_0.5s]">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                        strokeLinejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                        <line x1="12" y1="19" x2="12" y2="23" />
+                                        <line x1="8" y1="23" x2="16" y2="23" />
+                                    </svg>
+                                </div>
+                                <div className="text-sm text-gray-300">Recording Session...</div>
+                            </div>
+                        </div>
             </div>
           </div>
         </div>

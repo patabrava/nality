@@ -114,58 +114,11 @@
       }
     ]
   },
-  "customerValue": {
-    "label": "Für jede Geschichte",
-    "title": "Zugeschnitten auf",
-    "highlight": "jede Erzählerin, jeden Erzähler",
-    "description": "Ob Familiengeschichte, professionelles Memoir oder institutionelles Wissen – Nality passt sich deinem Erzählbedarf an.",
-    "segments": [
-      {
-        "title": "Familien & Ältere",
-        "subtitle": "Generationenwissen bewahren",
-        "description": "Halte die Geschichten deiner Großeltern fest, bevor sie verloren gehen. Unsere KI führt ältere Menschen behutsam, Familien können gemeinsam Erinnerungen ergänzen.",
-        "benefits": [
-          "Einfache Sprachaufnahmen für Senior:innen",
-          "Familien-Kollaboration",
-          "Automatische Sortierung nach Jahrzehnten",
-          "Wunderschöne Druckbücher für Generationen"
-        ],
-        "testimonial": "\"Wir haben 80 Jahre Geschichte meiner Großmutter in nur drei Sessions bewahrt.\"",
-        "author": "Maria Santos",
-        "icon": "👵"
-      },
-      {
-        "title": "Autor:innen & Kreative",
-        "subtitle": "Professionelle Memoir-Werkzeuge",
-        "description": "Verwandle Lebenserfahrungen in packende Narrative – mit KI-Struktur, Interview-Support und Publishing-Qualität.",
-        "benefits": [
-          "KI-Analyse der Dramaturgie",
-          "Professionelle Transkripte",
-          "Multi-Format-Publishing",
-          "Gemeinsame Bearbeitung"
-        ],
-        "testimonial": "\"Nality hat mein Memoir auf ein neues Level gebracht.\"",
-        "author": "Dr. James Patterson",
-        "icon": "✍️"
-      },
-      {
-        "title": "Organisationen & Institutionen",
-        "subtitle": "Institutionelles Gedächtnis sichern",
-        "description": "Bewahre Unternehmensgeschichte, Wissen ausscheidender Führungskräfte und erstelle institutionelle Vermächtnisse mit Enterprise-Sicherheit.",
-        "benefits": [
-          "Enterprise-Security & Compliance",
-          "Nutzerverwaltung in großen Mengen",
-          "Individuelles Branding",
-          "API-Integrationen"
-        ],
-        "testimonial": "\"Über 200 Jahre Wissen mühelos gesichert.\"",
-        "author": "Heritage Foundation",
-        "icon": "🏛️"
-      }
-    ]
-  },
+
   "outcomes": {
-    "title": "Ein Andenken zum Anfassen",
+    "label": "Das Lebensbuch",
+    "title": "Ein Andenken zum",
+    "titleHighlight": "Anfassen",
     "subtitle": "Nality verwandelt deine Timeline in ein poliertes, druckfertiges PDF. Wähle Cover-Stile und teile es digital oder bestelle Drucke.",
     "zoomHint": "Zum Vergrößern klicken",
     "ctaText": "Sieh, wie deine Geschichte im Druck lebendig wird",
@@ -191,40 +144,61 @@
     ]
   },
   "productHighlights": {
-    "label": "Technologie & Funktionen",
-    "titlePrefix": "Enterprise-Werkzeuge für",
-    "titleHighlight": "persönliches Erbe",
-    "description": "Die Kombination aus KI-Storytelling, professionellen Dienstleistungen und Konservierungstechnologie schafft die umfassendste Plattform zur Lebensdokumentation, die je entwickelt wurde.",
+    "label": "Die Erfahrung",
+    "titlePrefix": "Funktionen gestaltet für",
+    "titleHighlight": "dein Vermächtnis",
+    "description": "Jedes Werkzeug sorgfältig entwickelt, um dir zu helfen, die wichtigsten Momente deines Lebens mit kompromissloser Qualität festzuhalten, zu organisieren und zu teilen.",
     "features": [
       {
-        "title": "KI-gestützter Erinnerungsassistent",
-        "description": "Unser intelligenter Chat führt dich mit personalisierten Fragen durch deine Lebensgeschichte. Sprach- oder Texteingabe, automatische Strukturierung und intelligente Lückenerkennung sorgen dafür, dass nichts Wichtiges vergessen wird."
+        "title": "Intelligenter Einstieg",
+        "description": "Beginne mit einem geführten Chat, der deine Erinnerungen in strukturierte Ereignisse verwandelt. Bearbeite jederzeit mit Leichtigkeit."
       },
       {
-        "title": "Interaktive Lebens-Timeline",
-        "description": "Wunderschöne Drag-and-Drop-Timeline mit Unterstützung für Rich Media. Organisiere nach Jahrzehnten, Themen oder Beziehungen. Echtzeit-Kollaboration und automatische Backups sorgen dafür, dass deine Geschichte immer sicher ist."
+        "title": "Lebendige Timeline",
+        "description": "Klares, alternierendes Layout. Ziehe, kategorisiere und markiere wichtige Momente. Sieh Fotos und Videos im Kontext."
       },
       {
-        "title": "Experten-Interview-Service",
-        "description": "Professionelle Storyteller und Journalisten helfen dabei, tiefere Narrative festzuhalten. Nahtlose Buchung, HD-Aufnahme, KI-Transkription und Integration in deine Timeline. Perfekt für die Älteren in der Familie."
+        "title": "Professionelle Interviews",
+        "description": "Professionelle Interviewer können dir helfen, tiefer zu gehen – besonders für Geschichten von Älteren. Wir kümmern uns um die Terminplanung."
       },
       {
-        "title": "Premium-Publishing-Suite",
-        "description": "Verwandle deine Timeline in ein beeindruckendes Hardcover-Buch, ein digitales Memoir oder ein teilbares Familienarchiv. Individuelle Layouts, professioneller Druck und sichere Optionen zum Teilen in der Familie."
+        "title": "Das Life Book",
+        "description": "Exportiere ein wunderschönes, poliertes PDF, das zum Drucken und Teilen bereit ist. Dein Vermächtnis, verewigt."
+      }
+    ]
+  },
+  "legacyStories": {
+    "label": "Geschichten, die bleiben",
+    "title": "Vermächtnisse",
+    "titleHighlight": "meisterhaft bewahrt",
+    "description": "Erlebe, wie außergewöhnliche Menschen ihre wertvollsten Erinnerungen mit Nality für die Ewigkeit festhalten.",
+    "stories": [
+      {
+        "quote": "In nur drei Wochenenden haben wir achtzig Jahre Geschichte meiner Großmutter festgehalten. Das fertige Buch ist heute unser wertvollster Familienbesitz.",
+        "author": "Sofia R.",
+        "context": "Familienhistorikerin, Barcelona"
       },
       {
-        "title": "Rich-Media-Bibliothek",
-        "description": "Lade Fotos, Videos, Dokumente und Audioaufnahmen hoch. Intelligente Organisation, Gesichtserkennung und automatische Metadatenextraktion. Cloud-Speicher mit Familienzugriffskontrolle."
+        "quote": "Die KI-gestützte Struktur hat mir 80% meiner Vorbereitungszeit erspart. Jetzt empfehle ich Nality allen meinen Kunden für Dokumentarfilme.",
+        "author": "Marcus Chen",
+        "context": "Dokumentarfilmer, San Francisco"
       },
       {
-        "title": "Technologie zur Bewahrung des Vermächtnisses",
-        "description": "Sicherheit auf Bankenniveau, automatische Backups und eine 100-jährige Garantie zur digitalen Bewahrung. Die Geschichten deiner Familie werden Generationen überdauern – dank unserer quantenresistenten Verschlüsselung."
+        "quote": "Wir haben die Holocaust-Überlebensgeschichte meines Vaters bewahrt, bevor er verstarb. Das Buch hilft uns, sein Vermächtnis mit zukünftigen Generationen zu teilen.",
+        "author": "Rachel Goldstein",
+        "context": "Stiftung für Holocaust-Bildung, New York"
+      },
+      {
+        "quote": "Ich habe drei Memoiren mit Nality geschrieben. Die Exportqualität kann mit traditionellen Verlagen mithalten. Es hat meinen Schreibprozess revolutioniert.",
+        "author": "Dr. James Patterson",
+        "context": "Ehemaliger Universitätspräsident, Oxford"
       }
     ]
   },
   "howItWorks": {
     "label": "Prozess",
-    "title": "So funktioniert es",
+    "title": "So unterstützt NALITY ",
+    "titleHighlight": "deine Biografiearbeit",
     "subtitle": "Vier einfache Schritte, um deine Erinnerungen in eine schöne, dauerhafte Geschichte zu verwandeln",
     "steps": [
       {
@@ -250,6 +224,7 @@
     ]
   },
   "pricing": {
+    "label": "Preise",
     "titlePrefix": "Bewahre dein Vermächtnis,",
     "titleHighlight": "kostengünstig",
     "subtitle": "Starte kostenlos und erstelle unbegrenzte Erinnerungen. Upgrade für professionelle Funktionen, Experten-Interviews und Bücher in Erbstückqualität.",
@@ -260,7 +235,8 @@
       {
         "name": "Explorer",
         "price": "Kostenlos",
-        "period": "Für immer",
+        "period": "",
+        "periodSuffix": "Für immer",
         "yearlyPrice": "",
         "description": "Beginne noch heute die Reise deiner Lebensgeschichte",
         "features": [
@@ -322,7 +298,7 @@
   },
   "faq": {
     "title": "Häufig gestellte Fragen",
-    "subtitle": "Alles, was du über die Bewahrung deiner Lebensgeschichte wissen musst",
+    "subtitle": "Alles, was du über die Bewahrung deiner Lebensgeschichte ",
     "items": [
       {
         "question": "Wer kann meine Geschichte sehen?",
@@ -407,10 +383,6 @@
         {
           "name": "Preise",
           "href": "#pricing"
-        },
-        {
-          "name": "Blog",
-          "href": "/blog"
         }
       ]
     },
@@ -464,7 +436,35 @@
       ]
     },
     "copyright": "© {year} Nality. Alle Rechte vorbehalten.",
-    "taglineElite": "Die Biografie für die Elite"
+    "taglineElite": "Die Biografie für die Elite",
+    "legalContent": {
+      "terms": {
+        "title": "Allgemeine Geschäftsbedingungen",
+        "content": "Willkommen bei NALITY. Durch die Nutzung unserer Dienste stimmen Sie diesen Bedingungen zu.\n\n1. Nutzung des Dienstes\nNALITY bietet Ihnen eine Plattform zur Erstellung und Verwaltung Ihrer persönlichen Lebensgeschichte. Sie sind verantwortlich für alle Inhalte, die Sie hochladen.\n\n2. Datenschutz\nIhre persönlichen Daten werden gemäß unserer Datenschutzrichtlinie behandelt. Wir verpflichten uns, Ihre Privatsphäre zu schützen.\n\n3. Geistiges Eigentum\nAlle Inhalte, die Sie erstellen, bleiben Ihr Eigentum. NALITY beansprucht keine Rechte an Ihren persönlichen Geschichten.\n\n4. Haftungsausschluss\nNALITY wird \"wie besehen\" bereitgestellt. Wir garantieren nicht, dass der Dienst ununterbrochen oder fehlerfrei ist.\n\n5. Änderungen\nWir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Änderungen werden auf dieser Seite veröffentlicht.\n\nFür vollständige rechtliche Details kontaktieren Sie uns bitte unter legal@nality.com"
+      },
+      "privacy": {
+        "title": "Datenschutzerklärung",
+        "content": "NALITY nimmt Ihre Privatsphäre ernst. Diese Richtlinie beschreibt, wie wir Ihre Daten sammeln, verwenden und schützen.\n\n1. Datenerfassung\nWir sammeln Informationen, die Sie uns direkt zur Verfügung stellen: Name, E-Mail, Lebensgeschichten, Fotos und andere persönliche Inhalte.\n\n2. Datenverwendung\nIhre Daten werden verwendet, um:\n- Ihren Account zu verwalten\n- Ihre Lebensgeschichte zu speichern und zu organisieren\n- Den Service zu verbessern\n- Mit Ihnen zu kommunizieren\n\n3. Datenspeicherung\nAlle Daten werden sicher auf verschlüsselten Servern gespeichert. Wir verwenden Supabase für die Datenspeicherung mit End-zu-End-Verschlüsselung.\n\n4. Datenweitergabe\nWir verkaufen oder vermieten Ihre Daten niemals. Daten werden nur mit Ihrer ausdrücklichen Zustimmung oder bei gesetzlicher Verpflichtung weitergegeben.\n\n5. Ihre Rechte\nSie haben das Recht auf:\n- Zugriff auf Ihre Daten\n- Korrektur Ihrer Daten\n- Löschung Ihrer Daten\n- Export Ihrer Daten\n\nFür Datenschutzanfragen kontaktieren Sie privacy@nality.com"
+      },
+      "cookies": {
+        "title": "Cookie-Einstellungen",
+        "content": "NALITY verwendet Cookies, um Ihre Erfahrung zu verbessern und den Dienst bereitzustellen.\n\n1. Wesentliche Cookies\nDiese Cookies sind für den Betrieb der Website erforderlich:\n- Authentifizierung und Sitzungsverwaltung\n- Sicherheit und Betrugsschutz\n- Benutzerpräferenzen\n\n2. Funktionale Cookies\nDiese Cookies ermöglichen erweiterte Funktionen:\n- Spracheinstellungen\n- Benutzeroberflächen-Präferenzen\n- Formular-Autofill\n\n3. Analyse-Cookies\nWir verwenden diese, um zu verstehen, wie Sie unseren Dienst nutzen (optional):\n- Seitenaufrufe und Navigation\n- Funktionsnutzung\n- Performance-Metriken\n\n4. Cookie-Verwaltung\nSie können Cookies jederzeit in Ihren Browser-Einstellungen verwalten. Beachten Sie, dass das Deaktivieren wesentlicher Cookies die Funktionalität beeinträchtigen kann.\n\n5. Aktualisierungen\nWir können diese Cookie-Richtlinie gelegentlich aktualisieren. Änderungen werden auf dieser Seite veröffentlicht.\n\nFür Fragen zu Cookies kontaktieren Sie support@nality.com"
+      }
+    },
+    "companyContent": {
+      "about": {
+        "title": "Über uns",
+        "content": "NALITY wurde mit einer klaren Vision gegründet: Lebensgeschichten für zukünftige Generationen zu bewahren.\n\nUnsere Mission\nWir glauben, dass jeder Mensch eine einzigartige Geschichte hat, die es wert ist, erzählt und bewahrt zu werden. NALITY kombiniert modernste KI-Technologie mit der persönlichen Note professioneller Biografen, um Ihnen ein luxuriöses Werkzeug zur Erstellung Ihrer Lebensgeschichte zu bieten.\n\nUnser Ansatz\n- Technologie trifft Tradition: KI-gestützte Erfassung mit menschlicher Expertise\n- Datenschutz first: Ihre Geschichten gehören Ihnen, nicht uns\n- Qualität über Quantität: Jedes Detail zählt\n- Generationenübergreifend: Für heute und für morgen\n\nUnser Team\nWir sind ein internationales Team aus Technologen, Autoren, Historikern und Designern, vereint durch die Leidenschaft, Erinnerungen zu bewahren.\n\nKontaktieren Sie uns unter info@nality.com für weitere Informationen."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "content": "Wir freuen uns, von Ihnen zu hören.\n\nKontaktmöglichkeiten\n\nAllgemeine Anfragen\nE-Mail: info@nality.com\nAntwortzeit: Innerhalb von 24 Stunden\n\nKundensupport\nE-Mail: support@nality.com\nVerfugbar: Mo-Fr, 9:00-18:00 CET\n\nPartnerschaftsanfragen\nE-Mail: partnerships@nality.com\n\nMedienanfragen\nE-Mail: press@nality.com\n\nTechnischer Support\nFür technische Probleme nutzen Sie bitte unseren Chat-Support im Dashboard oder senden Sie eine E-Mail an support@nality.com mit detaillierten Informationen zum Problem.\n\nInterviewer-Buchung\nUm eine professionelle Interview-Session zu buchen, loggen Sie sich in Ihr Konto ein und navigieren Sie zum Interview-Bereich, oder kontaktieren Sie uns unter interview@nality.com.\n\nGeschäftsadresse\nNALITY GmbH\nMaximilianstraße 123\n80539 München\nDeutschland\n\nWir freuen uns darauf, Ihnen bei Ihrer Lebensgeschichte zu helfen."
+      },
+      "careers": {
+        "title": "Karriere",
+        "content": "Werde Teil unserer Mission, Lebensgeschichten zu bewahren.\n\nWarum NALITY?\n\nBei NALITY arbeiten Sie an einem Produkt, das echten Wert schafft. Wir helfen Menschen, ihre wertvollsten Erinnerungen für die Ewigkeit festzuhalten.\n\nUnsere Kultur\n- Remote-first: Arbeiten Sie von überall\n- Innovation: Nutzen Sie modernste Technologien\n- Work-Life-Balance: Flexible Arbeitszeiten\n- Wachstum: Kontinuierliche Lern- und Entwicklungsmöglichkeiten\n- Purpose: Sinnvolle Arbeit mit sozialem Impact\n\nAktuelle Positionen\n\nWir suchen regelmäßig nach talentierten Menschen in folgenden Bereichen:\n\n- Full-Stack Engineers (TypeScript, React, Node.js)\n- KI/ML Engineers (NLP, Sprachverarbeitung)\n- UX/UI Designer (Luxury Digital Design)\n- Content Writers & Biografen\n- Customer Success Manager\n- Marketing & Growth Specialists\n\nBewerbungsprozess\n1. Senden Sie Ihren Lebenslauf an careers@nality.com\n2. Erstes Gespräch (30 Minuten)\n3. Technisches Interview / Portfolio Review\n4. Team-Fit Gespräch\n5. Angebot\n\nWas wir bieten\n- Wettbewerbsfähiges Gehalt\n- Equity-Optionen\n- Flexible Arbeitszeiten\n- Weiterbildungsbudget\n- Moderne Tech-Stack\n- Internationale Team-Events\n\nKontakt\ncareers@nality.com\n\nWir freuen uns auf Ihre Bewerbung!"
+      }
+    }
   },
   "auth": {
     "login": {

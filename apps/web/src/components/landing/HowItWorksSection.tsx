@@ -29,17 +29,19 @@ export default function HowItWorksSection() {
   ]
 
   return (
-    <section className="section">
+    <section className="section" style={{ background: 'rgba(15, 15, 15, 0.3)' }}>
       <div className="section-header">
         <span className="section-label">{t('howItWorks.label')}</span>
-        <h2 className="section-title">{t('howItWorks.title')}</h2>
+        <h2 className="section-title">
+          {t('howItWorks.title')}<span className="serif-text italic text-gold">{t('howItWorks.titleHighlight')}</span>
+        </h2>
       </div>
 
       <div className="steps-container">
         {steps.map((step, index) => (
           <div key={index} className="step-item">
-            <h3 className="text-xl font-serif mb-3 text-gray-900">{step.title}</h3>
-            <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
           </div>
         ))}
       </div>
