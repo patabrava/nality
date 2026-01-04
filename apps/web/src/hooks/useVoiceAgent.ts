@@ -428,7 +428,11 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     try {
       await startListeningInternal();
     } catch (err) {
-      console.error('❌ Mic preflight failed, aborting session start');
+      const micError = err instanceof Error ? err : new Error('Microphone access failed');
+      console.error('❌ Mic preflight failed, aborting session start:', micError.message);
+      setError(micError);
+      setAgentState('error');
+      onError?.(micError);
       return;
     }
 

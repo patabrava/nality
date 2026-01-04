@@ -150,30 +150,54 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       setTranscript('');
       setInterimTranscript('');
 
-      // Request microphone permission first (with retries and minimal constraints)
-      const requestMic = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } });
-          preflightStreamRef.current = stream;
-          stream.getTracks().forEach(t => t.stop()); // release device so SpeechRecognition can attach
-          preflightStreamRef.current = null;
-        } catch (err) {
-          console.warn('⚠️ getUserMedia with echoCancellation failed, retrying with plain audio:', err);
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          preflightStreamRef.current = stream;
-          stream.getTracks().forEach(t => t.stop()); // release device
-          preflightStreamRef.current = null;
+      // Request microphone permission with robust retries
+      const requestMic = async (attempt = 1): Promise<void> => {
+        const maxAttempts = 3;
+        const constraints = [
+          { audio: { echoCancellation: true } },
+          { audio: true },
+          { audio: { deviceId: 'default' } },
+        ];
+
+        for (const constraint of constraints) {
+          try {
+            console.log(`🎤 Attempting getUserMedia (attempt ${attempt}):`, JSON.stringify(constraint));
+            const stream = await navigator.mediaDevices.getUserMedia(constraint);
+            preflightStreamRef.current = stream;
+            stream.getTracks().forEach(t => t.stop()); // release device so SpeechRecognition can attach
+            preflightStreamRef.current = null;
+            console.log('✅ Microphone access granted');
+            return; // Success!
+          } catch (err) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            console.warn(`⚠️ getUserMedia failed with constraint ${JSON.stringify(constraint)}:`, errMsg);
+            // Continue to next constraint
+          }
         }
+
+        // All constraints failed for this attempt
+        if (attempt < maxAttempts) {
+          console.warn(`⚠️ All constraints failed, retrying after delay (attempt ${attempt}/${maxAttempts})...`);
+          await new Promise(res => setTimeout(res, 500 * attempt));
+          // Re-enumerate devices to refresh browser's device cache
+          try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioInputs = devices.filter(d => d.kind === 'audioinput');
+            console.log(`🔍 Found ${audioInputs.length} audio input device(s) after re-enumeration`);
+            if (audioInputs.length === 0) {
+              throw new Error('No microphone detected. Please connect a microphone and try again.');
+            }
+          } catch (enumErr) {
+            console.warn('⚠️ Device re-enumeration failed:', enumErr);
+          }
+          return requestMic(attempt + 1);
+        }
+
+        // Final failure - throw descriptive error
+        throw new Error('Microphone not accessible. Please check your microphone connection and browser permissions, then try again.');
       };
 
-      try {
-        await requestMic();
-      } catch (err) {
-        // Retry once after a short delay in case the device list initializes late
-        console.warn('⚠️ getUserMedia failed, retrying once after delay:', err);
-        await new Promise(res => setTimeout(res, 400));
-        await requestMic();
-      }
+      await requestMic()
       
       console.log('🎤 Starting Web Speech API recognition...');
       
