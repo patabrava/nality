@@ -1,6 +1,9 @@
 import { createClient } from '@deepgram/sdk';
 import { NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
  * Voice TTS API Route
  * Converts text to speech using Deepgram Aura

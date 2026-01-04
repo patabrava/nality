@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       {
         model: 'nova-2',
         smart_format: true,
-        language: 'en-US',
+        language: 'de',
       }
     );
 

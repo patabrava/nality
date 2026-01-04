@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { isValidChapterId } from '@/lib/chapters';
 import type { ChapterId } from '@nality/schema';
 
+export const runtime = 'nodejs';
 export const dynamic = "force-dynamic";
 
 function sanitizeContent(raw: string): string {
