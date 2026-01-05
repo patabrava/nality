@@ -128,15 +128,36 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       console.warn('⚠️ Cannot save message: no active session');
       return;
     }
+    
+    if (!session.id) {
+      console.warn('⚠️ Cannot save message: session has no ID');
+      return;
+    }
+    
+    if (!content || !content.trim()) {
+      console.warn('⚠️ Cannot save message: empty content');
+      return;
+    }
+    
+    if (!userId) {
+      console.warn('⚠️ Cannot save message: no userId available');
+      return;
+    }
 
     try {
       // Get access token for API auth
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const accessToken = authSession?.access_token;
       
+      // Build headers with auth
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           role,
@@ -147,7 +168,16 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       });
 
       if (!response.ok) {
-        console.error('❌ Error saving message');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ Error saving message:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData,
+          sessionId: session.id,
+          role,
+          userId,
+          hasAccessToken: !!accessToken
+        });
         return;
       }
 

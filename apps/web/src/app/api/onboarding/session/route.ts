@@ -170,7 +170,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { sessionId, role, content, markComplete, userId: bodyUserId, accessToken } = body;
     
+    console.log('📂 POST body:', {
+      sessionId: sessionId || 'MISSING',
+      role: role || 'MISSING',
+      contentLength: content?.length ?? 0,
+      markComplete: !!markComplete,
+      hasUserId: !!bodyUserId,
+      hasAccessToken: !!accessToken
+    });
+    
     if (!sessionId) {
+      console.error('❌ POST: sessionId is missing');
       return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
     }
     
@@ -183,6 +193,28 @@ export async function POST(request: Request) {
     if (user?.id) {
       effectiveUserId = user.id;
       console.log('🔐 POST: Authenticated via server session');
+    }
+    
+    // Try Authorization header with access token
+    if (!effectiveUserId) {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        const headerToken = authHeader.slice(7);
+        const authedClient = createSupabaseClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: { Authorization: `Bearer ${headerToken}` },
+            },
+          }
+        );
+        const { data: { user: headerUser } } = await authedClient.auth.getUser();
+        if (headerUser?.id) {
+          effectiveUserId = headerUser.id;
+          console.log('🔑 POST: Authenticated via Authorization header');
+        }
+      }
     }
     
     // Try accessToken from body
@@ -253,6 +285,26 @@ export async function POST(request: Request) {
     
     // Save message
     if (role && content) {
+      // First verify the session exists and belongs to the user
+      const { data: sessionCheck, error: sessionCheckError } = await serviceClient
+        .from('chat_sessions')
+        .select('id, user_id')
+        .eq('id', sessionId)
+        .single();
+      
+      if (sessionCheckError || !sessionCheck) {
+        console.error('❌ Session not found or access denied:', { sessionId, error: sessionCheckError });
+        return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+      }
+      
+      if (sessionCheck.user_id !== effectiveUserId) {
+        console.error('❌ Session belongs to different user:', { 
+          sessionUserId: sessionCheck.user_id, 
+          effectiveUserId 
+        });
+        return NextResponse.json({ error: 'Session access denied' }, { status: 403 });
+      }
+      
       const { data: message, error: insertError } = await serviceClient
         .from('chat_messages')
         .insert({
@@ -265,8 +317,8 @@ export async function POST(request: Request) {
         .single();
       
       if (insertError) {
-        console.error('❌ Error saving message:', insertError);
-        return NextResponse.json({ error: 'Failed to save message' }, { status: 500 });
+        console.error('❌ Error saving message:', insertError, { sessionId, role, contentLength: content?.length });
+        return NextResponse.json({ error: 'Failed to save message', details: insertError.message }, { status: 500 });
       }
       
       // Update session's updated_at
@@ -279,7 +331,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ message });
     }
     
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    console.error('❌ POST: Invalid request - missing role or content', { role, contentLength: content?.length ?? 0 });
+    return NextResponse.json({ error: 'Invalid request - role and content are required' }, { status: 400 });
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);

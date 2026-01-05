@@ -72,6 +72,19 @@ export default function ChatInterface({
     saveMessage,
     markComplete
   } = useOnboardingSession(userId);
+  
+  // Refs to avoid stale closures in useChat callbacks
+  const sessionRef = useRef(session);
+  const saveMessageRef = useRef(saveMessage);
+  
+  // Keep refs in sync with latest values
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+  
+  useEffect(() => {
+    saveMessageRef.current = saveMessage;
+  }, [saveMessage]);
 
   // Notify parent of progress changes (for progress bar)
   useEffect(() => {
@@ -150,9 +163,17 @@ export default function ChatInterface({
       console.log('Message exchange completed');
       const sanitizedContent = sanitizeAIContent(message.content);
 
-      // Save AI message to database
-      if (session) {
-        await saveMessage('assistant', sanitizedContent);
+      // Save AI message to database (only if content is non-empty)
+      // Use refs to avoid stale closures
+      const currentSession = sessionRef.current;
+      const currentSaveMessage = saveMessageRef.current;
+      
+      if (currentSession && sanitizedContent.trim()) {
+        await currentSaveMessage('assistant', sanitizedContent);
+      } else if (currentSession && !sanitizedContent.trim()) {
+        console.warn('⚠️ Skipping save: AI message content is empty after sanitization');
+      } else if (!currentSession) {
+        console.warn('⚠️ Skipping save: no session available in onFinish callback');
       }
 
       // Add AI response to display messages
@@ -269,9 +290,9 @@ export default function ChatInterface({
             timestamp: new Date()
           };
 
-          // Save welcome message to database
-          if (session) {
-            await saveMessage('assistant', defaultInitialMessage);
+          // Save welcome message to database (use refs to avoid stale closures)
+          if (sessionRef.current) {
+            await saveMessageRef.current('assistant', defaultInitialMessage);
           }
 
           setDisplayMessages([botMessage]);
@@ -311,9 +332,9 @@ export default function ChatInterface({
       timestamp: new Date()
     };
 
-    // Save user message to database
-    if (session) {
-      saveMessage('user', input);
+    // Save user message to database (use refs for consistency)
+    if (sessionRef.current) {
+      saveMessageRef.current('user', input);
     }
 
     setDisplayMessages(prev => [...prev, userMessage]);
