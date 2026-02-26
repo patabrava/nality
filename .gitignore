@@ -38,3 +38,7 @@ Thumbs.db
 !apps/web/src/lib/prompts/onboarding.yaml
 
 *mcp_config.json
+
+.opencode
+
+AGENTS.md

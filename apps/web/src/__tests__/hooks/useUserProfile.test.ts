@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { LifeEvent, LifeEventsData } from '@/hooks/useUserProfile';
 
 /**
@@ -54,6 +56,18 @@ describe('LifeEvent types', () => {
 
     expect(careerEvent.category).toBe('career');
     expect(careerEvent.is_ongoing).toBe(true);
+  });
+});
+
+describe('Profile privacy boundary', () => {
+  it('does not expose alt onboarding private payload in public profile select', () => {
+    const hookSource = readFileSync(resolve(process.cwd(), 'src/hooks/useUserProfile.ts'), 'utf-8');
+    expect(hookSource).toContain('USER_PROFILE_PUBLIC_SELECT');
+    expect(hookSource).toContain('.select(USER_PROFILE_PUBLIC_SELECT)');
+
+    const selectMatch = hookSource.match(/USER_PROFILE_PUBLIC_SELECT\s*=\s*'([^']+)'/);
+    expect(selectMatch?.[1]).toBeTruthy();
+    expect(selectMatch?.[1]).not.toContain('alt_onboarding_private');
   });
 });
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { getIncompleteOnboardingPath } from '@/lib/onboarding/flags'
 
 // Import landing page components
 import { LandingHeader } from '@/components/landing/LandingHeader'
@@ -40,7 +41,7 @@ export default function Home() {
     if (isOnboardingComplete) {
       router.replace('/dash')
     } else {
-      router.replace('/onboarding')
+      router.replace(getIncompleteOnboardingPath())
     }
   }, [shouldRedirect, authLoading, profileLoading, isOnboardingComplete, router])
 

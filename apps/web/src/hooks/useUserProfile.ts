@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
+// Privacy boundary: public/profile-facing client reads must never include alt_onboarding_private.
+export const USER_PROFILE_PUBLIC_SELECT =
+  'id, email, full_name, onboarding_complete, form_of_address, language_style, birth_date, birth_place';
+
 // ──────────────────────
 // Types
 // ──────────────────────
@@ -104,7 +108,7 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
       // Fetch user data from users table
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id, email, full_name, onboarding_complete, form_of_address, language_style, birth_date, birth_place')
+        .select(USER_PROFILE_PUBLIC_SELECT)
         .eq('id', userId)
         .single();
 
