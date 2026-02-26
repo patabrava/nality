@@ -84,7 +84,7 @@ export function HeaderNavigation() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-2 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+        <nav className="hidden md:flex items-center gap-2 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
           {tabs.map((tab) => (
             <HeaderTabButton
               key={tab.id}
@@ -96,7 +96,7 @@ export function HeaderNavigation() {
         </nav>
 
         {/* Right Section: Theme & Profile */}
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <LanguageSwitcher />
           <ThemeToggleCompact />
           <button
@@ -110,7 +110,7 @@ export function HeaderNavigation() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="lg:hidden relative z-50 w-10 h-10 flex items-center justify-center text-white active:scale-95 transition-transform"
+          className="flex md:hidden relative z-50 w-10 h-10 items-center justify-center text-white active:scale-95 transition-transform"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label={t('header.toggleMenu')}
         >
@@ -131,7 +131,7 @@ export function HeaderNavigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -141,7 +141,7 @@ export function HeaderNavigation() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-[300px] bg-[#0A0A0A] border-l border-white/10 z-50 flex flex-col lg:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-[300px] bg-[#0A0A0A] border-l border-white/10 z-50 flex flex-col md:hidden shadow-2xl"
             >
               {/* Drawer Header */}
               <div className="p-6 pt-24 border-b border-white/5">

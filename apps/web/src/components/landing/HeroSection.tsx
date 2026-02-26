@@ -3,6 +3,7 @@
 import { useAuth } from '@/hooks/useAuth'
 import HeroCanvas from './HeroCanvas'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { isAltOnboardingEnabled } from '@/lib/onboarding/flags'
 
 interface HeroSectionProps {
   onSecondaryAction?: () => void
@@ -16,7 +17,7 @@ export default function HeroSection({ onSecondaryAction }: HeroSectionProps) {
     if (isAuthenticated) {
       window.location.href = '/dash'
     } else {
-      window.location.href = '/login'
+      window.location.href = isAltOnboardingEnabled() ? '/alt-onboarding' : '/login'
     }
   }
 

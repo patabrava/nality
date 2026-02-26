@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 import { Menu, X } from 'lucide-react'
+import { isAltOnboardingEnabled } from '@/lib/onboarding/flags'
 
 export function LandingHeader() {
   const { t } = useI18n()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const startHref = isAltOnboardingEnabled() ? '/alt-onboarding' : '/login'
 
   const scrollToSection = (sectionId: string) => {
     setMobileMenuOpen(false)
@@ -183,7 +185,7 @@ export function LandingHeader() {
               {t('header.login')}
             </Link>
             <Link
-              href="/login"
+              href={startHref}
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '0.75rem',
@@ -355,7 +357,7 @@ export function LandingHeader() {
               {t('header.login')}
             </Link>
             <Link
-              href="/login"
+              href={startHref}
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '0.75rem',

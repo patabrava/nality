@@ -106,16 +106,32 @@ export function useAuth() {
     }
   }
 
-  const signUpWithPassword = async (email: string, password: string) => {
+  const signUpWithPassword = async (
+    email: string,
+    password: string,
+    options?: {
+      redirectTo?: string
+      data?: Record<string, unknown>
+    }
+  ) => {
     setState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
+      const signUpOptions: {
+        emailRedirectTo: string
+        data?: Record<string, unknown>
+      } = {
+        emailRedirectTo: options?.redirectTo ?? `${window.location.origin}/auth/callback`
+      }
+
+      if (options?.data) {
+        signUpOptions.data = options.data
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
-        }
+        options: signUpOptions
       })
       
       if (error) {
@@ -132,15 +148,24 @@ export function useAuth() {
     }
   }
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (options?: { redirectTo?: string; queryParams?: Record<string, string> }) => {
     setState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
+      const oauthOptions: {
+        redirectTo: string
+        queryParams?: Record<string, string>
+      } = {
+        redirectTo: options?.redirectTo ?? `${window.location.origin}/auth/callback`
+      }
+
+      if (options?.queryParams) {
+        oauthOptions.queryParams = options.queryParams
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
+        options: oauthOptions
       })
       
       if (error) {
