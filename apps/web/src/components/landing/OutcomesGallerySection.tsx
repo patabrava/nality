@@ -70,7 +70,7 @@ export default function OutcomesGallerySection() {
           <button
             className="btn btn-secondary"
             onClick={() => {
-              console.log('View sample book clicked')
+              window.location.href = '/meeting'
             }}
           >
             {t('outcomes.ctaButton')}

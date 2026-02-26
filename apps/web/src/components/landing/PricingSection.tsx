@@ -8,9 +8,8 @@ export default function PricingSection() {
   const pricingTiers = t('pricing.tiers')
 
   const handleSelectPlan = (planName: string) => {
-    // Future: Navigate to signup with selected plan
-    console.log(`Selected plan: ${planName}`)
-    window.location.href = `/login?plan=${planName.toLowerCase()}`
+    void planName
+    window.location.href = '/meeting'
   }
 
   return (

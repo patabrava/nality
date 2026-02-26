@@ -18,10 +18,10 @@ export function AltProgressHeader({ path, currentStepId, stageLabel }: AltProgre
     <div
       style={{
         marginBottom: '20px',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        border: '1px solid var(--md-sys-color-outline-variant)',
         borderRadius: '14px',
         padding: '14px 16px',
-        background: 'rgba(255, 255, 255, 0.02)',
+        background: 'var(--md-sys-color-surface-container-low)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
@@ -31,14 +31,14 @@ export function AltProgressHeader({ path, currentStepId, stageLabel }: AltProgre
           </p>
           <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--md-sys-color-on-surface)' }}>{stageLabel}</p>
         </div>
-        <strong style={{ fontSize: '0.9rem', color: '#8ec5ff' }}>{progressPercent}%</strong>
+        <strong style={{ fontSize: '0.9rem', color: 'var(--accent-gold)' }}>{progressPercent}%</strong>
       </div>
       <div
         style={{
           marginTop: '10px',
           height: '8px',
           borderRadius: '999px',
-          background: 'rgba(255, 255, 255, 0.08)',
+          background: 'var(--md-sys-color-surface-container-high)',
           overflow: 'hidden',
         }}
       >
@@ -46,7 +46,7 @@ export function AltProgressHeader({ path, currentStepId, stageLabel }: AltProgre
           style={{
             width: `${progressPercent}%`,
             height: '100%',
-            background: 'linear-gradient(90deg, #4f8cff, #7ac8ff)',
+            background: 'var(--md-sys-color-primary)',
             transition: 'width 250ms ease',
           }}
         />

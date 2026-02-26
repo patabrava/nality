@@ -57,7 +57,7 @@ export async function middleware(request: NextRequest) {
   const needsOnboarding = onboardingComplete !== true
 
   // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ['/dash', '/chat', '/onboarding']
+  const protectedPaths = ['/dash', '/chat', '/onboarding', '/meeting']
   const isProtectedPath = protectedPaths.some(protectedPath =>
     path.startsWith(protectedPath)
   )
@@ -93,15 +93,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If alt onboarding is enabled, nudge incomplete users from legacy route to alt route
-  if (user && needsOnboarding && incompletePath === '/alt-onboarding' && path === '/onboarding') {
+  // If meeting onboarding is enabled, nudge incomplete users from legacy route to meeting route
+  if (user && needsOnboarding && incompletePath === '/meeting' && path === '/onboarding') {
     const url = request.nextUrl.clone()
-    url.pathname = '/alt-onboarding'
+    url.pathname = '/meeting'
     return NextResponse.redirect(url)
   }
 
   // Completed users should not stay on onboarding routes
-  if (user && hasCompletedOnboarding && (path === '/onboarding' || path === '/alt-onboarding')) {
+  if (user && hasCompletedOnboarding && (path === '/onboarding' || path === '/meeting')) {
     const url = request.nextUrl.clone()
     url.pathname = '/dash'
     return NextResponse.redirect(url)
@@ -116,7 +116,7 @@ export const config = {
     '/login',
     '/auth/:path*',
     '/onboarding',
-    '/alt-onboarding',
+    '/meeting',
     '/dash/:path*',
     '/chat/:path*',
     '/timeline',

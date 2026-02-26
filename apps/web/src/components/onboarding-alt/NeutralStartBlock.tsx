@@ -10,8 +10,8 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
     <section
       style={{
         borderRadius: '16px',
-        border: '1px solid rgba(122, 200, 255, 0.45)',
-        background: 'linear-gradient(145deg, rgba(36, 107, 180, 0.22), rgba(24, 64, 112, 0.22))',
+        border: '1px solid var(--md-sys-color-outline-variant)',
+        background: 'var(--md-sys-color-surface-container-low)',
         padding: '20px',
       }}
     >
@@ -21,7 +21,7 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
           fontSize: '0.75rem',
-          color: '#9fd8ff',
+          color: 'var(--accent-gold)',
         }}
       >
         Neutraler Storytelling-Start
@@ -37,7 +37,7 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
       >
         Blauer Block: Erst erzählen, dann registrieren
       </h3>
-      <p style={{ margin: 0, lineHeight: 1.7, color: 'rgba(255, 255, 255, 0.82)' }}>
+      <p style={{ margin: 0, lineHeight: 1.7, color: 'var(--md-sys-color-on-surface-variant)' }}>
         Du kannst direkt mit deiner ersten Erzählung starten und danach in weniger als einer Minute deine
         Registrierung abschließen. Deine bisherigen Antworten bleiben erhalten.
       </p>
@@ -46,14 +46,9 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
         <button
           type="button"
           onClick={onContinueToRegistration}
+          className="btn btn-primary"
           style={{
-            border: 'none',
-            borderRadius: '999px',
-            padding: '10px 16px',
-            background: '#7ac8ff',
-            color: '#082039',
-            fontWeight: 700,
-            cursor: 'pointer',
+            padding: '0.75rem 1.5rem',
           }}
         >
           Jetzt registrieren
@@ -61,13 +56,9 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
         <button
           type="button"
           onClick={onBackToPath}
+          className="btn btn-secondary"
           style={{
-            border: '1px solid rgba(255, 255, 255, 0.28)',
-            borderRadius: '999px',
-            padding: '10px 16px',
-            background: 'transparent',
-            color: 'var(--md-sys-color-on-surface)',
-            cursor: 'pointer',
+            padding: '0.75rem 1.5rem',
           }}
         >
           Zurück

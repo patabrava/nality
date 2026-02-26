@@ -591,7 +591,7 @@ export default function ChatInterface({
                   borderRadius: message.type === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
                   fontSize: '0.875rem',
                   lineHeight: 1.5,
-                  fontFamily: 'Roboto, system-ui, sans-serif',
+                  fontFamily: 'var(--font-sans)',
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
                   wordWrap: 'break-word'
                 }}
@@ -722,7 +722,7 @@ export default function ChatInterface({
                   border: '2px solid var(--md-sys-color-outline-variant)',
                   borderRadius: '12px',
                   color: 'var(--md-sys-color-on-surface)',
-                  fontFamily: 'Roboto, system-ui, sans-serif',
+                  fontFamily: 'var(--font-sans)',
                   fontSize: '1rem',
                   transition: 'all 0.2s var(--md-sys-motion-easing-standard)',
                   outline: 'none',

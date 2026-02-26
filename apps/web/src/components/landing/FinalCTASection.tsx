@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/components/i18n/I18nProvider'
-import { isAltOnboardingEnabled } from '@/lib/onboarding/flags'
 
 export default function FinalCTASection() {
   const { isAuthenticated } = useAuth()
@@ -12,13 +11,12 @@ export default function FinalCTASection() {
     if (isAuthenticated) {
       window.location.href = '/dash'
     } else {
-      window.location.href = isAltOnboardingEnabled() ? '/alt-onboarding' : '/login'
+      window.location.href = '/meeting'
     }
   }
 
   const handleExploreTimeline = () => {
-    // Future: Navigate to timeline demo or sample
-    window.location.href = '/demo/timeline-alternating'
+    window.location.href = '/meeting'
   }
 
   return (

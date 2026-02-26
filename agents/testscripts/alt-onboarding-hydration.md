@@ -1,11 +1,11 @@
-# Testscript: alt-onboarding hydration determinism
+# Testscript: meeting route hydration determinism
 
-## TS-ALT-HYDRATION-001
-- Objective: Verify `/alt-onboarding` renders deterministic server/client initial markup and no hydration mismatch from persisted draft state.
+## TS-MEETING-HYDRATION-001
+- Objective: Verify `/meeting` renders deterministic server/client initial markup and no hydration mismatch from persisted draft state.
 - Prerequisites: `pnpm install` completed, no port conflict on `3211`.
 - Setup:
   1. Start app: `pnpm --filter web dev --port 3211`
-  2. Open browser at `http://localhost:3211/alt-onboarding`
+  2. Open browser at `http://localhost:3211/meeting`
   3. In devtools console set draft payload in `localStorage` with non-entry stage.
 - Run:
   1. Hard refresh page.
@@ -18,7 +18,28 @@
   - Client can transition to stored draft state after mount.
 - Artifacts:
   - Browser console screenshot/log.
-  - `curl -s http://localhost:3211/alt-onboarding` output sample saved if needed.
+  - `curl -s http://localhost:3211/meeting` output sample saved if needed.
 - Cleanup:
   - Remove draft key from `localStorage`.
+  - Stop dev server.
+
+## TS-MEETING-RUNTIME-002
+- Objective: Verify `/meeting` does not throw webpack/react-server-dom runtime module errors after route render.
+- Prerequisites: `pnpm install` completed, no port conflict on `3211`.
+- Setup:
+  1. Start app: `pnpm --filter web dev --port 3211`
+  2. Open browser at `http://localhost:3211/meeting`
+- Run:
+  1. Hard refresh page twice.
+  2. Observe browser console and terminal logs.
+  3. Navigate away and back to `/meeting` once.
+- Expected:
+  - No browser error containing `Cannot read properties of undefined (reading 'call')`.
+  - No browser stack references `webpack-runtime.js` with failed module factory execution.
+  - No browser stack references `react-server-dom-webpack-client.edge.development.js` for `/meeting` render.
+  - `/meeting` renders onboarding UI without blank-screen crash.
+- Artifacts:
+  - Browser console log export or screenshot.
+  - Terminal output from `next dev` covering compile + request lines.
+- Cleanup:
   - Stop dev server.

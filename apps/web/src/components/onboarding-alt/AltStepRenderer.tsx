@@ -39,8 +39,8 @@ export function AltStepRenderer({
     <section
       style={{
         borderRadius: '14px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        background: 'rgba(255, 255, 255, 0.02)',
+        border: '1px solid var(--md-sys-color-outline-variant)',
+        background: 'var(--md-sys-color-surface-container-low)',
         padding: '20px',
       }}
     >
@@ -55,13 +55,15 @@ export function AltStepRenderer({
               <label
                 key={option.id}
                 style={{
-                  border: selected ? '1px solid #d4af37' : '1px solid rgba(255, 255, 255, 0.15)',
+                  border: selected
+                    ? '1px solid var(--md-sys-color-primary)'
+                    : '1px solid var(--md-sys-color-outline-variant)',
                   borderRadius: '10px',
                   padding: '10px 12px',
                   display: 'grid',
                   gap: '4px',
                   cursor: 'pointer',
-                  background: selected ? 'rgba(212, 175, 55, 0.08)' : 'transparent',
+                  background: selected ? 'var(--md-sys-color-surface-container-high)' : 'transparent',
                 }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -70,6 +72,7 @@ export function AltStepRenderer({
                     name={step.id}
                     checked={selected}
                     onChange={() => onChange(option.id)}
+                    style={{ accentColor: 'var(--md-sys-color-primary)' }}
                   />
                   {option.label}
                 </span>
@@ -83,7 +86,7 @@ export function AltStepRenderer({
                     href={option.ctaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#7ac8ff', fontSize: '0.85rem' }}
+                    style={{ color: 'var(--accent-gold)', fontSize: '0.85rem' }}
                   >
                     {option.ctaLabel}
                   </a>
@@ -102,13 +105,15 @@ export function AltStepRenderer({
               <label
                 key={option.id}
                 style={{
-                  border: selected ? '1px solid #d4af37' : '1px solid rgba(255, 255, 255, 0.15)',
+                  border: selected
+                    ? '1px solid var(--md-sys-color-primary)'
+                    : '1px solid var(--md-sys-color-outline-variant)',
                   borderRadius: '10px',
                   padding: '10px 12px',
                   display: 'grid',
                   gap: '4px',
                   cursor: 'pointer',
-                  background: selected ? 'rgba(212, 175, 55, 0.08)' : 'transparent',
+                  background: selected ? 'var(--md-sys-color-surface-container-high)' : 'transparent',
                 }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -116,6 +121,7 @@ export function AltStepRenderer({
                     type="checkbox"
                     checked={selected}
                     onChange={() => onChange(toggleMultiValue(value, option.id))}
+                    style={{ accentColor: 'var(--md-sys-color-primary)' }}
                   />
                   {option.label}
                 </span>
@@ -152,6 +158,7 @@ export function AltStepRenderer({
                               : [...currentValues, option.id];
                             onChange(updateDemographicValue(value, field.id, nextValues));
                           }}
+                          style={{ accentColor: 'var(--md-sys-color-primary)' }}
                         />
                         {option.label}
                       </label>
@@ -183,28 +190,25 @@ export function AltStepRenderer({
             marginTop: '16px',
             padding: '14px',
             borderRadius: '10px',
-            background: 'rgba(122, 200, 255, 0.12)',
-            border: '1px solid rgba(122, 200, 255, 0.4)',
-            color: '#d7efff',
+            background: 'var(--md-sys-color-surface-container)',
+            border: '1px solid var(--md-sys-color-outline)',
+            color: 'var(--md-sys-color-on-surface)',
           }}
         >
           Informationen übernommen. Du kannst jetzt fortfahren.
         </div>
       ) : null}
 
-      {errorMessage ? <p style={{ margin: '12px 0 0', color: '#ff9ea1', fontSize: '0.9rem' }}>{errorMessage}</p> : null}
+      {errorMessage ? <p style={{ margin: '12px 0 0', color: '#ffd9d5', fontSize: '0.9rem' }}>{errorMessage}</p> : null}
 
       <div style={{ marginTop: '18px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={onBack}
+          className="btn btn-secondary"
           style={{
-            borderRadius: '999px',
-            border: '1px solid rgba(255, 255, 255, 0.16)',
-            background: 'transparent',
-            color: 'var(--md-sys-color-on-surface-variant)',
-            padding: '10px 14px',
-            cursor: 'pointer',
+            padding: '0.75rem 1.25rem',
+            color: 'var(--md-sys-color-on-surface)',
           }}
         >
           Zurück
@@ -213,13 +217,10 @@ export function AltStepRenderer({
           type="button"
           disabled={disableNext}
           onClick={onNext}
+          className="btn btn-primary"
           style={{
-            borderRadius: '999px',
-            border: 'none',
-            background: disableNext ? 'rgba(212, 175, 55, 0.5)' : '#d4af37',
-            color: '#111',
-            fontWeight: 700,
-            padding: '10px 14px',
+            padding: '0.75rem 1.25rem',
+            opacity: disableNext ? 0.6 : 1,
             cursor: disableNext ? 'not-allowed' : 'pointer',
           }}
         >

@@ -91,7 +91,7 @@ export default function FAQSection() {
             <button
               className="faq-luxury-cta-button"
               onClick={() => {
-                window.location.href = 'mailto:support@nality.app'
+                window.location.href = '/meeting'
               }}
             >
               {t('faq.ctaButton')}
@@ -102,4 +102,3 @@ export default function FAQSection() {
     </section>
   )
 }
-

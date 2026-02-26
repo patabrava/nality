@@ -113,6 +113,7 @@ export function AltOnboardingWizard() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isRegistrationSubmitting, setIsRegistrationSubmitting] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [isAwaitingEmailConfirmation, setIsAwaitingEmailConfirmation] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [modalAddressPreference, setModalAddressPreference] = useState<AddressPreference>('du');
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
@@ -331,11 +332,25 @@ export function AltOnboardingWizard() {
 
   useEffect(() => {
     const hasPendingToken = Boolean(draft.pendingLinkToken ?? pendingTokenFromQuery);
-    if (!isAuthenticated || !hasPendingToken || draft.addressPreference || draft.stage === 'completed') return;
+    if (
+      !isAuthenticated ||
+      !hasPendingToken ||
+      draft.addressPreference ||
+      draft.stage === 'completed' ||
+      isAwaitingEmailConfirmation
+    )
+      return;
 
     setStatusMessage('Bitte bestaetige noch die Anrede, damit wir dein Onboarding abschliessen koennen.');
     setShowAddressModal(true);
-  }, [draft.addressPreference, draft.pendingLinkToken, draft.stage, isAuthenticated, pendingTokenFromQuery]);
+  }, [
+    draft.addressPreference,
+    draft.pendingLinkToken,
+    draft.stage,
+    isAuthenticated,
+    isAwaitingEmailConfirmation,
+    pendingTokenFromQuery,
+  ]);
 
   const hasFinalizeSource =
     draft.registration !== null || draft.pendingLinkToken !== null || pendingTokenFromQuery !== null;
@@ -426,6 +441,8 @@ export function AltOnboardingWizard() {
   };
 
   const handleBackFromRegistration = () => {
+    setIsAwaitingEmailConfirmation(false);
+
     if (!draft.path) {
       updateDraft((previous) => ({ ...previous, stage: 'entry' }));
       return;
@@ -449,6 +466,7 @@ export function AltOnboardingWizard() {
   }) => {
     setRegistrationError(null);
     setStatusMessage(null);
+    setIsAwaitingEmailConfirmation(false);
     setIsRegistrationSubmitting(true);
 
     const registrationDraft: AltRegistrationDraft = {
@@ -467,7 +485,7 @@ export function AltOnboardingWizard() {
     updateDraft((previous) => ({
       ...previous,
       registration: registrationDraft,
-      pendingFinalize: false,
+      pendingFinalize: true,
       pendingLinkToken: pendingToken,
     }));
 
@@ -482,13 +500,15 @@ export function AltOnboardingWizard() {
       return;
     }
 
-    setShowAddressModal(true);
-    setStatusMessage('Konto erstellt. Bitte bestätige jetzt noch die Anrede.');
+    setShowAddressModal(false);
+    setIsAwaitingEmailConfirmation(true);
+    setStatusMessage('Deine E-Mail wurde registriert. Bitte prüfe dein Postfach, um dein Konto zu bestätigen.');
   };
 
   const handleGoogleRegistration = async (submission: AltRegistrationDraft) => {
     setRegistrationError(null);
     setStatusMessage(null);
+    setIsAwaitingEmailConfirmation(false);
     setIsRegistrationSubmitting(true);
 
     const pendingToken = await createPendingLink(buildPendingPayload(draft, submission));
@@ -560,9 +580,8 @@ export function AltOnboardingWizard() {
     <div
       style={{
         minHeight: '100vh',
-        background:
-          'radial-gradient(circle at top right, rgba(122, 200, 255, 0.16), transparent 35%), #050505',
-        color: '#f2f2f2',
+        background: 'var(--md-sys-color-background)',
+        color: 'var(--md-sys-color-on-background)',
         padding: '24px 16px 40px',
       }}
     >
@@ -582,7 +601,7 @@ export function AltOnboardingWizard() {
           <h1 style={{ margin: '8px 0 0', fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: '2rem' }}>
             Willkommen bei Nality
           </h1>
-          <p style={{ margin: '10px 0 0', color: 'rgba(255, 255, 255, 0.78)', lineHeight: 1.7 }}>
+          <p style={{ margin: '10px 0 0', color: 'var(--md-sys-color-on-surface-variant)', lineHeight: 1.7 }}>
             Wir passen den Einstieg an deine Antwort an und speichern deinen Fortschritt automatisch.
           </p>
           {draft.stage === 'entry' ? (
@@ -591,7 +610,7 @@ export function AltOnboardingWizard() {
               style={{
                 display: 'inline-flex',
                 marginTop: '12px',
-                color: '#7ac8ff',
+                color: 'var(--accent-gold)',
                 textDecoration: 'none',
                 fontSize: '0.95rem',
               }}
@@ -601,7 +620,7 @@ export function AltOnboardingWizard() {
           ) : null}
         </header>
 
-        {draft.path && draft.stage !== 'entry' ? (
+        {draft.path && (draft.stage === 'path' || draft.stage === 'neutral') ? (
           <AltProgressHeader path={draft.path} currentStepId={draft.currentStepId} stageLabel={stageLabel} />
         ) : null}
 
@@ -609,11 +628,11 @@ export function AltOnboardingWizard() {
           <p
             style={{
               margin: '0 0 12px',
-              border: '1px solid rgba(122, 200, 255, 0.5)',
-              background: 'rgba(122, 200, 255, 0.12)',
+              border: '1px solid var(--md-sys-color-outline)',
+              background: 'var(--md-sys-color-surface-container)',
               borderRadius: '10px',
               padding: '10px 12px',
-              color: '#d7efff',
+              color: 'var(--md-sys-color-on-surface)',
             }}
           >
             {statusMessage}
@@ -624,11 +643,11 @@ export function AltOnboardingWizard() {
           <p
             style={{
               margin: '0 0 12px',
-              border: '1px solid rgba(255, 158, 161, 0.5)',
-              background: 'rgba(255, 80, 90, 0.12)',
+              border: '1px solid #e6a19a',
+              background: '#3a1d1a',
               borderRadius: '10px',
               padding: '10px 12px',
-              color: '#ffd5d7',
+              color: '#ffd9d5',
             }}
           >
             {finalizeError}
@@ -639,8 +658,8 @@ export function AltOnboardingWizard() {
           <section
             style={{
               borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid var(--md-sys-color-outline-variant)',
+              background: 'var(--md-sys-color-surface-container-low)',
               padding: '20px',
             }}
           >
@@ -658,13 +677,15 @@ export function AltOnboardingWizard() {
                   <label
                     key={option.id}
                     style={{
-                      border: selected ? '1px solid #d4af37' : '1px solid rgba(255, 255, 255, 0.15)',
+                      border: selected
+                        ? '1px solid var(--md-sys-color-primary)'
+                        : '1px solid var(--md-sys-color-outline-variant)',
                       borderRadius: '10px',
                       padding: '10px 12px',
                       display: 'grid',
                       gap: '4px',
                       cursor: 'pointer',
-                      background: selected ? 'rgba(212, 175, 55, 0.08)' : 'transparent',
+                      background: selected ? 'var(--md-sys-color-surface-container-high)' : 'transparent',
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -673,6 +694,7 @@ export function AltOnboardingWizard() {
                         name="entry"
                         checked={selected}
                         onChange={() => setEntrySelection(option.answerId)}
+                        style={{ accentColor: 'var(--md-sys-color-primary)' }}
                       />
                       {option.label}
                     </span>
@@ -684,20 +706,15 @@ export function AltOnboardingWizard() {
               })}
             </div>
 
-            {stepError ? <p style={{ margin: '12px 0 0', color: '#ff9ea1' }}>{stepError}</p> : null}
+            {stepError ? <p style={{ margin: '12px 0 0', color: '#ffd9d5' }}>{stepError}</p> : null}
 
             <div style={{ marginTop: '18px' }}>
               <button
                 type="button"
                 onClick={handleEntryContinue}
+                className="btn btn-primary"
                 style={{
-                  border: 'none',
-                  borderRadius: '999px',
-                  padding: '10px 16px',
-                  background: '#d4af37',
-                  color: '#111',
-                  fontWeight: 700,
-                  cursor: 'pointer',
+                  padding: '0.75rem 1.5rem',
                 }}
               >
                 Weiter
@@ -732,19 +749,72 @@ export function AltOnboardingWizard() {
         ) : null}
 
         {draft.stage === 'registration' ? (
-          <AltRegistrationModule
-            initialValues={draft.registration}
-            isSubmitting={isRegistrationSubmitting || isFinalizing}
-            errorMessage={registrationError}
-            onPasswordSubmit={handlePasswordRegistration}
-            onGoogleSubmit={handleGoogleRegistration}
-            onBack={handleBackFromRegistration}
-          />
+          isAwaitingEmailConfirmation ? (
+            <section
+              role="status"
+              aria-live="polite"
+              style={{
+                borderRadius: '14px',
+                border: '1px solid var(--md-sys-color-outline-variant)',
+                padding: '20px',
+                background: 'var(--md-sys-color-surface-container-low)',
+              }}
+            >
+              <h2 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.45rem' }}>E-Mail registriert</h2>
+              <p style={{ margin: '10px 0 0', color: 'var(--md-sys-color-on-surface-variant)', lineHeight: 1.6 }}>
+                Wir haben deine Registrierung gespeichert. Bitte prüfe jetzt dein Postfach und bestätige deine E-Mail,
+                um fortzufahren.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
+                <Link
+                  href="/login"
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.75rem 1.25rem',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Zum Login
+                </Link>
+              </div>
+            </section>
+          ) : (
+            <AltRegistrationModule
+              initialValues={draft.registration}
+              isSubmitting={isRegistrationSubmitting || isFinalizing}
+              errorMessage={registrationError}
+              onPasswordSubmit={handlePasswordRegistration}
+              onGoogleSubmit={handleGoogleRegistration}
+              onBack={handleBackFromRegistration}
+            />
+          )
         ) : null}
 
         {authLoading ? (
-          <p style={{ marginTop: '12px', color: 'var(--md-sys-color-on-surface-variant)' }}>Authentifizierung wird geladen ...</p>
+          <p style={{ marginTop: '12px', color: 'var(--md-sys-color-on-surface-variant)' }}>
+            Authentifizierung wird geladen ...
+          </p>
         ) : null}
+
+        <p
+          style={{
+            margin: '24px 0 0',
+            textAlign: 'center',
+            color: 'var(--md-sys-color-on-surface-variant)',
+            fontSize: '0.95rem',
+          }}
+        >
+          Bereits ein Konto?{' '}
+          <Link
+            href="/login"
+            style={{
+              color: 'var(--accent-gold)',
+              textDecoration: 'none',
+            }}
+          >
+            Direkt zum Login
+          </Link>
+        </p>
       </div>
 
       <AddressPreferenceModal

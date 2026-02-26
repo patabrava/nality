@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import type { AltRegistrationDraft, PasswordRegistrationSubmission } from '@/lib/onboarding/alt-config';
 
 interface AltRegistrationModuleProps {
@@ -24,161 +25,177 @@ export function AltRegistrationModule({
   const [lastName, setLastName] = useState(initialValues?.lastName ?? '');
   const [email, setEmail] = useState(initialValues?.email ?? '');
   const [password, setPassword] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
 
-  const validate = (): boolean => {
-    if (!firstNameOrNickname.trim()) {
-      setLocalError('Vorname oder Spitzname ist ein Pflichtfeld.');
-      return false;
-    }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setLocalError('Bitte gib eine gültige E-Mail-Adresse ein.');
-      return false;
-    }
-    return true;
-  };
+  useEffect(() => {
+    setFirstNameOrNickname(initialValues?.firstNameOrNickname ?? '');
+    setLastName(initialValues?.lastName ?? '');
+    setEmail(initialValues?.email ?? '');
+  }, [initialValues]);
 
-  const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!validate()) return;
-    if (!password.trim()) {
-      setLocalError('Bitte gib ein Passwort ein.');
-      return;
-    }
+  const normalizedEmail = email.trim().toLowerCase();
+  const canSubmitIdentity = firstNameOrNickname.trim().length > 0 && normalizedEmail.length > 0;
+  const canSubmitPassword = canSubmitIdentity && password.trim().length >= 8;
 
-    setLocalError(null);
-    await onPasswordSubmit({
+  const googlePayload = useMemo<AltRegistrationDraft>(() => {
+    return {
       firstNameOrNickname: firstNameOrNickname.trim(),
       lastName: lastName.trim(),
-      email: email.trim(),
-      password,
-      method: 'password',
-    });
-  };
-
-  const handleGoogle = async () => {
-    if (!validate()) return;
-    setLocalError(null);
-    await onGoogleSubmit({
-      firstNameOrNickname: firstNameOrNickname.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
+      email: normalizedEmail,
       method: 'google',
-    });
+    };
+  }, [firstNameOrNickname, lastName, normalizedEmail]);
+
+  const handlePasswordSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSubmitPassword || isSubmitting) return;
+
+    const payload: PasswordRegistrationSubmission = {
+      firstNameOrNickname: firstNameOrNickname.trim(),
+      lastName: lastName.trim(),
+      email: normalizedEmail,
+      password: password.trim(),
+      method: 'password',
+    };
+
+    await onPasswordSubmit(payload);
+  };
+
+  const handleGoogleSubmit = async () => {
+    if (!canSubmitIdentity || isSubmitting) return;
+    await onGoogleSubmit(googlePayload);
   };
 
   return (
     <section
       style={{
         borderRadius: '14px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid var(--md-sys-color-outline-variant)',
         padding: '20px',
-        background: 'rgba(255, 255, 255, 0.02)',
+        background: 'var(--md-sys-color-surface-container-low)',
       }}
     >
       <h2 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.45rem' }}>Registrierung</h2>
-      <p style={{ margin: '10px 0 0', color: 'rgba(255, 255, 255, 0.76)', lineHeight: 1.6 }}>
-        Super, dann richten wir dir in weniger als 1 Minute deinen persönlichen Erinnerungsraum ein.
+      <p style={{ margin: '10px 0 0', color: 'var(--md-sys-color-on-surface-variant)', lineHeight: 1.6 }}>
+        Du hast alle Fragen abgeschlossen. Erstelle jetzt dein Konto, damit wir deine Antworten direkt in dein Profil uebernehmen koennen.
       </p>
 
-      <form onSubmit={handlePasswordSubmit} style={{ marginTop: '16px', display: 'grid', gap: '12px' }}>
-        <label style={{ display: 'grid', gap: '6px' }}>
-          <span style={{ fontSize: '0.85rem' }}>Vorname oder Spitzname (Pflicht)</span>
-          <input
-            className="form-input"
-            value={firstNameOrNickname}
-            onChange={(event) => setFirstNameOrNickname(event.target.value)}
-            placeholder="z. B. Anna"
-            disabled={isSubmitting}
-          />
-        </label>
+      <form onSubmit={handlePasswordSubmit} style={{ display: 'grid', gap: '10px', marginTop: '16px' }}>
+        <input
+          type="text"
+          value={firstNameOrNickname}
+          onChange={(event) => setFirstNameOrNickname(event.target.value)}
+          placeholder="Vorname oder Rufname"
+          autoComplete="given-name"
+          disabled={isSubmitting}
+          style={{
+            border: '1px solid var(--md-sys-color-outline-variant)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            background: 'var(--md-sys-color-surface)',
+            color: 'var(--md-sys-color-on-surface)',
+          }}
+        />
+        <input
+          type="text"
+          value={lastName}
+          onChange={(event) => setLastName(event.target.value)}
+          placeholder="Nachname (optional)"
+          autoComplete="family-name"
+          disabled={isSubmitting}
+          style={{
+            border: '1px solid var(--md-sys-color-outline-variant)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            background: 'var(--md-sys-color-surface)',
+            color: 'var(--md-sys-color-on-surface)',
+          }}
+        />
+        <input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="E-Mail"
+          autoComplete="email"
+          disabled={isSubmitting}
+          style={{
+            border: '1px solid var(--md-sys-color-outline-variant)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            background: 'var(--md-sys-color-surface)',
+            color: 'var(--md-sys-color-on-surface)',
+          }}
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          placeholder="Passwort (mindestens 8 Zeichen)"
+          autoComplete="new-password"
+          disabled={isSubmitting}
+          style={{
+            border: '1px solid var(--md-sys-color-outline-variant)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            background: 'var(--md-sys-color-surface)',
+            color: 'var(--md-sys-color-on-surface)',
+          }}
+        />
 
-        <label style={{ display: 'grid', gap: '6px' }}>
-          <span style={{ fontSize: '0.85rem' }}>Nachname (optional)</span>
-          <input
-            className="form-input"
-            value={lastName}
-            onChange={(event) => setLastName(event.target.value)}
-            placeholder="z. B. Mustermann"
-            disabled={isSubmitting}
-          />
-        </label>
+        {errorMessage ? (
+          <p style={{ margin: 0, color: '#ffd9d5' }}>
+            {errorMessage}
+          </p>
+        ) : null}
 
-        <label style={{ display: 'grid', gap: '6px' }}>
-          <span style={{ fontSize: '0.85rem' }}>E-Mail-Adresse</span>
-          <input
-            className="form-input"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="du@example.com"
-            disabled={isSubmitting}
-          />
-        </label>
-
-        <label style={{ display: 'grid', gap: '6px' }}>
-          <span style={{ fontSize: '0.85rem' }}>Passwort</span>
-          <input
-            className="form-input"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Mindestens 8 Zeichen"
-            disabled={isSubmitting}
-          />
-        </label>
-
-        {localError ? <p style={{ margin: 0, color: '#ff9ea1', fontSize: '0.9rem' }}>{localError}</p> : null}
-        {errorMessage ? <p style={{ margin: 0, color: '#ff9ea1', fontSize: '0.9rem' }}>{errorMessage}</p> : null}
-
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             type="submit"
-            disabled={isSubmitting}
+            className="btn btn-primary"
+            disabled={!canSubmitPassword || isSubmitting}
             style={{
-              border: 'none',
-              borderRadius: '999px',
-              padding: '10px 14px',
-              background: '#d4af37',
-              color: '#111',
-              fontWeight: 700,
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              padding: '0.75rem 1.25rem',
             }}
           >
-            {isSubmitting ? 'Verarbeite...' : 'Konto erstellen'}
+            {isSubmitting ? 'Wird erstellt ...' : 'Mit E-Mail registrieren'}
           </button>
           <button
             type="button"
-            disabled={isSubmitting}
-            onClick={handleGoogle}
+            onClick={handleGoogleSubmit}
+            className="btn btn-secondary"
+            disabled={!canSubmitIdentity || isSubmitting}
             style={{
-              border: '1px solid rgba(255, 255, 255, 0.26)',
-              borderRadius: '999px',
-              padding: '10px 14px',
-              background: 'transparent',
-              color: 'var(--md-sys-color-on-surface)',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              padding: '0.75rem 1.25rem',
             }}
           >
-            Mit Google registrieren
-          </button>
-          <button
-            type="button"
-            disabled={isSubmitting}
-            onClick={onBack}
-            style={{
-              border: '1px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '999px',
-              padding: '10px 14px',
-              background: 'transparent',
-              color: 'var(--md-sys-color-on-surface-variant)',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Zurück
+            Mit Google fortfahren
           </button>
         </div>
       </form>
+
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
+        <Link
+          href="/login"
+          className="btn btn-secondary"
+          style={{
+            padding: '0.75rem 1.25rem',
+            textDecoration: 'none',
+            color: 'var(--md-sys-color-on-surface-variant)',
+          }}
+        >
+          Ich habe bereits ein Konto
+        </Link>
+        <button
+          type="button"
+          onClick={onBack}
+          className="btn btn-secondary"
+          style={{
+            padding: '0.75rem 1.25rem',
+            color: 'var(--md-sys-color-on-surface-variant)',
+          }}
+        >
+          Zurück
+        </button>
+      </div>
     </section>
   );
 }

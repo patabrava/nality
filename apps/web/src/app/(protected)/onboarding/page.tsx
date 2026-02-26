@@ -16,7 +16,6 @@ export default function OnboardingPage() {
   const [progress, setProgress] = useState(0)
   const [questionsAnswered, setQuestionsAnswered] = useState(0)
   const [showVoiceSelector, setShowVoiceSelector] = useState(false)
-  const [activeMode, setActiveMode] = useState<VoiceMode>('text')
   const [showInterview, setShowInterview] = useState(false)
   const [showFreeTalk, setShowFreeTalk] = useState(false)
 
@@ -24,7 +23,6 @@ export default function OnboardingPage() {
     setShowInterview(false)
     setShowFreeTalk(false)
     setShowVoiceSelector(false)
-    setActiveMode('text')
     router.push('/dash')
   }, [router])
 
@@ -53,34 +51,65 @@ export default function OnboardingPage() {
       style={{
         minHeight: '100vh',
         background: 'var(--md-sys-color-background)',
-        fontFamily: 'Roboto, system-ui, sans-serif'
+        fontFamily: 'var(--font-sans)'
       }}
     >
-      {/* Main Content */}
       <main
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1220px',
           margin: '0 auto',
-          padding: '24px'
+          padding: '24px',
+          paddingTop: '32px',
+          paddingBottom: '40px'
         }}
       >
-        <div
+        <section
+          aria-labelledby="onboarding-heading"
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gap: '24px',
-            minHeight: 'calc(100vh - 100px)'
+            marginBottom: '28px',
+            borderBottom: '1px solid var(--md-sys-color-outline-variant)',
+            paddingBottom: '24px'
           }}
-          className="lg:grid-cols-[2fr_1fr]"
         >
+          <span className="section-label" style={{ marginBottom: '12px' }}>
+            {t('onboarding.chat.progress')}
+          </span>
+          <h1
+            id="onboarding-heading"
+            style={{
+              margin: '0 0 10px 0',
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(2rem, 4.3vw, 3.2rem)',
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              color: 'var(--md-sys-color-on-surface)'
+            }}
+          >
+            {t('onboarding.chat.assistantTitle')}
+          </h1>
+          <p
+            style={{
+              margin: 0,
+              maxWidth: '760px',
+              fontSize: '1rem',
+              lineHeight: 1.6,
+              color: 'var(--md-sys-color-on-surface-variant)'
+            }}
+          >
+            {t('onboarding.chat.tagline')}
+          </p>
+        </section>
+
+        <div className="onboarding-layout" style={{ minHeight: 'calc(100vh - 220px)' }}>
 
           {/* Chat Interface - Main Area */}
           <div>
             <div
               style={{
                 background: 'var(--md-sys-color-surface)',
-                borderRadius: '16px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                borderRadius: '18px',
+                boxShadow: '0 14px 36px rgba(0, 0, 0, 0.22)',
                 overflow: 'hidden',
                 border: '1px solid var(--md-sys-color-outline-variant)'
               }}
@@ -91,7 +120,6 @@ export default function OnboardingPage() {
                   availableModes={['text', 'interview']}
                   onSelect={(mode: VoiceMode) => {
                     setShowVoiceSelector(false)
-                    setActiveMode(mode)
                     switch (mode) {
                       case 'interview':
                         setShowInterview(true)
@@ -109,7 +137,6 @@ export default function OnboardingPage() {
                   }}
                   onClose={() => {
                     // Default to text mode if user closes
-                    setActiveMode('text')
                     setShowVoiceSelector(false)
                     setShowInterview(false)
                     setShowFreeTalk(false)
@@ -122,12 +149,10 @@ export default function OnboardingPage() {
                 <InterviewInterface
                   onClose={() => {
                     setShowInterview(false)
-                    setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
                   onMemorySaved={() => {
                     setShowInterview(false)
-                    setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
                   onComplete={handleVoiceCompletion}
@@ -139,12 +164,10 @@ export default function OnboardingPage() {
                 <FreeTalkInterface
                   onClose={() => {
                     setShowFreeTalk(false)
-                    setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
                   onComplete={() => {
                     setShowFreeTalk(false)
-                    setActiveMode('text')
                     setShowVoiceSelector(true)
                   }}
                 />
@@ -159,10 +182,7 @@ export default function OnboardingPage() {
 
           {/* Sidebar - Progress Indicator */}
           <div
-            style={{
-              display: 'none'
-            }}
-            className="lg:block"
+            className="onboarding-sidebar"
           >
             <div style={{ position: 'sticky', top: '24px' }}>
               <ProgressIndicator
@@ -176,13 +196,14 @@ export default function OnboardingPage() {
                 marginTop: '16px',
                 background: 'var(--md-sys-color-surface-container)',
                 borderRadius: '16px',
-                padding: '20px',
+                padding: '24px',
                 border: '1px solid var(--md-sys-color-outline-variant)',
               }}>
                 <h4 style={{
                   margin: '0 0 12px 0',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-serif)',
                   color: 'var(--md-sys-color-on-surface)',
                 }}>
                   💡 {t('onboarding.tips')}
@@ -190,7 +211,7 @@ export default function OnboardingPage() {
                 <ul style={{
                   margin: 0,
                   padding: '0 0 0 16px',
-                  fontSize: '0.8rem',
+                  fontSize: '0.84rem',
                   color: 'var(--md-sys-color-on-surface-variant)',
                   lineHeight: 1.6
                 }}>
@@ -203,6 +224,28 @@ export default function OnboardingPage() {
           </div>
         </div>
       </main>
+
+      <style jsx>{`
+        .onboarding-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+          gap: 24px;
+        }
+
+        .onboarding-sidebar {
+          display: block;
+        }
+
+        @media (max-width: 1024px) {
+          .onboarding-layout {
+            grid-template-columns: 1fr;
+          }
+
+          .onboarding-sidebar {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
-} 
+}
