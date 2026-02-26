@@ -1,11 +1,11 @@
-# Testscript: alt-onboarding hydration determinism
+# Testscript: meeting route hydration determinism
 
-## TS-ALT-HYDRATION-001
-- Objective: Verify `/alt-onboarding` renders deterministic server/client initial markup and no hydration mismatch from persisted draft state.
+## TS-MEETING-HYDRATION-001
+- Objective: Verify `/meeting` renders deterministic server/client initial markup and no hydration mismatch from persisted draft state.
 - Prerequisites: `pnpm install` completed, no port conflict on `3211`.
 - Setup:
   1. Start app: `pnpm --filter web dev --port 3211`
-  2. Open browser at `http://localhost:3211/alt-onboarding`
+  2. Open browser at `http://localhost:3211/meeting`
   3. In devtools console set draft payload in `localStorage` with non-entry stage.
 - Run:
   1. Hard refresh page.
@@ -18,7 +18,7 @@
   - Client can transition to stored draft state after mount.
 - Artifacts:
   - Browser console screenshot/log.
-  - `curl -s http://localhost:3211/alt-onboarding` output sample saved if needed.
+  - `curl -s http://localhost:3211/meeting` output sample saved if needed.
 - Cleanup:
   - Remove draft key from `localStorage`.
   - Stop dev server.

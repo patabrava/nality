@@ -32,8 +32,8 @@ export default function AuthCallback() {
 
           const buildIncompleteRedirect = () => {
             const incompletePath = getIncompleteOnboardingPath()
-            if (incompletePath === '/alt-onboarding' && altToken) {
-              return `/alt-onboarding?altToken=${encodeURIComponent(altToken)}`
+            if (incompletePath === '/meeting' && altToken) {
+              return `/meeting?altToken=${encodeURIComponent(altToken)}`
             }
             return incompletePath
           }

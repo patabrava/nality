@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 import { Menu, X } from 'lucide-react'
-import { isAltOnboardingEnabled } from '@/lib/onboarding/flags'
 
 export function LandingHeader() {
   const { t } = useI18n()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const startHref = isAltOnboardingEnabled() ? '/alt-onboarding' : '/login'
+  const startHref = '/meeting'
 
   const scrollToSection = (sectionId: string) => {
     setMobileMenuOpen(false)

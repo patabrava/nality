@@ -4,6 +4,6 @@ export function isAltOnboardingEnabled(): boolean {
   return process.env.NEXT_PUBLIC_ALT_ONBOARDING_ENABLED === 'true';
 }
 
-export function getIncompleteOnboardingPath(): '/onboarding' | '/alt-onboarding' {
-  return isAltOnboardingEnabled() ? '/alt-onboarding' : '/onboarding';
+export function getIncompleteOnboardingPath(): '/onboarding' | '/meeting' {
+  return isAltOnboardingEnabled() ? '/meeting' : '/onboarding';
 }

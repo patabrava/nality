@@ -55,8 +55,9 @@ export default function ProgressIndicator({
       }}>
         <h4 style={{
           margin: 0,
-          fontSize: '0.875rem',
-          fontWeight: 600,
+          fontSize: '0.95rem',
+          fontWeight: 500,
+          fontFamily: 'var(--font-serif)',
           color: 'var(--md-sys-color-on-surface)',
         }}>
           {t('onboarding.chat.progress')}

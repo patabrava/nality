@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/components/i18n/I18nProvider'
 
@@ -601,6 +601,17 @@ export function LoginForm() {
   const { signInWithEmail, signInWithPassword, signUpWithPassword, signInWithGoogle, loading, error, isAuthenticated } = useAuth()
   const { t } = useI18n()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')?.toLowerCase()
+    const shouldStartInSignUp = mode === 'signup' || mode === 'register'
+
+    if (shouldStartInSignUp) {
+      setAuthMethod('password')
+      setIsSignUp(true)
+    }
+  }, [searchParams])
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
@@ -694,7 +705,6 @@ export function LoginForm() {
 
   if (isSubmitted) {
     const isSignUpSuccess = authMethod === 'password' && isSignUp
-    const isMagicLinkSent = authMethod === 'magic-link'
 
     return (
       <>
