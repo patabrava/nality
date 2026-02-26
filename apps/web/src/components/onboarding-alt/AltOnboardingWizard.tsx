@@ -113,6 +113,7 @@ export function AltOnboardingWizard() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isRegistrationSubmitting, setIsRegistrationSubmitting] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [isAwaitingEmailConfirmation, setIsAwaitingEmailConfirmation] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [modalAddressPreference, setModalAddressPreference] = useState<AddressPreference>('du');
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
@@ -331,11 +332,25 @@ export function AltOnboardingWizard() {
 
   useEffect(() => {
     const hasPendingToken = Boolean(draft.pendingLinkToken ?? pendingTokenFromQuery);
-    if (!isAuthenticated || !hasPendingToken || draft.addressPreference || draft.stage === 'completed') return;
+    if (
+      !isAuthenticated ||
+      !hasPendingToken ||
+      draft.addressPreference ||
+      draft.stage === 'completed' ||
+      isAwaitingEmailConfirmation
+    )
+      return;
 
     setStatusMessage('Bitte bestaetige noch die Anrede, damit wir dein Onboarding abschliessen koennen.');
     setShowAddressModal(true);
-  }, [draft.addressPreference, draft.pendingLinkToken, draft.stage, isAuthenticated, pendingTokenFromQuery]);
+  }, [
+    draft.addressPreference,
+    draft.pendingLinkToken,
+    draft.stage,
+    isAuthenticated,
+    isAwaitingEmailConfirmation,
+    pendingTokenFromQuery,
+  ]);
 
   const hasFinalizeSource =
     draft.registration !== null || draft.pendingLinkToken !== null || pendingTokenFromQuery !== null;
@@ -426,6 +441,8 @@ export function AltOnboardingWizard() {
   };
 
   const handleBackFromRegistration = () => {
+    setIsAwaitingEmailConfirmation(false);
+
     if (!draft.path) {
       updateDraft((previous) => ({ ...previous, stage: 'entry' }));
       return;
@@ -449,6 +466,7 @@ export function AltOnboardingWizard() {
   }) => {
     setRegistrationError(null);
     setStatusMessage(null);
+    setIsAwaitingEmailConfirmation(false);
     setIsRegistrationSubmitting(true);
 
     const registrationDraft: AltRegistrationDraft = {
@@ -467,7 +485,7 @@ export function AltOnboardingWizard() {
     updateDraft((previous) => ({
       ...previous,
       registration: registrationDraft,
-      pendingFinalize: false,
+      pendingFinalize: true,
       pendingLinkToken: pendingToken,
     }));
 
@@ -482,13 +500,15 @@ export function AltOnboardingWizard() {
       return;
     }
 
-    setShowAddressModal(true);
-    setStatusMessage('Konto erstellt. Bitte bestätige jetzt noch die Anrede.');
+    setShowAddressModal(false);
+    setIsAwaitingEmailConfirmation(true);
+    setStatusMessage('Deine E-Mail wurde registriert. Bitte prüfe dein Postfach, um dein Konto zu bestätigen.');
   };
 
   const handleGoogleRegistration = async (submission: AltRegistrationDraft) => {
     setRegistrationError(null);
     setStatusMessage(null);
+    setIsAwaitingEmailConfirmation(false);
     setIsRegistrationSubmitting(true);
 
     const pendingToken = await createPendingLink(buildPendingPayload(draft, submission));
@@ -600,7 +620,7 @@ export function AltOnboardingWizard() {
           ) : null}
         </header>
 
-        {draft.path && draft.stage !== 'entry' ? (
+        {draft.path && (draft.stage === 'path' || draft.stage === 'neutral') ? (
           <AltProgressHeader path={draft.path} currentStepId={draft.currentStepId} stageLabel={stageLabel} />
         ) : null}
 
@@ -729,14 +749,45 @@ export function AltOnboardingWizard() {
         ) : null}
 
         {draft.stage === 'registration' ? (
-          <AltRegistrationModule
-            initialValues={draft.registration}
-            isSubmitting={isRegistrationSubmitting || isFinalizing}
-            errorMessage={registrationError}
-            onPasswordSubmit={handlePasswordRegistration}
-            onGoogleSubmit={handleGoogleRegistration}
-            onBack={handleBackFromRegistration}
-          />
+          isAwaitingEmailConfirmation ? (
+            <section
+              role="status"
+              aria-live="polite"
+              style={{
+                borderRadius: '14px',
+                border: '1px solid var(--md-sys-color-outline-variant)',
+                padding: '20px',
+                background: 'var(--md-sys-color-surface-container-low)',
+              }}
+            >
+              <h2 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.45rem' }}>E-Mail registriert</h2>
+              <p style={{ margin: '10px 0 0', color: 'var(--md-sys-color-on-surface-variant)', lineHeight: 1.6 }}>
+                Wir haben deine Registrierung gespeichert. Bitte prüfe jetzt dein Postfach und bestätige deine E-Mail,
+                um fortzufahren.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
+                <Link
+                  href="/login"
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.75rem 1.25rem',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Zum Login
+                </Link>
+              </div>
+            </section>
+          ) : (
+            <AltRegistrationModule
+              initialValues={draft.registration}
+              isSubmitting={isRegistrationSubmitting || isFinalizing}
+              errorMessage={registrationError}
+              onPasswordSubmit={handlePasswordRegistration}
+              onGoogleSubmit={handleGoogleRegistration}
+              onBack={handleBackFromRegistration}
+            />
+          )
         ) : null}
 
         {authLoading ? (

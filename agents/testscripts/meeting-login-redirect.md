@@ -1,25 +1,32 @@
-# Testscript: meeting onboarding hands off to login signup
+# Testscript: meeting onboarding finalizes into profile
 
 ## TS-MEETING-LOGIN-REDIRECT-001
-- Objective: Verify `/meeting` routes users to `/login?mode=signup` after finishing onboarding questions and login opens in registration mode.
+- Objective: Verify middleware + onboarding routing compiles cleanly and login CTA "Nality beitreten" routes to `/meeting`, then `/meeting` keeps the onboarding flow, creates account inline, and applies meeting answers to the user profile.
 - Prerequisites: `pnpm install` completed, no port conflict on `3211`.
 - Setup:
-  1. Start app: `pnpm --filter web dev --port 3211`
-  2. Open browser at `http://localhost:3211/meeting`
+  1. Run compile guard: `pnpm --filter web build`
+  2. Start app: `pnpm --filter web dev --port 3211`
+  3. Open browser at `http://localhost:3211/meeting`
 - Run:
+  1. Open `http://localhost:3211/login`.
+  2. Click `Nality beitreten` and confirm browser navigates to `/meeting`.
   1. With no active session, confirm onboarding content is visible on `/meeting`.
   2. Answer onboarding questions until the registration stage is reached.
-  3. Confirm the app navigates to `/login?mode=signup` automatically.
-  4. Confirm login opens with sign-up mode active (password mode + create account copy/button).
-  5. Toggle to sign-in manually and confirm behavior stays normal.
+  3. Confirm registration inputs are rendered on `/meeting` (name, email, password, submit buttons).
+  4. Complete password registration and finish email confirmation/callback if required.
+  5. Confirm callback returns to `/meeting` and onboarding finalization succeeds.
+  6. Confirm navigation lands on `/dash`.
+  7. Open `/dash/profile` and verify onboarding-derived profile fields are populated (for example full name and onboarding completion state).
 - Expected:
-  - Signed-out users can complete onboarding questions.
-  - Reaching onboarding registration stage hands off to `/login?mode=signup`.
-  - Login defaults to registration mode when `mode=signup` is present.
-  - No redirect loop occurs while navigating between `/meeting` and `/login`.
+  - Clicking `Nality beitreten` on `/login` navigates to `/meeting`.
+  - Registration stage stays inside `/meeting` without forced redirect to `/login`.
+  - No redirect loop between `/meeting` and `/login` occurs.
+  - Onboarding finalization updates the user record and marks onboarding complete.
+  - Profile page reflects data produced by the meeting flow.
 - Artifacts:
-  - Browser URL transitions for final onboarding step -> `/login?mode=signup`.
-  - Browser console screenshot if a redirect issue appears.
+  - Browser URL transitions for registration completion and callback.
+  - Screenshot of `/dash/profile` after completion.
+  - Browser console screenshot if finalize or redirect issues appear.
 - Cleanup:
   - Stop dev server.
   - Sign out test session if used.

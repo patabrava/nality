@@ -891,7 +891,14 @@ export function LoginForm() {
                 <span className="auth-toggle-text">
                   {isSignUp ? t('auth.login.haveAccount') : t('auth.login.needAccount')}{' '}
                   <a
-                    onClick={() => setIsSignUp(!isSignUp)}
+                    onClick={() => {
+                      if (isSignUp) {
+                        setIsSignUp(false)
+                        return
+                      }
+
+                      router.push('/meeting')
+                    }}
                     className="auth-toggle-link"
                   >
                     {isSignUp ? t('auth.login.switchToSignIn') : t('auth.login.switchToSignUp')}
