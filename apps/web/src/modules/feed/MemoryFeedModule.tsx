@@ -2,12 +2,13 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Mic, Home } from 'lucide-react'
+import { Plus, Mic } from 'lucide-react'
 import { useMemories } from '@/hooks/useMemories'
 import { MemoryCard } from '@/components/memory/MemoryCard'
 import { TextMemoryInput } from '@/components/memory/TextMemoryInput'
 import { VoiceModeSelector } from '@/components/voice/VoiceModeSelector'
-import { InterviewInterface } from '@/components/voice/InterviewInterface'
+import { FreeTalkInterface } from '@/components/voice/FreeTalkInterface'
+import { BiographyInterviewModal } from '@/components/interview/BiographyInterviewModal'
 import { formatDateHeader } from '@nality/schema'
 import type { Memory } from '@nality/schema'
 
@@ -82,6 +83,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
         
         <button
           onClick={() => setShowVoiceSelector(true)}
+          aria-label="Add memory"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -96,19 +98,23 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             fontSize: '0.9rem',
           }}
         >
-          <Plus size={18} />
+          <Plus size={18} aria-hidden="true" />
           Add Memory
         </button>
       </header>
       
       {loading ? (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '200px',
-          color: 'rgba(255, 255, 255, 0.5)',
-        }}>
+        <div
+          role="status"
+          aria-label="Loading memories"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '200px',
+            color: 'rgba(255, 255, 255, 0.5)',
+          }}
+        >
           Loading memories...
         </div>
       ) : memories.length === 0 ? (
@@ -131,7 +137,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             justifyContent: 'center',
             marginBottom: '24px',
           }}>
-            <Mic size={32} style={{ color: '#D4AF37' }} />
+            <Mic size={32} style={{ color: '#D4AF37' }} aria-hidden="true" />
           </div>
           <h2 style={{ 
             marginBottom: '12px', 
@@ -208,17 +214,12 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
       )}
       
       {showInterview && (
-        <InterviewInterface
-          onClose={() => setShowInterview(false)}
-          onMemorySaved={handleMemoryComplete}
-          onComplete={handleMemoryComplete}
-        />
+        <BiographyInterviewModal onClose={handleMemoryComplete} />
       )}
       
       {showFreeTalk && (
-        <InterviewInterface
+        <FreeTalkInterface
           onClose={() => setShowFreeTalk(false)}
-          onMemorySaved={handleMemoryComplete}
           onComplete={handleMemoryComplete}
         />
       )}

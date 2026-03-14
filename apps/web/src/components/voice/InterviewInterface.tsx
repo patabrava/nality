@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Mic, MicOff, X, Volume2, VolumeX } from 'lucide-react';
-import { useVoiceAgent } from '@/hooks/useVoiceAgent';
+import { useVoiceAgent, type GuidedVoiceMode } from '@/hooks/useVoiceAgent';
 import { AgentVisualizer } from './AgentVisualizer';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import type { Chapter } from '@nality/schema';
@@ -12,6 +12,9 @@ interface InterviewInterfaceProps {
   onClose: () => void;
   onMemorySaved?: () => void;
   onComplete?: () => void;
+  mode?: GuidedVoiceMode;
+  interviewSessionId?: string | null;
+  onSwitchToText?: () => void;
 }
 
 /**
@@ -24,6 +27,9 @@ export function InterviewInterface({
   onClose,
   onMemorySaved,
   onComplete,
+  mode = 'biography',
+  interviewSessionId,
+  onSwitchToText,
 }: InterviewInterfaceProps) {
   const { t } = useI18n();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,6 +46,8 @@ export function InterviewInterface({
     isMuted,
   } = useVoiceAgent({
     chapterId: chapter?.id,
+    mode,
+    ...(interviewSessionId !== undefined ? { interviewSessionId } : {}),
     onMemorySaved: () => {
       onMemorySaved?.();
     },
@@ -342,6 +350,34 @@ export function InterviewInterface({
         </button>
 
         {/* End Session Button */}
+        {onSwitchToText && (
+          <button
+            onClick={onSwitchToText}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              padding: '12px 24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              color: 'var(--md-sys-color-on-surface)',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
+          >
+            Zu Text wechseln
+          </button>
+        )}
+
         <button
           onClick={handleClose}
           style={{
