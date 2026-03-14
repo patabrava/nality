@@ -5,8 +5,10 @@ import { useVoiceInput } from './useVoiceInput';
 import { useAudioPlayer } from './useAudioPlayer';
 import { useChat } from '@ai-sdk/react';
 import { useAuth } from './useAuth';
+import { BIOGRAPHY_INTERVIEW_START_TOKEN } from '@/lib/biography/interview';
 
 export type VoiceAgentState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
+export type GuidedVoiceMode = 'onboarding' | 'biography';
 
 interface UseVoiceAgentOptions {
   chapterId?: string | undefined;
@@ -15,6 +17,8 @@ interface UseVoiceAgentOptions {
   autoStart?: boolean;
   voice?: string;
   onComplete?: () => Promise<void> | void;
+  mode?: GuidedVoiceMode;
+  interviewSessionId?: string | null;
 }
 
 interface UseVoiceAgentReturn {
@@ -48,9 +52,17 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     autoStart = false,
     voice = 'aura-2-viktoria-de',
     onComplete,
+    mode = 'biography',
+    interviewSessionId: externalInterviewSessionId = null,
   } = options;
 
-  const { user, session } = useAuth();
+  const { session } = useAuth();
+  const voiceMode: 'chapter' | GuidedVoiceMode = chapterId ? 'chapter' : mode;
+  const authHeaders = session?.access_token
+    ? {
+        Authorization: `Bearer ${session.access_token}`,
+      }
+    : null;
   const sttLanguage = 'de-DE'; // Web Speech API locale for STT
   const [agentState, setAgentState] = useState<VoiceAgentState>('idle');
   const [error, setError] = useState<Error | null>(null);
@@ -59,6 +71,13 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   const completionHandledRef = useRef(false);
   const [onboardingSessionId, setOnboardingSessionId] = useState<string | null>(null);
   const [isOnboardingResuming, setIsOnboardingResuming] = useState(false);
+  const [interviewSessionId, setInterviewSessionId] = useState<string | null>(externalInterviewSessionId);
+
+  useEffect(() => {
+    if (externalInterviewSessionId) {
+      setInterviewSessionId(externalInterviewSessionId);
+    }
+  }, [externalInterviewSessionId]);
 
   // Refs for state machine control (avoid stale closures in callbacks)
   const processedMessageIdRef = useRef<string | null>(null);
@@ -72,32 +91,47 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     append, 
     isLoading: isThinking,
   } = useChat({
-    api: chapterId ? '/api/chat/chapter' : '/api/chat',
+    api:
+      voiceMode === 'chapter'
+        ? '/api/chat/chapter'
+        : voiceMode === 'onboarding'
+        ? '/api/chat'
+        : '/api/chat/biography',
+    ...(authHeaders ? { headers: authHeaders } : {}),
     body: {
-      chapterId,
-      userId: user?.id,
-      accessToken: session?.access_token,
+      ...(chapterId ? { chapterId } : {}),
+      ...(voiceMode === 'onboarding' && onboardingSessionId ? { sessionId: onboardingSessionId } : {}),
+      ...(voiceMode === 'biography' && interviewSessionId
+        ? { interviewSessionId, source: 'voice' as const }
+        : {}),
     },
-    initialMessages: [
-      {
-        id: 'voice-welcome',
-        role: 'assistant',
-        content: chapterId 
-          ? "Hallo! Ich helfe dir, deine Erinnerungen festzuhalten. Woran möchtest du dich heute erinnern?"
-          : "Willkommen zum Onboarding. Ich sammle jetzt deine Basisdaten – Herkunft, wichtige Stationen und Rahmeninfos. Antworte einfach mündlich, ich führe dich Frage für Frage durch.",
-      }
-    ],
+    initialMessages:
+      voiceMode === 'biography'
+        ? []
+        : [
+            {
+              id: 'voice-welcome',
+              role: 'assistant',
+              content:
+                voiceMode === 'chapter'
+                  ? "Hallo! Ich helfe dir, deine Erinnerungen festzuhalten. Woran möchtest du dich heute erinnern?"
+                  : "Willkommen zum Onboarding. Ich sammle jetzt deine Basisdaten – Herkunft, wichtige Stationen und Rahmeninfos. Antworte einfach mündlich, ich führe dich Frage für Frage durch.",
+            },
+          ],
   });
 
   // Ensure onboarding session exists (only for onboarding flow)
   const ensureOnboardingSession = useCallback(async (): Promise<string | null> => {
-    if (chapterId) return null; // Only needed for onboarding flow
+    if (voiceMode !== 'onboarding') return null;
     if (onboardingSessionId) return onboardingSessionId;
 
     try {
       const resp = await fetch('/api/onboarding/session', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authHeaders || {}),
+        },
       });
 
       if (!resp.ok) {
@@ -114,12 +148,43 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       console.error('❌ Error ensuring onboarding session:', err);
       return null;
     }
-  }, [chapterId, onboardingSessionId]);
+  }, [authHeaders, onboardingSessionId, voiceMode]);
+
+  const ensureInterviewSession = useCallback(async (): Promise<string | null> => {
+    if (voiceMode !== 'biography') return null;
+    if (interviewSessionId) return interviewSessionId;
+
+    try {
+      const response = await fetch('/api/interview-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authHeaders || {}),
+        },
+        body: JSON.stringify({
+          topics_covered: [],
+          memory_count: 0,
+          processing_status: 'processing',
+        }),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      const nextSessionId = data?.data?.id ?? null;
+      setInterviewSessionId(nextSessionId);
+      return nextSessionId;
+    } catch {
+      return null;
+    }
+  }, [authHeaders, interviewSessionId, voiceMode]);
 
   // Persist onboarding messages just like text onboarding does
   const saveOnboardingMessage = useCallback(
     async (role: 'user' | 'assistant', content: string) => {
-      if (chapterId) return; // Not an onboarding flow
+      if (voiceMode !== 'onboarding') return;
       const sanitized = content?.trim();
       if (!sanitized) return;
 
@@ -132,13 +197,14 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       try {
         const resp = await fetch('/api/onboarding/session', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authHeaders || {}),
+          },
           body: JSON.stringify({
             sessionId,
             role,
             content: sanitized,
-            userId: user?.id,
-            accessToken: session?.access_token,
           }),
         });
 
@@ -149,7 +215,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
         console.error('❌ Error saving onboarding voice message:', err);
       }
     },
-    [chapterId, ensureOnboardingSession, onboardingSessionId, session?.access_token, user?.id],
+    [authHeaders, ensureOnboardingSession, onboardingSessionId, voiceMode],
   );
 
   // Start listening helper - returns a promise that resolves when listening actually starts
@@ -227,7 +293,9 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     setAgentState('thinking');
     
     try {
-      await saveOnboardingMessage('user', transcript);
+      if (voiceMode === 'onboarding') {
+        await saveOnboardingMessage('user', transcript);
+      }
       await append({
         role: 'user',
         content: transcript,
@@ -239,7 +307,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       // Return to listening on error
       startListeningInternal();
     }
-  }, [append, onError, startListeningInternal]);
+  }, [append, onError, saveOnboardingMessage, startListeningInternal, voiceMode]);
 
   // Store voiceInput in ref so callbacks can access it
   const voiceInputRef = useRef<ReturnType<typeof useVoiceInput> | null>(null);
@@ -292,14 +360,27 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
   // End voice session
   const endSession = useCallback(() => {
-    console.log('🛑 Ending voice session');
+    if (voiceMode === 'biography' && interviewSessionId) {
+      void fetch(`/api/interview-sessions?sessionId=${interviewSessionId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authHeaders || {}),
+        },
+        body: JSON.stringify({
+          ended_at: new Date().toISOString(),
+          processing_status: 'complete',
+        }),
+      });
+    }
+
     setIsActive(false);
     isActiveRef.current = false;
     isTransitioningRef.current = false;
     voiceInput.stopListening();
     audioPlayer.stop();
     setAgentState('idle');
-  }, [voiceInput, audioPlayer]);
+  }, [audioPlayer, authHeaders, interviewSessionId, voiceInput, voiceMode]);
 
   // Handle new assistant messages - trigger TTS
   useEffect(() => {
@@ -317,13 +398,14 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     // Persist assistant turn for onboarding flow
     (async () => {
-      if (!chapterId) {
+      if (voiceMode === 'onboarding') {
         await saveOnboardingMessage('assistant', content);
       }
     })();
 
     // Detect onboarding completion markers (voice path lacks ChatInterface detection)
-    const lower = content.toLowerCase();
+    if (voiceMode === 'onboarding') {
+      const lower = content.toLowerCase();
     const completionPatterns = [
       '[onboarding_complete]',
       'grunddaten sind vollständig',
@@ -341,24 +423,25 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       ? false
       : completionPatterns.some(p => lower.includes(p));
 
-    if (isCompletion) {
+      if (isCompletion) {
       completionHandledRef.current = true;
       console.log('🎯 Voice path onboarding completion detected');
       // Best-effort: mark onboarding complete + convert answers, if user/session available
       (async () => {
         try {
-          const accessToken = session?.access_token;
           const chatSessionId = onboardingSessionId ?? (await ensureOnboardingSession());
+          const requestHeaders: Record<string, string> = {
+            'Content-Type': 'application/json',
+            ...(authHeaders || {}),
+          };
 
           if (chatSessionId) {
             await fetch('/api/onboarding/session', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: requestHeaders,
               body: JSON.stringify({
                 sessionId: chatSessionId,
                 markComplete: true,
-                userId: user?.id,
-                accessToken,
               }),
             });
           }
@@ -366,8 +449,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
           // Convert onboarding answers to events
           await fetch('/api/events/convert-onboarding', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user?.id, accessToken }),
+            headers: requestHeaders,
           });
 
           // Stop session and bubble completion
@@ -377,6 +459,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
           console.error('❌ Failed to finalize onboarding from voice path:', err);
         }
       })();
+    }
     }
 
     console.log('🔊 Speaking assistant message:', lastMessage.id, content.length, 'chars');
@@ -401,6 +484,8 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       onMemorySaved?.(idMatch?.[1] || '');
     }
   }, [
+    authHeaders,
+    voiceMode,
     messages,
     isThinking,
     isActive,
@@ -412,6 +497,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     onComplete,
     ensureOnboardingSession,
     onboardingSessionId,
+    saveOnboardingMessage,
   ]);
 
   // Start voice session
@@ -423,6 +509,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     // Ensure onboarding session exists before any turns are spoken
     const onboardingSession = await ensureOnboardingSession();
+    const biographySessionId = await ensureInterviewSession();
     
     // Preflight: ensure microphone is available before any TTS
     try {
@@ -446,12 +533,50 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       setAgentState('idle');
     }
 
+    if (voiceMode === 'biography') {
+      if (!biographySessionId) {
+        const sessionError = new Error('Interview session could not be started');
+        setError(sessionError);
+        setAgentState('error');
+        setIsActive(false);
+        isActiveRef.current = false;
+        onError?.(sessionError);
+        return;
+      }
+
+      try {
+        setAgentState('thinking');
+        await append(
+          {
+            role: 'user',
+            content: BIOGRAPHY_INTERVIEW_START_TOKEN,
+          },
+          {
+            body: {
+              interviewSessionId: biographySessionId,
+              source: 'voice',
+            },
+            ...(authHeaders ? { headers: authHeaders } : {}),
+          },
+        );
+      } catch (err) {
+        const bootstrapError =
+          err instanceof Error ? err : new Error('Failed to bootstrap biography interview');
+        setError(bootstrapError);
+        setAgentState('error');
+        setIsActive(false);
+        isActiveRef.current = false;
+        onError?.(bootstrapError);
+      }
+      return;
+    }
+
     // Play welcome message first, then start listening when it ends
     const welcomeMessage = messages[0];
     if (welcomeMessage && welcomeMessage.role === 'assistant' && !isMuted) {
       console.log('🔊 Playing welcome message');
       processedMessageIdRef.current = welcomeMessage.id;
-      if (!chapterId && onboardingSession && !isOnboardingResuming) {
+      if (voiceMode === 'onboarding' && onboardingSession && !isOnboardingResuming) {
         await saveOnboardingMessage('assistant', welcomeMessage.content);
       }
       audioPlayer.playText(welcomeMessage.content);
@@ -463,13 +588,17 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   }, [
     voiceInput,
     audioPlayer,
+    append,
+    authHeaders,
     messages,
     isMuted,
     startListeningInternal,
     ensureOnboardingSession,
+    ensureInterviewSession,
     saveOnboardingMessage,
-    chapterId,
     isOnboardingResuming,
+    onError,
+    voiceMode,
   ]);
 
   // Toggle mute
