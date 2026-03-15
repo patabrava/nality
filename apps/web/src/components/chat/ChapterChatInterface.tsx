@@ -54,6 +54,13 @@ function isRetryableRouteStatus(status: number): boolean {
   return status === 404 || status >= 500;
 }
 
+function stripSaveMemoryBlock(content: string): string {
+  return content
+    .replace(/\[SAVE_MEMORY\][\s\S]*$/i, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 export function ChapterChatInterface({ 
   chapter, 
   mode = 'chapter',
@@ -97,7 +104,7 @@ export function ChapterChatInterface({
         role: 'assistant',
         content: isBiographyMode
           ? 'Ich bin dein Biografie-Assistent. Ich starte gleich mit einer Frage, die zu deinen Vorab-Angaben und bisherigen Erinnerungen passt.'
-          : `Let's add a memory to your "${chapter?.title}" chapter. ${chapter?.summary || 'Share what you remember.'}. What moment would you like to capture?`,
+          : `Lass uns eine Erinnerung für dein Kapitel "${chapter?.title}" festhalten. ${chapter?.summary || 'Erzähl mir, woran du dich erinnerst.'} Welchen Moment möchtest du festhalten?`,
       }
     ],
   })
@@ -384,9 +391,16 @@ export function ChapterChatInterface({
     }
   }, [extractEvent, isBiographyMode, messages]);
 
-  const displayMessages = messages.filter(
-    (message) => !(message.role === 'user' && message.content === BIOGRAPHY_INTERVIEW_START_TOKEN),
-  )
+  const displayMessages = messages
+    .filter((message) => !(message.role === 'user' && message.content === BIOGRAPHY_INTERVIEW_START_TOKEN))
+    .map((message) => ({
+      ...message,
+      content:
+        message.role === 'assistant' && !isBiographyMode
+          ? stripSaveMemoryBlock(message.content)
+          : message.content,
+    }))
+    .filter((message) => message.content.trim().length > 0)
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -575,7 +589,7 @@ export function ChapterChatInterface({
                 color: 'var(--md-sys-color-on-surface-variant)',
               }}
             >
-              <span style={{ opacity: 0.7 }}>Thinking...</span>
+              <span style={{ opacity: 0.7 }}>Denkt nach...</span>
             </div>
           )}
           
@@ -609,19 +623,19 @@ export function ChapterChatInterface({
             {extractionStatus === 'extracting' && (
               <>
                 <span style={{ animation: 'pulse 1.5s infinite' }}>⏳</span>
-                Saving your memory...
+                Deine Erinnerung wird gespeichert...
               </>
             )}
             {extractionStatus === 'success' && (
               <>
                 <span>✅</span>
-                Memory saved to your timeline!
+                Erinnerung in deiner Zeitleiste gespeichert!
               </>
             )}
             {extractionStatus === 'error' && (
               <>
                 <span>❌</span>
-                Failed to save. Please try again.
+                Speichern fehlgeschlagen. Bitte versuche es erneut.
               </>
             )}
           </div>
@@ -641,7 +655,7 @@ export function ChapterChatInterface({
           <input
             value={input}
             onChange={handleInputChange}
-            placeholder={isBiographyMode ? 'Erzähl mir von einer Szene, Person oder Entscheidung ...' : 'Share your memory...'}
+            placeholder={isBiographyMode ? 'Erzähl mir von einer Szene, Person oder Entscheidung ...' : 'Teile deine Erinnerung ...'}
             style={{
               flex: 1,
               padding: '12px 16px',
@@ -670,7 +684,7 @@ export function ChapterChatInterface({
               transition: 'all 0.2s',
             }}
           >
-            Send
+            Senden
           </button>
         </form>
       </div>

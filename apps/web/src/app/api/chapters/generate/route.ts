@@ -1,179 +1,132 @@
 /**
  * Chapter Generation API
- * 
- * POST: Generate chapters from memories using AI clustering
+ *
+ * POST: Evaluate narrative readiness and create draft chapters in place
  */
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { openai } from '@ai-sdk/openai';
-import { generateObject } from 'ai';
 import { z } from 'zod';
+import { createClient } from '@/lib/supabase/server';
+import { evaluateNarrativeReadiness } from '@/features/chapter-planning/readiness';
+import { buildDraftChapterCandidates } from '@/features/chapter-planning/planner';
+import {
+  clearDraftChapters,
+  createDraftChapters,
+  loadChapterPlanningContext,
+  loadUserChapters,
+} from '@/features/chapter-planning/persistence';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const ChapterSuggestionSchema = z.object({
-  chapters: z.array(z.object({
-    title: z.string().describe('A meaningful, evocative title for this chapter'),
-    summary: z.string().describe('A brief 1-2 sentence summary of the chapter theme'),
-    time_range_start: z.string().nullable().describe('Approximate start date in YYYY-MM-DD format'),
-    time_range_end: z.string().nullable().describe('Approximate end date in YYYY-MM-DD format'),
-    theme_keywords: z.array(z.string()).describe('3-5 keywords that capture the theme'),
-    memory_indices: z.array(z.number()).describe('Indices of memories that belong to this chapter'),
-  })),
+const ChapterPlanningRequestSchema = z.object({
+  force_regenerate: z.boolean().optional().default(false),
 });
 
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const minMemories = body.min_memories || 5;
-    const forceRegenerate = body.force_regenerate || false;
-
-    // Get user's memories
-    const { data: memories, error: memoriesError } = await supabase
-      .from('memories')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('captured_at', { ascending: true });
-
-    if (memoriesError) {
-      console.error('Error fetching memories:', memoriesError);
-      return NextResponse.json({ error: 'Failed to fetch memories' }, { status: 500 });
+    const parsedBody = ChapterPlanningRequestSchema.safeParse(await req.json().catch(() => ({})));
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: 'Invalid chapter planning request' }, { status: 400 });
     }
 
-    if (!memories || memories.length < minMemories) {
+    const { force_regenerate: forceRegenerate } = parsedBody.data;
+    const existingChapters = await loadUserChapters(supabase, user.id);
+    const publishedChapters = existingChapters.filter((chapter: { status: string }) => chapter.status === 'published');
+    const draftChapters = existingChapters.filter((chapter: { status: string }) => chapter.status === 'draft');
+
+    if (publishedChapters.length > 0 && !forceRegenerate) {
       return NextResponse.json({
-        error: `Need at least ${minMemories} memories to generate chapters`,
-        current_count: memories?.length || 0,
+        error: 'Published chapters already exist. Confirmation flow has already completed.',
       }, { status: 400 });
     }
 
-    // Check if chapters already exist
-    if (!forceRegenerate) {
-      const { data: existingChapters } = await supabase
-        .from('chapters')
-        .select('id')
-        .eq('user_id', user.id)
-        .limit(1);
+    const planningContext = await loadChapterPlanningContext(supabase, user.id);
+    const readiness = evaluateNarrativeReadiness(
+      planningContext.progressRows,
+      planningContext.memories,
+    );
 
-      if (existingChapters && existingChapters.length > 0) {
-        return NextResponse.json({
-          error: 'Chapters already exist. Use force_regenerate: true to regenerate.',
-        }, { status: 400 });
-      }
+    if (!readiness.ready) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          ready: false,
+          readiness,
+          chapters_created: 0,
+          chapters: [],
+          memories_assigned: 0,
+        },
+      });
     }
 
-    // Prepare memories for LLM analysis
-    const memorySummaries = memories.map((m, idx) => ({
-      index: idx,
-      content: m.cleaned_content || m.raw_transcript,
-      captured_at: m.captured_at,
-      suggested_category: m.suggested_category,
-      topics: m.topics,
-    }));
+    if (draftChapters.length > 0 && !forceRegenerate) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          ready: true,
+          readiness,
+          chapters_created: draftChapters.length,
+          chapters: draftChapters,
+          memories_assigned: 0,
+        },
+      });
+    }
 
-    // Generate chapter suggestions using AI
-    const { object: suggestions } = await generateObject({
-      model: openai('gpt-4o'),
-      schema: ChapterSuggestionSchema,
-      prompt: `You are helping organize a person's life memories into meaningful chapters for their autobiography.
+    if (forceRegenerate || draftChapters.length > 0) {
+      await clearDraftChapters(supabase, user.id);
+    }
 
-Here are their memories in chronological order:
-${memorySummaries.map(m => `[${m.index}] ${m.captured_at?.split('T')[0] || 'Unknown date'}: ${m.content?.substring(0, 200)}...`).join('\n\n')}
-
-Analyze these memories and group them into 3-7 meaningful life chapters. Consider:
-1. **Time periods**: Natural life phases (childhood, education, career, etc.)
-2. **Themes**: Common topics or emotional threads
-3. **Significance**: Major life transitions or events
-
-For each chapter:
-- Create an evocative, personal title (not generic like "Childhood")
-- Write a brief summary capturing the essence
-- Identify approximate time boundaries
-- List relevant keywords
-- Assign memory indices that belong to this chapter
-
-Every memory should belong to exactly one chapter.`,
+    const candidates = buildDraftChapterCandidates({
+      readiness,
+      progressRows: planningContext.progressRows,
+      memories: planningContext.memories,
     });
 
-    // Delete existing chapters if force regenerating
-    if (forceRegenerate) {
-      await supabase
-        .from('memories')
-        .update({ chapter_id: null })
-        .eq('user_id', user.id);
-
-      await supabase
-        .from('chapters')
-        .delete()
-        .eq('user_id', user.id);
+    if (candidates.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          ready: false,
+          readiness: {
+            ...readiness,
+            ready: false,
+            gaps: [
+              ...readiness.gaps,
+              'Aus dem vorhandenen Material konnten noch keine belastbaren Kapitelentwürfe gebildet werden.',
+            ],
+          },
+          chapters_created: 0,
+          chapters: [],
+          memories_assigned: 0,
+        },
+      });
     }
 
-    // Create chapters and assign memories
-    const createdChapters = [];
-    let totalMemoriesAssigned = 0;
-
-    for (let i = 0; i < suggestions.chapters.length; i++) {
-      const chapterSuggestion = suggestions.chapters[i];
-      if (!chapterSuggestion) continue;
-
-      // Create chapter
-      const { data: chapter, error: chapterError } = await supabase
-        .from('chapters')
-        .insert({
-          user_id: user.id,
-          title: chapterSuggestion.title,
-          summary: chapterSuggestion.summary,
-          time_range_start: chapterSuggestion.time_range_start,
-          time_range_end: chapterSuggestion.time_range_end,
-          theme_keywords: chapterSuggestion.theme_keywords,
-          status: 'draft',
-          display_order: i,
-          memory_count: chapterSuggestion.memory_indices.length,
-        })
-        .select()
-        .single();
-
-      if (chapterError) {
-        console.error('Error creating chapter:', chapterError);
-        continue;
-      }
-
-      createdChapters.push(chapter);
-
-      // Assign memories to this chapter
-      const memoryIds = chapterSuggestion.memory_indices
-        .filter(idx => idx >= 0 && idx < memories.length)
-        .map(idx => memories[idx].id);
-
-      if (memoryIds.length > 0) {
-        const { error: updateError } = await supabase
-          .from('memories')
-          .update({ chapter_id: chapter.id })
-          .in('id', memoryIds)
-          .eq('user_id', user.id);
-
-        if (!updateError) {
-          totalMemoriesAssigned += memoryIds.length;
-        }
-      }
-    }
+    const createdChapters = await createDraftChapters(supabase, {
+      userId: user.id,
+      readiness,
+      candidates,
+    });
 
     return NextResponse.json({
       success: true,
       data: {
+        ready: true,
+        readiness,
         chapters_created: createdChapters.length,
         chapters: createdChapters,
-        memories_assigned: totalMemoriesAssigned,
+        memories_assigned: 0,
       },
     });
   } catch (error) {

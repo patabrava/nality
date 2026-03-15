@@ -3,8 +3,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
-import { fetchUserProfile } from '@/lib/supabase/client'
-import { getIncompleteOnboardingPath } from '@/lib/onboarding/flags'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -24,25 +22,7 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          // User is authenticated, check onboarding state
-          const userId = data.session.user.id
-          const profile = await fetchUserProfile(userId)
-          const searchParams = new URLSearchParams(window.location.search)
-          const altToken = searchParams.get('altToken')
-
-          const buildIncompleteRedirect = () => {
-            const incompletePath = getIncompleteOnboardingPath()
-            if (incompletePath === '/meeting' && altToken) {
-              return `/meeting?altToken=${encodeURIComponent(altToken)}`
-            }
-            return incompletePath
-          }
-
-          if (profile && profile.onboarding_complete) {
-            router.push('/dash')
-          } else {
-            router.push(buildIncompleteRedirect())
-          }
+          router.push('/dash')
         } else {
           // No session, redirect to login
           router.push('/login')

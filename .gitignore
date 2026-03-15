@@ -8,6 +8,7 @@ node_modules/
 
 # Build artifacts
 .next/
+.next.corrupt-*/
 dist/
 *.tsbuildinfo
 
@@ -31,11 +32,8 @@ Thumbs.db
 # Supabase
 .supabase/
 
-# YAML files
-
-*.yml
-# Allow prompt YAML inside web app prompts
-!apps/web/src/lib/prompts/onboarding.yaml
+# Local YAML scratch files
+*.local.yml
 
 *mcp_config.json
 

@@ -33,7 +33,7 @@ export function FreeTalkInterface({
   onComplete
 }: FreeTalkInterfaceProps) {
   const { t } = useI18n();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [state, setState] = useState<FreeTalkState>('idle');
   const [extractedEvents, setExtractedEvents] = useState<ExtractedEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -93,12 +93,18 @@ export function FreeTalkInterface({
       // Send transcript to extraction API
       const response = await fetch('/api/events/extract', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token
+            ? {
+                Authorization: `Bearer ${session.access_token}`,
+              }
+            : {}),
+        },
         body: JSON.stringify({
           content: transcript,
           chapterId: chapter?.id,
-          userId: user?.id,
-          source: 'voice_monologue',
+          source: chapter?.id ? 'chapter_chat' : 'voice_monologue',
         }),
       });
 
@@ -108,7 +114,12 @@ export function FreeTalkInterface({
         throw new Error(data.error);
       }
 
-      if (data.events && data.events.length > 0) {
+      if (data?.persisted?.ids?.length) {
+        setState('success');
+        setTimeout(() => {
+          onComplete?.();
+        }, 2000);
+      } else if (data.events && data.events.length > 0) {
         setExtractedEvents(data.events);
         setState('preview');
       } else if (data.saved) {
@@ -126,7 +137,7 @@ export function FreeTalkInterface({
       setError(t('voice.freeTalk.failedProcess'));
       setState('error');
     }
-  }, [voiceInput, chapter?.id, user?.id, onComplete, t]);
+  }, [voiceInput, chapter?.id, onComplete, session?.access_token, t]);
 
   const confirmEvents = useCallback(async () => {
     setState('processing');

@@ -126,7 +126,7 @@ async function fetchEnvelope<T>(url: string, signal?: AbortSignal): Promise<T> {
   const payload = (await response.json().catch(() => null)) as Envelope<T> | null;
 
   if (!response.ok || !payload) {
-    throw new Error(payload?.message ?? 'Request failed');
+    throw new Error(payload?.message ?? 'Die Anfrage ist fehlgeschlagen.');
   }
 
   return payload.data;
@@ -393,7 +393,7 @@ export function AdminOverviewModule() {
         if (cancelled || isAbortLikeError(error)) {
           return;
         }
-        setOverviewError(error instanceof Error ? error.message : 'Failed to load overview');
+        setOverviewError(error instanceof Error ? error.message : 'Die Übersicht konnte nicht geladen werden.');
       })
       .finally(() => {
         if (cancelled) {
@@ -438,7 +438,7 @@ export function AdminOverviewModule() {
           if (cancelled || isAbortLikeError(error)) {
             return;
           }
-          setUsersError(error instanceof Error ? error.message : 'Failed to load users');
+          setUsersError(error instanceof Error ? error.message : 'Die Nutzerdaten konnten nicht geladen werden.');
         })
         .finally(() => {
           if (cancelled) {
@@ -462,27 +462,27 @@ export function AdminOverviewModule() {
 
     return [
       {
-        label: 'Users total',
+        label: 'Nutzende gesamt',
         value: formatNumber(overview.summary.totalUsers),
-        detail: `${formatNumber(overview.summary.onboardedUsers)} fully onboarded profiles in archive`,
+        detail: `${formatNumber(overview.summary.onboardedUsers)} vollständig eingerichtete Profile im Archiv`,
         icon: <Users size={16} aria-hidden="true" />,
       },
       {
-        label: 'Active users',
+        label: 'Aktive Nutzende',
         value: formatNumber(overview.summary.activeUsers),
-        detail: `Observed activity inside the live ${overview.filters.window} window`,
+        detail: `Beobachtete Aktivität im aktiven Zeitraum ${overview.filters.window}`,
         icon: <Activity size={16} aria-hidden="true" />,
       },
       {
-        label: 'Biographies',
+        label: 'Biografien',
         value: formatNumber(overview.summary.currentBiographies),
-        detail: 'Current biography versions ready for QA, export, or support handoff',
+        detail: 'Aktuelle Biografieversionen für Prüfung, Export oder Übergabe',
         icon: <BookText size={16} aria-hidden="true" />,
       },
       {
-        label: 'Interview load',
+        label: 'Interviewlast',
         value: formatNumber(overview.summary.interviewSessions),
-        detail: `${formatCompactNumber(overview.summary.averageMemoriesPerInterview)} memories captured per session on average`,
+        detail: `${formatCompactNumber(overview.summary.averageMemoriesPerInterview)} Erinnerungen pro Sitzung im Durchschnitt`,
         icon: <Mic2 size={16} aria-hidden="true" />,
       },
     ];
@@ -499,41 +499,40 @@ export function AdminOverviewModule() {
       <div className={styles.container}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
-            <div className={styles.eyebrow}>Admin workspace</div>
-            <h1 className={styles.title}>Admin overview for search, live sessions, and archive status.</h1>
+            <div className={styles.eyebrow}>Verwaltungsbereich</div>
+            <h1 className={styles.title}>Verwaltungsübersicht für Suche, laufende Sitzungen und Archivstatus.</h1>
             <p className={styles.lead}>
-              Search a participant, check core activity, and open the single-user workspace when an assisted interview
-              is happening in the room.
+              Suche eine Person, prüfe die Kernaktivität und öffne den Einzelarbeitsbereich, wenn gerade ein begleitetes Interview läuft.
             </p>
 
             <div className={styles.heroNotes}>
               <article className={styles.noteCard}>
-                <div className={styles.noteLabel}>Retention pulse</div>
+                <div className={styles.noteLabel}>Bindungssignal</div>
                 <div className={styles.noteValue}>
                   {overview ? formatNumber(overview.summary.activeUsers) : '...'}
                 </div>
                 <p className={styles.noteDetail}>
-                  Participants showing recent movement in the selected operating window.
+                  Teilnehmende mit jüngster Aktivität im gewählten Zeitraum.
                 </p>
               </article>
 
               <article className={styles.noteCard}>
-                <div className={styles.noteLabel}>Narrative readiness</div>
+                <div className={styles.noteLabel}>Erzählbereitschaft</div>
                 <div className={styles.noteValue}>
                   {overview ? formatNumber(overview.summary.currentBiographies) : '...'}
                 </div>
                 <p className={styles.noteDetail}>
-                  Current biographies available for export, QA review, or white-glove support.
+                  Aktuelle Biografien, die für Export, Prüfung oder persönliche Begleitung bereitstehen.
                 </p>
               </article>
 
               <article className={styles.noteCard}>
-                <div className={styles.noteLabel}>Interview cadence</div>
+                <div className={styles.noteLabel}>Interview-Takt</div>
                 <div className={styles.noteValue}>
-                  {overview ? formatCompactNumber(overview.summary.averageMemoriesPerInterview) : '...'} avg
+                  {overview ? formatCompactNumber(overview.summary.averageMemoriesPerInterview) : '...'} Ø
                 </div>
                 <p className={styles.noteDetail}>
-                  Useful as a live benchmark while you run a guided in-room conversation.
+                  Nützlich als Live-Vergleichswert während eines begleiteten Gesprächs vor Ort.
                 </p>
               </article>
             </div>
@@ -541,8 +540,8 @@ export function AdminOverviewModule() {
 
           <aside className={styles.heroAside}>
             <section className={styles.asideCard}>
-              <div className={styles.eyebrow}>Window selector</div>
-              <h2 className={styles.asideTitle}>Metrics and charts stay tied to one active window.</h2>
+              <div className={styles.eyebrow}>Zeitraumauswahl</div>
+              <h2 className={styles.asideTitle}>Metriken und Diagramme bleiben an einen aktiven Zeitraum gebunden.</h2>
 
               <div className={styles.filterRow}>
                 {(['7d', '30d', '90d'] as const).map((value) => (
@@ -551,7 +550,7 @@ export function AdminOverviewModule() {
                     active={windowFilter === value}
                     onClick={() => setWindowFilter(value)}
                   >
-                    Last {value}
+                    Letzte {value}
                   </FilterPill>
                 ))}
               </div>
@@ -572,27 +571,27 @@ export function AdminOverviewModule() {
         <section className={styles.overviewGrid}>
           <div className={styles.chartGrid}>
             <BarChart
-              title="New registrations"
-              subtitle="Daily registrations inside the selected operator window."
-              badge="growth"
+              title="Neue Registrierungen"
+              subtitle="Tägliche Registrierungen im gewählten Zeitraum."
+              badge="Wachstum"
               points={overview?.charts.userGrowth ?? []}
             />
             <LineChart
-              title="Memory flow"
-              subtitle="Captured memory volume over time, useful for spotting stalled interviews."
-              badge="capture"
+              title="Erinnerungsfluss"
+              subtitle="Erfasste Erinnerungsmenge im Zeitverlauf, hilfreich zum Erkennen stockender Interviews."
+              badge="Erfassung"
               points={overview?.charts.memoryTrend ?? []}
             />
           </div>
 
           <Panel
-            title="Archive mix"
-            subtitle="Current capture modes and recurring topics in the selected window."
-            badge="mix"
+            title="Archiv-Mix"
+            subtitle="Aktuelle Erfassungsarten und wiederkehrende Themen im gewählten Zeitraum."
+            badge="Mix"
             muted
           >
             {(overview?.charts.captureModes ?? []).length === 0 ? (
-              <EmptyState>No capture-mode activity in this window.</EmptyState>
+              <EmptyState>In diesem Zeitraum gibt es keine Aktivität bei den Erfassungsarten.</EmptyState>
             ) : (
               <div className={styles.stack}>
                 <div className={styles.meterList}>
@@ -613,9 +612,9 @@ export function AdminOverviewModule() {
                 </div>
 
                 <div>
-                  <div className={styles.fieldLabel}>Top recurring topics</div>
+                  <div className={styles.fieldLabel}>Häufigste wiederkehrende Themen</div>
                   {(overview?.charts.topTopics ?? []).length === 0 ? (
-                    <EmptyState>No dominant topic clusters in this window.</EmptyState>
+                    <EmptyState>In diesem Zeitraum gibt es keine dominanten Themencluster.</EmptyState>
                   ) : (
                     <div className={styles.topicList}>
                       {(overview?.charts.topTopics ?? []).map((topic) => (
@@ -642,29 +641,29 @@ export function AdminOverviewModule() {
 
         <section className={styles.directoryGrid}>
           <Panel
-            title="Participant directory"
-            subtitle="Search by name or email, then open the user workspace."
+            title="Teilnehmendenverzeichnis"
+            subtitle="Suche nach Name oder E-Mail und öffne dann den jeweiligen Arbeitsbereich."
             badge={usersLoading ? 'loading' : `${users.length} matches`}
           >
             <div className={styles.searchBar}>
               <label htmlFor="admin-user-search" className={styles.fieldLabel}>
-                Participant lookup
+                Personensuche
               </label>
               <input
                 id="admin-user-search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search a participant by name or email"
+                placeholder="Teilnehmende nach Name oder E-Mail suchen"
                 className={styles.searchInput}
               />
             </div>
 
             <div className={styles.filterRow}>
               {([
-                ['all', 'All people'],
-                ['onboarded', 'Onboarded'],
-                ['incomplete', 'Incomplete'],
-                ['with_memories', 'With memories'],
+                ['all', 'Alle Personen'],
+                ['onboarded', 'Eingerichtet'],
+                ['incomplete', 'Unvollständig'],
+                ['with_memories', 'Mit Erinnerungen'],
               ] as const).map(([value, label]) => (
                 <FilterPill
                   key={value}
@@ -687,34 +686,34 @@ export function AdminOverviewModule() {
                 : null}
 
               {!usersLoading && users.length === 0 ? (
-                <EmptyState>No participant matched the current filters.</EmptyState>
+                <EmptyState>Keine Person passt zu den aktuellen Filtern.</EmptyState>
               ) : null}
 
               {!usersLoading
                 ? users.map((user) => {
-                    const userLabel = user.full_name || user.email || 'Unnamed participant';
-                    const statusLabel = user.onboarding_complete ? 'Onboarded' : 'Incomplete';
+                    const userLabel = user.full_name || user.email || 'Unbenannte Person';
+                    const statusLabel = user.onboarding_complete ? 'Eingerichtet' : 'Unvollständig';
 
                     return (
                       <Link key={user.id} href={`/admin/users/${user.id}`} className={styles.directoryRow}>
                         <div className={styles.directoryIdentity}>
                           <div className={styles.directoryName}>{userLabel}</div>
-                          <div className={styles.directoryEmail}>{user.email || 'No email saved'}</div>
+                          <div className={styles.directoryEmail}>{user.email || 'Keine E-Mail gespeichert'}</div>
                           <div className={styles.badgeRow}>
                             <span className={joinClassNames(styles.badge, styles.badgeAccent)}>{statusLabel}</span>
                             {user.birth_place ? <span className={styles.badge}>{user.birth_place}</span> : null}
-                            {user.stats.hasBiography ? <span className={styles.badge}>Biography ready</span> : null}
+                            {user.stats.hasBiography ? <span className={styles.badge}>Biografie bereit</span> : null}
                           </div>
                         </div>
 
                         <div className={styles.directoryMetric}>
                           <span className={styles.directoryMetricValue}>{user.stats.memories}</span>
-                          <span className={styles.directoryMetricLabel}>Memories</span>
+                          <span className={styles.directoryMetricLabel}>Erinnerungen</span>
                         </div>
 
                         <div className={styles.directoryMetric}>
                           <span className={styles.directoryMetricValue}>{user.stats.chapters}</span>
-                          <span className={styles.directoryMetricLabel}>Chapters</span>
+                          <span className={styles.directoryMetricLabel}>Kapitel</span>
                         </div>
 
                         <div className={styles.directoryMetric}>
@@ -724,7 +723,7 @@ export function AdminOverviewModule() {
 
                         <div className={styles.directoryMeta}>
                           <div>{formatDate(user.stats.lastMemoryAt)}</div>
-                          <div>Updated {formatDate(user.updated_at)}</div>
+                          <div>Aktualisiert {formatDate(user.updated_at)}</div>
                         </div>
 
                         <div className={styles.arrowTag} aria-hidden="true">

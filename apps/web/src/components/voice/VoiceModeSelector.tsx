@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Mic, MessageSquare, FileText } from 'lucide-react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 
@@ -22,6 +23,16 @@ interface VoiceModeSelectorProps {
  */
 export function VoiceModeSelector({ onSelect, onClose, availableModes }: VoiceModeSelectorProps) {
   const { t } = useI18n();
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    dialogRef.current?.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const allModes = [
     {
@@ -56,6 +67,11 @@ export function VoiceModeSelector({ onSelect, onClose, availableModes }: VoiceMo
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="vms-title"
+      ref={dialogRef}
+      tabIndex={-1}
       style={{
         position: 'fixed',
         inset: 0,
@@ -66,6 +82,7 @@ export function VoiceModeSelector({ onSelect, onClose, availableModes }: VoiceMo
         alignItems: 'center',
         justifyContent: 'center',
         padding: '16px',
+        outline: 'none',
       }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
@@ -83,6 +100,7 @@ export function VoiceModeSelector({ onSelect, onClose, availableModes }: VoiceMo
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <h2
+            id="vms-title"
             style={{
               fontSize: '1.5rem',
               fontWeight: 600,

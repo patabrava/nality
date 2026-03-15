@@ -70,20 +70,20 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
             color: '#fff',
           }}>
-            Your Memories
+            Deine Erinnerungen
           </h1>
           <p style={{ 
             margin: '4px 0 0', 
             color: 'rgba(255, 255, 255, 0.5)',
             fontSize: '0.9rem',
           }}>
-            {memories.length} memories captured
+            {memories.length} Erinnerungen festgehalten
           </p>
         </div>
         
         <button
           onClick={() => setShowVoiceSelector(true)}
-          aria-label="Add memory"
+          aria-label="Erinnerung hinzufügen"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -99,14 +99,14 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
           }}
         >
           <Plus size={18} aria-hidden="true" />
-          Add Memory
+          Erinnerung hinzufügen
         </button>
       </header>
       
       {loading ? (
         <div
           role="status"
-          aria-label="Loading memories"
+          aria-label="Erinnerungen werden geladen"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -115,7 +115,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             color: 'rgba(255, 255, 255, 0.5)',
           }}
         >
-          Loading memories...
+          Erinnerungen werden geladen...
         </div>
       ) : memories.length === 0 ? (
         <div style={{
@@ -144,7 +144,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             color: '#fff',
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
           }}>
-            Start capturing your story
+            Beginne, deine Geschichte festzuhalten
           </h2>
           <p style={{ 
             color: 'rgba(255, 255, 255, 0.6)', 
@@ -152,8 +152,8 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             marginBottom: '24px',
             lineHeight: 1.6,
           }}>
-            Record your first memory to begin building your autobiography. 
-            Speak freely, answer questions, or write it down.
+            Halte deine erste Erinnerung fest, um mit deiner Autobiografie zu beginnen.
+            Sprich frei, beantworte Fragen oder schreibe sie auf.
           </p>
           <button
             onClick={() => setShowVoiceSelector(true)}
@@ -172,7 +172,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             }}
           >
             <Plus size={20} />
-            Add Your First Memory
+            Erste Erinnerung hinzufügen
           </button>
         </div>
       ) : (

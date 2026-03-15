@@ -63,8 +63,8 @@ export function ChatModule() {
           >
             <div className="text-center space-y-4">
               <div className="text-3xl">🔐</div>
-              <p>Authentication required</p>
-              <p className="text-sm">Please log in to access the chat</p>
+              <p>Anmeldung erforderlich</p>
+              <p className="text-sm">Bitte melde dich an, um das Gespräch zu öffnen.</p>
               <button
                 onClick={() => router.push('/login')}
                 className="px-4 py-2 rounded"
@@ -73,7 +73,7 @@ export function ChatModule() {
                   color: 'var(--c-primary-invert)'
                 }}
               >
-                Go to Login
+                Zum Login
               </button>
             </div>
           </div>

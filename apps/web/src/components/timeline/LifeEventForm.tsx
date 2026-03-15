@@ -46,15 +46,15 @@ interface FormErrors {
 // ──────────────────────
 
 const CATEGORY_OPTIONS = [
-  { value: 'personal', label: 'Personal' },
-  { value: 'education', label: 'Education' },
-  { value: 'career', label: 'Career' },
-  { value: 'family', label: 'Family' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'achievement', label: 'Achievement' },
-  { value: 'health', label: 'Health' },
-  { value: 'relationship', label: 'Relationship' },
-  { value: 'other', label: 'Other' },
+  { value: 'personal', label: 'Persönlich' },
+  { value: 'education', label: 'Bildung' },
+  { value: 'career', label: 'Beruf' },
+  { value: 'family', label: 'Familie' },
+  { value: 'travel', label: 'Reisen' },
+  { value: 'achievement', label: 'Erfolg' },
+  { value: 'health', label: 'Gesundheit' },
+  { value: 'relationship', label: 'Beziehung' },
+  { value: 'other', label: 'Sonstiges' },
 ]
 
 // ──────────────────────
@@ -125,14 +125,14 @@ export function LifeEventForm({
 
     // Title validation
     if (!formState.title.trim()) {
-      newErrors.title = 'Title is required'
+      newErrors.title = 'Ein Titel ist erforderlich'
     } else if (formState.title.length > 200) {
-      newErrors.title = 'Title must be less than 200 characters'
+      newErrors.title = 'Der Titel darf höchstens 200 Zeichen lang sein'
     }
 
     // Start date validation
     if (!formState.start_date) {
-      newErrors.start_date = 'Start date is required'
+      newErrors.start_date = 'Ein Startdatum ist erforderlich'
     }
 
     // End date validation
@@ -141,7 +141,7 @@ export function LifeEventForm({
       const endDate = new Date(formState.end_date)
       
       if (endDate < startDate) {
-        newErrors.end_date = 'End date cannot be before start date'
+        newErrors.end_date = 'Das Enddatum darf nicht vor dem Startdatum liegen'
       }
     }
 
@@ -227,13 +227,13 @@ export function LifeEventForm({
       await onSubmit(formData)
     } catch (error) {
       console.error('[LifeEventForm] Form submission error:', error)
-      setErrors({ general: 'Failed to save event. Please try again.' })
+      setErrors({ general: 'Das Ereignis konnte nicht gespeichert werden. Bitte versuche es erneut.' })
     }
   }
 
   const handleCancel = () => {
     console.log('[LifeEventForm] Cancel requested', { isDirty })
-    if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+    if (isDirty && !window.confirm('Du hast ungespeicherte Änderungen. Möchtest du wirklich abbrechen?')) {
       return
     }
     onCancel()
@@ -265,7 +265,7 @@ export function LifeEventForm({
   const renderTagInput = () => (
     <div className="form-group">
       <label className="form-label">
-        Tags
+        Schlagwörter
       </label>
       <div className="flex flex-wrap gap-2 mb-4">
         {formState.tags.map((tag: string, index: number) => (
@@ -284,7 +284,7 @@ export function LifeEventForm({
               onClick={() => handleTagRemove(tag)}
               className="ml-1 hover:opacity-70"
               style={{ color: 'var(--md-sys-color-on-surface-variant)' }}
-              aria-label={`Remove tag ${tag}`}
+              aria-label={`Schlagwort ${tag} entfernen`}
             >
               <CloseIcon />
             </button>
@@ -298,7 +298,7 @@ export function LifeEventForm({
           onChange={(e) => handleInputChange('tagInput', e.target.value)}
           onKeyDown={handleTagInputKeyDown}
           className="form-input flex-1"
-          placeholder="Enter a tag"
+          placeholder="Schlagwort eingeben"
           maxLength={20}
         />
         <button
@@ -307,7 +307,7 @@ export function LifeEventForm({
           disabled={!formState.tagInput.trim()}
           className="form-button secondary"
         >
-          Add
+          Hinzufügen
         </button>
       </div>
     </div>
@@ -324,7 +324,7 @@ export function LifeEventForm({
            color: 'var(--md-sys-color-on-surface)'
          }}>
       <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--md-sys-color-on-surface)' }}>
-        {isEditing ? 'Edit Life Event' : 'Create Life Event'}
+        {isEditing ? 'Lebensereignis bearbeiten' : 'Lebensereignis anlegen'}
       </h2>
 
       {errors.general && (
@@ -340,13 +340,13 @@ export function LifeEventForm({
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Title */}
-        {renderFormField('Title',
+        {renderFormField('Titel',
           <input
             type="text"
             value={formState.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
             className="form-input"
-            placeholder="What happened?"
+            placeholder="Was ist passiert?"
             maxLength={200}
             required
           />,
@@ -355,19 +355,19 @@ export function LifeEventForm({
         )}
 
         {/* Description */}
-        {renderFormField('Description',
+        {renderFormField('Beschreibung',
           <textarea
             value={formState.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             className="form-textarea"
-            placeholder="Tell the story..."
+            placeholder="Erzähle die Geschichte..."
             rows={3}
           />
         )}
 
         {/* Date fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {renderFormField('Start Date',
+          {renderFormField('Startdatum',
             <input
               type="date"
               value={formState.start_date}
@@ -379,7 +379,7 @@ export function LifeEventForm({
             true
           )}
 
-          {renderFormField('End Date',
+          {renderFormField('Enddatum',
             <input
               type="date"
               value={formState.end_date}
@@ -401,13 +401,13 @@ export function LifeEventForm({
               className="w-4 h-4 rounded"
               style={{ accentColor: 'var(--md-sys-color-primary)' }}
             />
-            This is ongoing
+            Das dauert noch an
           </label>
         </div>
 
         {/* Category and Location */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {renderFormField('Category',
+          {renderFormField('Kategorie',
             <EnhancedTopicDropdown
               value={formState.category}
               onChange={(value) => handleInputChange('category', value)}
@@ -415,19 +415,19 @@ export function LifeEventForm({
             />
           )}
 
-          {renderFormField('Location',
+          {renderFormField('Ort',
             <input
               type="text"
               value={formState.location}
               onChange={(e) => handleInputChange('location', e.target.value)}
               className="form-input"
-              placeholder="Where did this happen?"
+              placeholder="Wo ist das passiert?"
             />
           )}
         </div>
 
         {/* Importance */}
-        {renderFormField('Importance',
+        {renderFormField('Bedeutung',
           <div className="flex items-center gap-4">
             <input
               type="range"
@@ -455,14 +455,14 @@ export function LifeEventForm({
             className="form-button secondary"
             disabled={isLoading}
           >
-            Cancel
+            Abbrechen
           </button>
           <button
             type="submit"
             className="form-button primary"
             disabled={isLoading}
           >
-            {isLoading ? 'Saving...' : (isEditing ? 'Update Event' : 'Create Event')}
+            {isLoading ? 'Wird gespeichert...' : (isEditing ? 'Ereignis aktualisieren' : 'Ereignis anlegen')}
           </button>
         </div>
       </form>

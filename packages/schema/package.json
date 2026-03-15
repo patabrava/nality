@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
-    "zod": "latest"
+    "zod": "3.23.0"
   },
   "devDependencies": {
     "typescript": "^5"

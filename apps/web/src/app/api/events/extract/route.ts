@@ -6,8 +6,11 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase/server';
+import {
+  authenticationRequiredResponse,
+  getAuthenticatedRequestContext,
+} from '@/lib/server/auth';
 import {
   getDestination,
   needsSplitting,
@@ -30,57 +33,41 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
-  console.log('� Unified Extraction API endpoint hit');
-
   try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse();
+    }
+
     const body: ExtractionRequest = await req.json();
-    const { content, source, topic, chapterId, userId: bodyUserId, accessToken } = body;
+    const { content, source, topic, chapterId } = body;
 
     // Validate content
     if (!content || typeof content !== 'string') {
       return NextResponse.json({ error: 'Content is required', success: false }, { status: 400 });
     }
 
-    // Authenticate user
-    let effectiveUserId: string | null = null;
-
-    // Try server auth first
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    effectiveUserId = user?.id || null;
-
-    // If no server auth, try accessToken
-    if (!effectiveUserId && accessToken) {
-      const authedClient = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          global: {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
-        }
-      );
-      const { data: { user: tokenUser } } = await authedClient.auth.getUser();
-      effectiveUserId = tokenUser?.id || null;
-    }
-
-    // Fallback to bodyUserId
-    if (!effectiveUserId && bodyUserId) {
-      effectiveUserId = bodyUserId;
-    }
-
-    if (!effectiveUserId) {
-      console.error('❌ No authenticated user found');
-      return NextResponse.json({ error: 'Authentication required', success: false }, { status: 401 });
-    }
-
-    console.log(`� Source: ${source}, Topic: ${topic || 'N/A'}, Chapter: ${chapterId || 'N/A'}`);
-
     // Route based on source
     let result: ExtractionResult;
 
     if (source === 'chapter_chat') {
       result = await extractFromChapterChat(content, chapterId || 'moments');
+    } else if (source === 'voice_monologue') {
+      result = {
+        destination: 'life_event',
+        events: [
+          {
+            title: content.slice(0, 60).trim() || 'Erinnerung',
+            description: content,
+            start_date: null,
+            category: chapterId ? getCategoryForChapter(chapterId) : 'personal',
+            confidence: 0.7,
+            source: 'voice_monologue',
+          },
+        ],
+        rawContent: content,
+        confidence: 0.7,
+      };
     } else if (source === 'onboarding') {
       result = await extractFromOnboarding(content, topic || 'identity');
     } else {
@@ -89,7 +76,7 @@ export async function POST(req: Request) {
 
     // Persist extracted data
     const serviceClient = await createServiceClient();
-    const persistResult = await persistExtractionResult(result, effectiveUserId, serviceClient);
+    const persistResult = await persistExtractionResult(result, auth.user.id, serviceClient);
 
     const response: ExtractionResponse = {
       success: true,
@@ -97,7 +84,6 @@ export async function POST(req: Request) {
       persisted: persistResult,
     };
 
-    console.log(`✅ Extraction complete: ${result.destination}, persisted: ${persistResult.success}`);
     return NextResponse.json(response);
 
   } catch (error) {

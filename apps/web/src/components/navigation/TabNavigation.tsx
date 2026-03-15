@@ -6,10 +6,10 @@ import { useDashboard } from '@/hooks/useDashboard'
 
 // Navigation contract from new_component.md  
 const tabs = [
-  { id: 'dashboard', label: 'Dashboard', route: '/dash', icon: 'house' },
-  { id: 'timeline', label: 'Timeline', route: '/dash/timeline', icon: 'timeline' },
-  { id: 'chat', label: 'Chat', route: '/dash/chat', icon: 'chat' },
-  { id: 'contact', label: 'Contact', route: '/dash/contact', icon: 'user' }
+  { id: 'dashboard', label: 'Übersicht', route: '/dash', icon: 'house' },
+  { id: 'timeline', label: 'Zeitleiste', route: '/dash/timeline', icon: 'timeline' },
+  { id: 'chat', label: 'Gespräch', route: '/dash/chat', icon: 'chat' },
+  { id: 'contact', label: 'Kontakt', route: '/dash/contact', icon: 'user' }
 ] as const
 
 export function TabNavigation() {
@@ -44,7 +44,7 @@ export function TabNavigation() {
   return (
     <nav 
       className={`flex-shrink-0 flex flex-col py-4 transition-all duration-200 border-l border-white/5 bg-[#050505] ${compactMode ? 'w-16' : 'w-20'}`}
-      aria-label="Dashboard Navigation"
+      aria-label="Dashboard-Navigation"
       role="tablist"
     >
       {tabs.map((tab) => {
@@ -65,8 +65,8 @@ export function TabNavigation() {
       {/* Debug info */}
       {!compactMode && (
         <div className="mt-auto p-2 text-xs space-y-1" style={{ color: 'var(--c-neutral-dark)' }}>
-          <div>Avg: {averageModuleLoadTime.toFixed(1)}ms</div>
-          <div>Active: {activeModule || 'none'}</div>
+          <div>Ø: {averageModuleLoadTime.toFixed(1)}ms</div>
+          <div>Aktiv: {activeModule || 'keins'}</div>
         </div>
       )}
     </nav>

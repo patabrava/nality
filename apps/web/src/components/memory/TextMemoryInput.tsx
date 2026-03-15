@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, Send } from 'lucide-react'
 import { useMemories } from '@/hooks/useMemories'
 
@@ -12,7 +12,17 @@ interface TextMemoryInputProps {
 export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
   const [content, setContent] = useState('')
   const [saving, setSaving] = useState(false)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const { createMemory } = useMemories()
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    dialogRef.current?.focus()
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   const handleSave = async () => {
     if (!content.trim()) return
@@ -35,7 +45,12 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
   }
 
   return (
-    <div 
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="memory-modal-title"
+      ref={dialogRef}
+      tabIndex={-1}
       className="text-memory-modal"
       style={{
         position: 'fixed',
@@ -45,6 +60,7 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
+        outline: 'none',
       }}
     >
       <header style={{
@@ -55,15 +71,16 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
       }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.125rem', color: '#fff' }}>
+          <h1 id="memory-modal-title" style={{ margin: 0, fontSize: '1.125rem', color: '#fff' }}>
             Write a Memory
           </h1>
           <p style={{ margin: '4px 0 0', fontSize: '0.75rem', opacity: 0.6, color: '#fff' }}>
             Capture your thoughts in writing
           </p>
         </div>
-        <button 
+        <button
           onClick={onClose}
+          aria-label="Close"
           style={{
             background: 'transparent',
             border: 'none',
@@ -82,7 +99,9 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
         display: 'flex',
         flexDirection: 'column',
       }}>
+        <label htmlFor="memory-content" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Your memory</label>
         <textarea
+          id="memory-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What's on your mind? Share a memory, a thought, or something you want to remember..."

@@ -145,12 +145,13 @@ describe('convertOnboardingToEvents', () => {
     // All answers should have been processed and marked extracted
     expect(updateCalls).toHaveLength(answers.length);
 
-    // Extraction API should be called once per answer with onboarding source and userId
+    // Extraction API should be called once per answer with onboarding source and bearer auth
     expect(fetchMock).toHaveBeenCalledTimes(answers.length);
     expect(fetchMock.mock.calls[0]).toBeDefined();
     const firstCall = fetchMock.mock.calls[0];
     const firstCallBody = JSON.parse(String(firstCall?.[1]?.body ?? '{}'));
     expect(firstCallBody.source).toBe('onboarding');
-    expect(firstCallBody.userId).toBe(userId);
+    expect(firstCallBody.userId).toBeUndefined();
+    expect((firstCall?.[1]?.headers as Record<string, string> | undefined)?.Authorization).toBe('Bearer token-123');
   });
 });

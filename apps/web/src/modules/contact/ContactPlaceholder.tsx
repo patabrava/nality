@@ -8,7 +8,6 @@ import { Send, Calendar, Wrench, MessageSquare, Lightbulb, Mail } from 'lucide-r
  * Clean, functional contact interface matching dash page design
  */
 export function ContactPlaceholder() {
-  console.log('[ContactPlaceholder] Component mounted')
 
   const [formData, setFormData] = useState({
     category: '',
@@ -23,29 +22,29 @@ export function ContactPlaceholder() {
   const [showCalendar, setShowCalendar] = useState(false)
 
   const categories = [
-    { id: 'technical', label: 'Technical Issues', icon: Wrench },
+    { id: 'technical', label: 'Technische Probleme', icon: Wrench },
     { id: 'feedback', label: 'Feedback', icon: MessageSquare },
-    { id: 'feature', label: 'Feature Request', icon: Lightbulb },
-    { id: 'general', label: 'General Inquiry', icon: Mail }
+    { id: 'feature', label: 'Funktionswunsch', icon: Lightbulb },
+    { id: 'general', label: 'Allgemeine Anfrage', icon: Mail }
   ]
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
     
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = 'Name ist erforderlich'
     }
     
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = 'E-Mail ist erforderlich'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email'
+      newErrors.email = 'Bitte gib eine gültige E-Mail-Adresse ein'
     }
     
     if (!formData.message.trim()) {
-      newErrors.message = 'Message is required'
+      newErrors.message = 'Eine Nachricht ist erforderlich'
     } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters'
+      newErrors.message = 'Die Nachricht muss mindestens 10 Zeichen lang sein'
     }
     
     if (!formData.category) {
@@ -58,18 +57,15 @@ export function ContactPlaceholder() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('[ContactForm] Form submitted', formData)
-    
+
     if (!validateForm()) {
-      console.log('[ContactForm] Validation failed', errors)
       return
     }
-    
+
     setSubmitting(true)
-    
+
     // TODO: API integration - placeholder for future backend
     setTimeout(() => {
-      console.log('[ContactForm] Message sent successfully')
       setSubmitted(true)
       setSubmitting(false)
       setFormData({ category: '', name: '', email: '', message: '' })
@@ -79,7 +75,6 @@ export function ContactPlaceholder() {
   }
 
   const handleCalendarClick = () => {
-    console.log('[CalendarBooking] Calendar popup opened')
     setShowCalendar(true)
   }
 
@@ -97,7 +92,7 @@ export function ContactPlaceholder() {
           color: '#fff',
           marginBottom: '12px',
         }}>
-          Get in Touch
+          Kontakt aufnehmen
         </h1>
         <p style={{ 
           margin: 0,
@@ -109,8 +104,8 @@ export function ContactPlaceholder() {
           marginRight: 'auto',
           fontWeight: 300,
         }}>
-          Whether you need guidance crafting your legacy or technical support for your timeline, 
-          our dedicated team is here to ensure your story receives the attention it deserves.
+          Ob du Unterstützung beim Festhalten deines Vermächtnisses oder technische Hilfe für deine Zeitleiste brauchst:
+          Unser Team sorgt dafür, dass deine Geschichte die Aufmerksamkeit bekommt, die sie verdient.
         </p>
       </header>
 
@@ -130,7 +125,7 @@ export function ContactPlaceholder() {
           marginBottom: '12px',
           marginTop: 0,
         }}>
-          Work with Our Biography Experts
+          Mit unseren Biografie-Expertinnen und -Experten arbeiten
         </h2>
         <p style={{
           color: 'rgba(255, 255, 255, 0.6)',
@@ -141,8 +136,8 @@ export function ContactPlaceholder() {
           marginLeft: 'auto',
           marginRight: 'auto',
         }}>
-          Schedule a professional interview session with our experienced team to capture your life story. 
-          We'll guide you through the process of creating your personalized autobiography.
+          Vereinbare ein professionelles Interview mit unserem erfahrenen Team, um deine Lebensgeschichte festzuhalten.
+          Wir begleiten dich durch den gesamten Weg zu deiner persönlichen Autobiografie.
         </p>
         <button
           type="button"
@@ -169,7 +164,7 @@ export function ContactPlaceholder() {
           }}
         >
           <Calendar size={20} />
-          Book Your Interview Session
+          Interviewtermin buchen
         </button>
       </section>
 
@@ -183,7 +178,7 @@ export function ContactPlaceholder() {
           marginBottom: '16px',
           fontWeight: 500,
         }}>
-          How can we help?
+          Wobei können wir helfen?
         </h2>
         
         <div style={{
@@ -242,7 +237,7 @@ export function ContactPlaceholder() {
       <form onSubmit={handleSubmit} style={{ marginBottom: '32px' }}>
         {/* Name Field */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{
+          <label htmlFor="contact-name" style={{
             display: 'block',
             fontSize: '0.85rem',
             fontWeight: 500,
@@ -254,6 +249,7 @@ export function ContactPlaceholder() {
             Name
           </label>
           <input
+            id="contact-name"
             type="text"
             value={formData.name}
             onChange={(e) => {
@@ -287,7 +283,7 @@ export function ContactPlaceholder() {
 
         {/* Email Field */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{
+          <label htmlFor="contact-email" style={{
             display: 'block',
             fontSize: '0.85rem',
             fontWeight: 500,
@@ -296,9 +292,10 @@ export function ContactPlaceholder() {
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}>
-            Email
+            E-Mail
           </label>
           <input
+            id="contact-email"
             type="email"
             value={formData.email}
             onChange={(e) => {
@@ -332,7 +329,7 @@ export function ContactPlaceholder() {
 
         {/* Message Field */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{
+          <label htmlFor="contact-message" style={{
             display: 'block',
             fontSize: '0.85rem',
             fontWeight: 500,
@@ -341,16 +338,17 @@ export function ContactPlaceholder() {
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}>
-            Message
+            Nachricht
           </label>
           <textarea
+            id="contact-message"
             value={formData.message}
             onChange={(e) => {
               setFormData(prev => ({ ...prev, message: e.target.value }))
               setErrors(prev => ({ ...prev, message: '' }))
             }}
             rows={6}
-            placeholder="Tell us how we can help you..."
+            placeholder="Erzähl uns, wie wir dir helfen können..."
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -409,28 +407,32 @@ export function ContactPlaceholder() {
           }}
         >
           {submitting ? (
-            'Sending...'
+            'Wird gesendet...'
           ) : (
             <>
               <Send size={18} />
-              Send Message
+              Nachricht senden
             </>
           )}
         </button>
 
         {/* Success Message */}
         {submitted && (
-          <div style={{
-            marginTop: '16px',
-            padding: '12px 16px',
-            background: 'rgba(34, 197, 94, 0.1)',
-            border: '1px solid rgba(34, 197, 94, 0.3)',
-            borderRadius: '8px',
-            color: '#22c55e',
-            fontSize: '0.9rem',
-            textAlign: 'center',
-          }}>
-            ✓ Message sent successfully! We'll get back to you soon.
+          <div
+            role="status"
+            aria-live="polite"
+            style={{
+              marginTop: '16px',
+              padding: '12px 16px',
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '8px',
+              color: '#22c55e',
+              fontSize: '0.9rem',
+              textAlign: 'center',
+            }}
+          >
+            ✓ Nachricht erfolgreich gesendet. Wir melden uns bald bei dir.
           </div>
         )}
       </form>
@@ -438,6 +440,9 @@ export function ContactPlaceholder() {
       {/* Calendar Popup Modal */}
       {showCalendar && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Interviewtermin buchen"
           style={{
             position: 'fixed',
             top: 0,
@@ -503,7 +508,7 @@ export function ContactPlaceholder() {
                 height: '100%',
                 border: 'none',
               }}
-              title="Book Interview Session"
+              title="Interviewtermin buchen"
             />
           </div>
         </div>

@@ -39,7 +39,7 @@ const resetHoverState = (target: HTMLButtonElement) => {
 }
 
 export function AddMemoryButton({
-  label = 'Add memory',
+  label = 'Erinnerung hinzufügen',
   icon,
   styleOverrides,
   disabled = false,

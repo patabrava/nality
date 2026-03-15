@@ -496,7 +496,7 @@ export function useDeepgramVoiceSession(
         }
       };
     } catch (nextError) {
-      const resolved = nextError instanceof Error ? nextError : new Error('Failed to start voice session');
+      const resolved = nextError instanceof Error ? nextError : new Error('Die Sprachsitzung konnte nicht gestartet werden');
       teardown();
       reportError(resolved);
     }

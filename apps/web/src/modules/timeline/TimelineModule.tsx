@@ -352,7 +352,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             margin: '0 0 clamp(8px, 2vw, 16px) 0'
           }}
         >
-          {hasFilters ? 'No matching events' : 'Your story starts here'}
+          {hasFilters ? 'Keine passenden Ereignisse' : 'Hier beginnt deine Geschichte'}
         </h2>
         <p
           style={{
@@ -365,8 +365,8 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           }}
         >
           {hasFilters
-            ? 'Try adjusting your filters or create a new event that matches your criteria.'
-            : 'Begin documenting your life\'s journey. Share your first memory, achievement, or milestone.'
+            ? 'Passe deine Filter an oder lege ein neues Ereignis an, das zu deinen Kriterien passt.'
+            : 'Beginne, deinen Lebensweg festzuhalten. Teile deine erste Erinnerung, deinen ersten Erfolg oder einen wichtigen Meilenstein.'
           }
         </p>
         {hasFilters ? (
@@ -386,18 +386,18 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 fontFamily: 'Roboto, system-ui, sans-serif'
               }}
             >
-              Clear Filters
+              Filter löschen
             </button>
             <AddMemoryButton
               onClick={() => setShowVoiceSelector(true)}
-              aria-label="Add new event"
+              aria-label="Neues Ereignis hinzufügen"
             />
           </div>
         ) : (
           <AddMemoryButton
             onClick={() => setShowVoiceSelector(true)}
-            label="Add Your First Memory"
-            aria-label="Add your first memory"
+            label="Erste Erinnerung hinzufügen"
+            aria-label="Erste Erinnerung hinzufügen"
           />
         )}
       </div>
@@ -500,7 +500,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             fontFamily: 'Roboto, system-ui, sans-serif'
           }}
         >
-          {isDatabaseSetupError ? 'Database Setup Required' : 'Something went wrong'}
+          {isDatabaseSetupError ? 'Datenbankeinrichtung erforderlich' : 'Etwas ist schiefgelaufen'}
         </h2>
         <p
           style={{
@@ -522,8 +522,8 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 maxWidth: '400px'
               }}
             >
-              Your database needs to be initialized with the required tables.
-              This is a one-time setup process.
+              Deine Datenbank muss mit den erforderlichen Tabellen initialisiert werden.
+              Das ist ein einmaliger Einrichtungsschritt.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <a
@@ -538,7 +538,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                   transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
                 }}
               >
-                Go to Database Setup →
+                Zur Datenbank-Einrichtung →
               </a>
               <button
                 onClick={() => router.refresh()}
@@ -553,7 +553,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                   transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
                 }}
               >
-                Check Again
+                Erneut prüfen
               </button>
             </div>
           </div>
@@ -572,7 +572,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
             }}
           >
-            Try Again
+            Erneut versuchen
           </button>
         )}
       </div>
@@ -652,7 +652,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             letterSpacing: '-0.02em'
           }}
         >
-          Your Timeline
+          Deine Zeitleiste
         </h1>
 
         {/* Filter results summary - CODE_EXPANSION: Add filter feedback */}
@@ -665,7 +665,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               fontFamily: 'Roboto, system-ui, sans-serif'
             }}
           >
-            Showing {filterStats.filtered} of {filterStats.total} events
+            {filterStats.filtered} von {filterStats.total} Ereignissen werden angezeigt
           </div>
         )}
       </div>
@@ -745,7 +745,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       <AddMemoryButton
         onClick={() => setShowVoiceSelector(true)}
         disabled={creating || updating || deleting}
-        aria-label="Add new memory"
+        aria-label="Neue Erinnerung hinzufügen"
         styleOverrides={{
           position: 'fixed',
           bottom: 'clamp(16px, 4vw, 24px)',
@@ -800,9 +800,9 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 margin: 0
               }}
             >
-              {creating && 'Creating event...'}
-              {updating && 'Updating event...'}
-              {deleting && 'Deleting event...'}
+              {creating && 'Ereignis wird erstellt...'}
+              {updating && 'Ereignis wird aktualisiert...'}
+              {deleting && 'Ereignis wird gelöscht...'}
             </p>
           </div>
         </div>

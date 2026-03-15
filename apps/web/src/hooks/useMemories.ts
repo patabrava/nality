@@ -91,7 +91,7 @@ export function useMemories(options: UseMemoriesOptions = {}): UseMemoriesReturn
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch memories',
+        error: error instanceof Error ? error.message : 'Die Erinnerungen konnten nicht geladen werden',
       }))
     }
   }, [isAuthenticated, user, captureMode, chapterId, limit])
@@ -233,7 +233,7 @@ export function useMemory(memoryId: string): UseMemoryReturn {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch memory',
+        error: error instanceof Error ? error.message : 'Die Erinnerung konnte nicht geladen werden',
       }))
     }
   }, [isAuthenticated, user, memoryId])

@@ -126,13 +126,13 @@ export function validateBiography(data: unknown): { success: true; data: Biograp
 export function getToneDisplayInfo(tone: BiographyToneType): { label: string; description: string } {
   switch (tone) {
     case 'neutral':
-      return { label: 'Neutral', description: 'Clear and balanced narrative' }
+      return { label: 'Neutral', description: 'Klar und ausgewogen erzählt' }
     case 'poetic':
-      return { label: 'Poetic', description: 'Lyrical and expressive style' }
+      return { label: 'Poetisch', description: 'Bildhaft und ausdrucksstark' }
     case 'formal':
-      return { label: 'Formal', description: 'Professional and structured' }
+      return { label: 'Formal', description: 'Sachlich und strukturiert' }
     default:
-      return { label: 'Unknown', description: '' }
+      return { label: 'Unbekannt', description: '' }
   }
 }
 
@@ -163,6 +163,6 @@ export function canGenerateBiography(chapterCount: number, minRequired: number =
  */
 export function exportBiographyAsMarkdown(biography: Biography, title?: string): string {
   const header = title ? `# ${title}\n\n` : ''
-  const meta = `*Generated on ${new Date(biography.created_at || Date.now()).toLocaleDateString()}*\n\n---\n\n`
+  const meta = `*Erstellt am ${new Date(biography.created_at || Date.now()).toLocaleDateString('de-DE')}*\n\n---\n\n`
   return header + meta + biography.content
 }

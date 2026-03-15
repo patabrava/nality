@@ -215,7 +215,7 @@ async function fetchEnvelope<T>(url: string, signal?: AbortSignal): Promise<T> {
   const payload = (await response.json().catch(() => null)) as DetailEnvelope<T> | null;
 
   if (!response.ok || !payload) {
-    throw new Error(payload?.message ?? 'Request failed');
+    throw new Error(payload?.message ?? 'Die Anfrage ist fehlgeschlagen.');
   }
 
   return payload.data;
@@ -355,7 +355,7 @@ function AdminInterviewPanel({
       });
     } catch (nextError) {
       setHasStarted(false);
-      setLocalError(nextError instanceof Error ? nextError.message : 'Interview could not be started.');
+      setLocalError(nextError instanceof Error ? nextError.message : 'Das Interview konnte nicht gestartet werden.');
     }
   }, [append]);
 
@@ -381,14 +381,14 @@ function AdminInterviewPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Session could not be marked complete.');
+        throw new Error('Die Sitzung konnte nicht als abgeschlossen markiert werden.');
       }
 
       setHasStarted(false);
       setInterviewSessionId(null);
       await onRefresh();
     } catch (nextError) {
-      setLocalError(nextError instanceof Error ? nextError.message : 'Session could not be marked complete.');
+      setLocalError(nextError instanceof Error ? nextError.message : 'Die Sitzung konnte nicht als abgeschlossen markiert werden.');
     } finally {
       setEnding(false);
     }
@@ -401,9 +401,9 @@ function AdminInterviewPanel({
   return (
     <div className={styles.contentGrid}>
       <Panel
-        title="Live interview"
-        subtitle="AI-guided interview pinned to this participant."
-        badge={interviewSessionId ? `session ${interviewSessionId.slice(0, 8)}` : 'ready'}
+        title="Live-Interview"
+        subtitle="KI-geführtes Interview für diese Person."
+        badge={interviewSessionId ? `Sitzung ${interviewSessionId.slice(0, 8)}` : 'bereit'}
       >
         <div className={styles.buttonRow}>
           <button
@@ -412,7 +412,7 @@ function AdminInterviewPanel({
             disabled={isLoading || hasStarted}
             className={joinClassNames(styles.button, styles.buttonGhost)}
           >
-            {hasStarted || activeSession ? 'Continue guided interview' : 'Start guided interview'}
+            {hasStarted || activeSession ? 'Geführtes Interview fortsetzen' : 'Geführtes Interview starten'}
           </button>
           <button
             type="button"
@@ -420,7 +420,7 @@ function AdminInterviewPanel({
             disabled={!interviewSessionId || ending}
             className={joinClassNames(styles.button, styles.buttonSecondary)}
           >
-            {ending ? 'Ending session...' : 'Mark session complete'}
+            {ending ? 'Sitzung wird beendet...' : 'Sitzung abschließen'}
           </button>
         </div>
 
@@ -439,7 +439,7 @@ function AdminInterviewPanel({
                 </div>
               ))}
               {isLoading ? (
-                <div className={styles.chatMessage}>The interviewer is shaping the next question...</div>
+                <div className={styles.chatMessage}>Die Interviewführung formuliert die nächste Frage...</div>
               ) : null}
             </div>
           </div>
@@ -449,7 +449,7 @@ function AdminInterviewPanel({
               <input
                 value={input}
                 onChange={handleInputChange}
-                placeholder="Type the participant's answer or add a follow-up instruction..."
+                placeholder="Antwort der Person eingeben oder eine Anschlussanweisung hinzufügen..."
                 className={styles.composerInput}
               />
               <button
@@ -457,7 +457,7 @@ function AdminInterviewPanel({
                 disabled={isLoading || !input.trim()}
                 className={joinClassNames(styles.button, styles.buttonPrimary)}
               >
-                Send
+                Senden
               </button>
             </div>
           </form>
@@ -469,13 +469,13 @@ function AdminInterviewPanel({
 
       <div className={styles.stickyRail}>
         <Panel
-          title="Recent sessions"
-          subtitle="Open or completed guided sessions."
-          badge={`${interviewSessions.length} total`}
+          title="Letzte Sitzungen"
+          subtitle="Offene oder abgeschlossene geführte Sitzungen."
+          badge={`${interviewSessions.length} gesamt`}
           muted
         >
           {interviewSessions.length === 0 ? (
-            <EmptyState>No interview sessions have been recorded yet.</EmptyState>
+            <EmptyState>Es wurden noch keine Interviewsitzungen aufgezeichnet.</EmptyState>
           ) : (
             <div className={styles.list}>
               {interviewSessions.map((session) => (
@@ -483,11 +483,11 @@ function AdminInterviewPanel({
                   key={session.id}
                   title={formatDateTime(session.started_at)}
                   badge={session.processing_status}
-                  meta={`${session.memory_count} captured memories${
+                  meta={`${session.memory_count} festgehaltene Erinnerungen${
                     session.topics_covered?.length ? ` • ${session.topics_covered.join(', ')}` : ''
                   }`}
                 >
-                  {session.summary ? excerpt(session.summary, 160) : 'No session summary yet.'}
+                  {session.summary ? excerpt(session.summary, 160) : 'Es gibt noch keine Sitzungszusammenfassung.'}
                 </DetailItem>
               ))}
             </div>
@@ -495,15 +495,15 @@ function AdminInterviewPanel({
         </Panel>
 
         <Panel
-          title="Quick context"
-          subtitle="Minimal interview context from the saved profile."
-          badge="context"
+          title="Schnellkontext"
+          subtitle="Knappes Interviewprofil aus den gespeicherten Profildaten."
+          badge="Kontext"
         >
           <div className={styles.list}>
             <div className={styles.infoCard}>
               <div className={styles.metricLabel}>
                 <User size={16} aria-hidden="true" />
-                <span>Profile</span>
+                <span>Profil</span>
               </div>
               <p className={styles.infoText}>
                 {userName}
@@ -513,9 +513,9 @@ function AdminInterviewPanel({
             <div className={styles.infoCard}>
               <div className={styles.metricLabel}>
                 <BadgeCheck size={16} aria-hidden="true" />
-                <span>Session count</span>
+                <span>Anzahl Sitzungen</span>
               </div>
-              <p className={styles.infoText}>{interviewSessions.length} guided sessions</p>
+              <p className={styles.infoText}>{interviewSessions.length} geführte Sitzungen</p>
             </div>
           </div>
         </Panel>
@@ -563,7 +563,7 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
         if (cancelled || isAbortLikeError(nextError)) {
           return;
         }
-        setError(nextError instanceof Error ? nextError.message : 'Failed to load user workspace');
+        setError(nextError instanceof Error ? nextError.message : 'Der Arbeitsbereich der Person konnte nicht geladen werden.');
       })
       .finally(() => {
         if (cancelled) {
@@ -584,9 +584,9 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
     }
 
     return [
-      { label: 'Memories', value: String(detail.memories.length) },
-      { label: 'Chapters', value: String(detail.chapters.length) },
-      { label: 'Biographies', value: String(detail.biographies.length) },
+      { label: 'Erinnerungen', value: String(detail.memories.length) },
+      { label: 'Kapitel', value: String(detail.chapters.length) },
+      { label: 'Biografien', value: String(detail.biographies.length) },
       { label: 'Interviews', value: String(detail.interviewSessions.length) },
     ];
   }, [detail]);
@@ -616,11 +616,11 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
       <div className={styles.page}>
         <div className={styles.container}>
           <div className={styles.errorCard}>
-            <div className={styles.eyebrow}>Admin workspace</div>
-            <div className={styles.panelTitle}>{error || 'User workspace could not be loaded.'}</div>
+            <div className={styles.eyebrow}>Verwaltungsbereich</div>
+            <div className={styles.panelTitle}>{error || 'Der Arbeitsbereich der Person konnte nicht geladen werden.'}</div>
             <Link href="/admin" className={styles.emptyLink}>
               <ArrowLeft size={14} aria-hidden="true" />
-              Back to admin overview
+              Zurück zur Verwaltungsübersicht
             </Link>
           </div>
         </div>
@@ -628,7 +628,7 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
     );
   }
 
-  const userLabel = detail.user.full_name || detail.user.email || 'Unnamed participant';
+  const userLabel = detail.user.full_name || detail.user.email || 'Unbenannte Person';
   const currentBiography = detail.biographies.find((biography) => biography.is_current) ?? detail.biographies[0] ?? null;
 
   return (
@@ -638,19 +638,19 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
           <div className={styles.detailHeroCopy}>
             <Link href="/admin" className={styles.backLink}>
               <ArrowLeft size={14} aria-hidden="true" />
-              Back to overview
+              Zurück zur Übersicht
             </Link>
-            <div className={styles.eyebrow}>Participant workspace</div>
+            <div className={styles.eyebrow}>Teilnehmendenbereich</div>
             <h1 className={styles.detailTitle}>{userLabel}</h1>
-            <p className={styles.detailLead}>Profile data, saved outputs, and the live interview shell for one participant.</p>
+            <p className={styles.detailLead}>Profildaten, gespeicherte Ausgaben und die Live-Interviewoberfläche für eine Person.</p>
             <div className={styles.metaRow}>
               <span className={joinClassNames(styles.badge, styles.badgeAccent)}>
-                {detail.user.onboarding_complete ? 'Onboarded' : 'Incomplete'}
+                {detail.user.onboarding_complete ? 'Eingerichtet' : 'Unvollständig'}
               </span>
-              <span className={styles.badge}>{detail.user.email || 'No email saved'}</span>
+              <span className={styles.badge}>{detail.user.email || 'Keine E-Mail gespeichert'}</span>
               {detail.user.birth_place ? <span className={styles.badge}>{detail.user.birth_place}</span> : null}
               {detail.profile?.updated_at ? (
-                <span className={styles.badge}>Profile updated {formatDateTime(detail.profile.updated_at)}</span>
+                <span className={styles.badge}>Profil aktualisiert {formatDateTime(detail.profile.updated_at)}</span>
               ) : null}
             </div>
           </div>
@@ -663,9 +663,9 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
         </section>
 
         <div className={styles.tabRow}>
-          <TabButton active={tab === 'profile'} label="Profile" onClick={() => setTab('profile')} />
-          <TabButton active={tab === 'content'} label="Content" onClick={() => setTab('content')} />
-          <TabButton active={tab === 'sessions'} label="Sessions" onClick={() => setTab('sessions')} />
+          <TabButton active={tab === 'profile'} label="Profil" onClick={() => setTab('profile')} />
+          <TabButton active={tab === 'content'} label="Inhalte" onClick={() => setTab('content')} />
+          <TabButton active={tab === 'sessions'} label="Sitzungen" onClick={() => setTab('sessions')} />
           <TabButton active={tab === 'interview'} label="Interview" onClick={() => setTab('interview')} />
         </div>
 

@@ -1,14 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function DatabaseSetupPage() {
+  const router = useRouter()
   const [logs, setLogs] = useState<string[]>([])
   const [databaseStatus, setDatabaseStatus] = useState<{
     ready: boolean
     tables: string[]
     error?: string
   }>({ ready: false, tables: [] })
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      router.replace('/dash')
+    }
+  }, [router])
 
   const addLog = (message: string) => {
     setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
@@ -47,7 +55,7 @@ export default function DatabaseSetupPage() {
   }
 
   const openSupabaseDashboard = () => {
-    window.open('https://supabase.com/dashboard/project/kjtpqfylijhbetpguntr/sql/new', '_blank')
+    window.open('https://supabase.com/dashboard', '_blank')
   }
 
   const copySetupScript = async () => {

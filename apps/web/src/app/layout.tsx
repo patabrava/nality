@@ -21,25 +21,25 @@ export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies()
   const localeCookie = cookieStore.get("locale")?.value
   const locale = resolveLocale(localeCookie)
-  const heroTitle = messages[locale]?.hero?.title ?? "Nality — Your life, beautifully told"
+  const heroTitle = messages[locale]?.hero?.title ?? "Nality — Dein Leben, schön erzählt"
   const heroDescription =
     messages[locale]?.hero?.subtitle ??
-    "Turn memories into a living timeline and a beautiful Life Book. Private by design. Start in minutes."
+    "Verwandle Erinnerungen in eine lebendige Zeitleiste und ein wunderschönes Lebensbuch. Datenschutz von Anfang an. Starte in wenigen Minuten."
 
   return {
     title: `Nality — ${heroTitle}`,
     description: heroDescription,
     keywords: [
-      "life story",
-      "timeline",
-      "memories",
-      "family history",
-      "personal timeline",
-      "AI assistant",
-      "life book",
-      "memoir",
+      "Lebensgeschichte",
+      "Zeitleiste",
+      "Erinnerungen",
+      "Familiengeschichte",
+      "persönliche Biografie",
+      "KI-Begleitung",
+      "Lebensbuch",
+      "Memoiren",
     ],
-    authors: [{ name: "Nality Team" }],
+    authors: [{ name: "Nality-Team" }],
     creator: "Nality",
     publisher: "Nality",
     formatDetection: {
@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "/hero/hero-timeline-book.png",
           width: 1200,
           height: 800,
-          alt: "A life timeline with photos alongside a preview of a printed Life Book",
+          alt: "Eine Lebenszeitleiste mit Fotos neben der Vorschau eines gedruckten Lebensbuchs",
         },
       ],
     },

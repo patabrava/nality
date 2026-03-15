@@ -6,8 +6,11 @@ import { Locale, SUPPORTED_LOCALES } from '@/lib/i18n'
 export function LanguageSwitcher() {
     const { locale, setLocale, t } = useI18n()
 
-    const languages = {
-        en: { code: 'EN', name: t('common.languageOptions.en') },
+    if (SUPPORTED_LOCALES.length < 2) {
+        return null
+    }
+
+    const languages: Record<Locale, { code: string; name: string }> = {
         de: { code: 'DE', name: t('common.languageOptions.de') },
     }
 
@@ -43,7 +46,7 @@ export function LanguageSwitcher() {
                                 e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
                             }
                         }}
-                        aria-label={`Switch to ${languages[lang as Locale].name}`}
+                        aria-label={`Sprache wechseln zu ${languages[lang as Locale].name}`}
                         aria-pressed={locale === lang}
                     >
                         {languages[lang as Locale].code}
@@ -60,4 +63,3 @@ export function LanguageSwitcher() {
         </div>
     )
 }
-

@@ -275,7 +275,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       // Set up a timeout in case onstart never fires
       const timeout = setTimeout(() => {
         isTransitioningRef.current = false;
-        const err = new Error('Microphone start timed out');
+        const err = new Error('Der Start des Mikrofons hat zu lange gedauert');
         setError(err);
         setAgentState('error');
         onError?.(err);
@@ -287,7 +287,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       if (!originalStartListening) {
         clearTimeout(timeout);
         isTransitioningRef.current = false;
-        const err = new Error('Voice input not initialized');
+        const err = new Error('Die Spracheingabe wurde nicht initialisiert');
         reject(err);
         return;
       }
@@ -305,7 +305,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
           } else if (voiceInputRef.current?.state === 'error') {
             clearTimeout(timeout);
             isTransitioningRef.current = false;
-            const err = voiceInputRef.current?.error || new Error('Failed to start listening');
+            const err = voiceInputRef.current?.error || new Error('Das Zuhören konnte nicht gestartet werden');
             setError(err);
             setAgentState('error');
             onError?.(err);
@@ -320,7 +320,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
         clearTimeout(timeout);
         isTransitioningRef.current = false;
         console.error('❌ Failed to start listening:', err);
-        setError(err instanceof Error ? err : new Error('Failed to start listening'));
+        setError(err instanceof Error ? err : new Error('Das Zuhören konnte nicht gestartet werden'));
         setAgentState('error');
         onError?.(err as Error);
         reject(err);
@@ -338,7 +338,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       await startListeningInternal();
     } catch (err) {
       const resumeError =
-        err instanceof Error ? err : new Error('Failed to resume biography voice session');
+        err instanceof Error ? err : new Error('Die Sprachsitzung der Biografie konnte nicht fortgesetzt werden');
       setError(resumeError);
       setAgentState('error');
       onError?.(resumeError);
@@ -362,7 +362,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       });
     } catch (err) {
       console.error('❌ Failed to send message:', err);
-      setError(err instanceof Error ? err : new Error('Failed to process speech'));
+      setError(err instanceof Error ? err : new Error('Die Sprache konnte nicht verarbeitet werden'));
       onError?.(err as Error);
       // Return to listening on error
       startListeningInternal();
@@ -594,7 +594,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     try {
       await startListeningInternal();
     } catch (err) {
-      const micError = err instanceof Error ? err : new Error('Microphone access failed');
+      const micError = err instanceof Error ? err : new Error('Der Mikrofonzugriff ist fehlgeschlagen');
       console.error('❌ Mic preflight failed, aborting session start:', micError.message);
       setError(micError);
       setAgentState('error');
@@ -614,7 +614,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     if (voiceMode === 'biography') {
       if (!biographySessionId) {
-        const sessionError = new Error('Interview session could not be started');
+        const sessionError = new Error('Die Interviewsitzung konnte nicht gestartet werden');
         setError(sessionError);
         setAgentState('error');
         setIsActive(false);
@@ -644,7 +644,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       } catch (err) {
         clearStartedBiographyVoiceSession(biographySessionId);
         const bootstrapError =
-          err instanceof Error ? err : new Error('Failed to bootstrap biography interview');
+          err instanceof Error ? err : new Error('Das Biografie-Interview konnte nicht initialisiert werden');
         setError(bootstrapError);
         setAgentState('error');
         setIsActive(false);

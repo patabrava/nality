@@ -4,26 +4,42 @@
  * Tests for the chapters CRUD operations
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: async () => ({
+    auth: {
+      getUser: async () => ({ data: { user: null } }),
+    },
+  }),
+}));
+
+import { GET as getChapters, POST as postChapters } from '@/app/api/chapters/route';
+import { POST as generateChapters } from '@/app/api/chapters/generate/route';
+import {
+  GET as getChapterById,
+  PATCH as patchChapterById,
+  DELETE as deleteChapterById,
+} from '@/app/api/chapters/[id]/route';
 
 describe('Chapters API', () => {
   let testChapterId: string | null = null;
 
   describe('POST /api/chapters', () => {
     it('should create a new chapter with valid data', async () => {
-      const response = await fetch(`${API_BASE}/api/chapters`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: 'The Early Years',
-          summary: 'Memories from childhood and growing up.',
-          theme_keywords: ['childhood', 'family', 'school'],
-        }),
-      });
+      const response = await postChapters(
+        new Request('http://test.local/api/chapters', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: 'The Early Years',
+            summary: 'Memories from childhood and growing up.',
+            theme_keywords: ['childhood', 'family', 'school'],
+          }),
+        })
+      );
 
       const data = await response.json();
 
@@ -39,15 +55,17 @@ describe('Chapters API', () => {
     });
 
     it('should reject chapter without title', async () => {
-      const response = await fetch(`${API_BASE}/api/chapters`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          summary: 'Missing title',
-        }),
-      });
+      const response = await postChapters(
+        new Request('http://test.local/api/chapters', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            summary: 'Missing title',
+          }),
+        })
+      );
 
       expect(response.status).toBeGreaterThanOrEqual(400);
     });
@@ -55,7 +73,7 @@ describe('Chapters API', () => {
 
   describe('GET /api/chapters', () => {
     it('should return chapters list ordered by display_order', async () => {
-      const response = await fetch(`${API_BASE}/api/chapters`);
+      const response = await getChapters(new Request('http://test.local/api/chapters'));
       const data = await response.json();
 
       if (response.status === 200) {
@@ -67,7 +85,7 @@ describe('Chapters API', () => {
     });
 
     it('should filter chapters by status', async () => {
-      const response = await fetch(`${API_BASE}/api/chapters?status=draft`);
+      const response = await getChapters(new Request('http://test.local/api/chapters?status=draft'));
       const data = await response.json();
 
       if (response.status === 200) {
@@ -83,7 +101,10 @@ describe('Chapters API', () => {
     it('should return chapter with its memories', async () => {
       if (!testChapterId) return;
 
-      const response = await fetch(`${API_BASE}/api/chapters/${testChapterId}`);
+      const response = await getChapterById(
+        new Request(`http://test.local/api/chapters/${testChapterId}`),
+        { params: Promise.resolve({ id: testChapterId }) }
+      );
       const data = await response.json();
 
       if (response.status === 200) {
@@ -95,7 +116,10 @@ describe('Chapters API', () => {
 
     it('should return 404 for non-existent chapter', async () => {
       const fakeId = '00000000-0000-0000-0000-000000000000';
-      const response = await fetch(`${API_BASE}/api/chapters/${fakeId}`);
+      const response = await getChapterById(
+        new Request(`http://test.local/api/chapters/${fakeId}`),
+        { params: Promise.resolve({ id: fakeId }) }
+      );
       
       if (response.status !== 401) {
         expect(response.status).toBe(404);
@@ -107,16 +131,19 @@ describe('Chapters API', () => {
     it('should update chapter title and status', async () => {
       if (!testChapterId) return;
 
-      const response = await fetch(`${API_BASE}/api/chapters/${testChapterId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: 'The Early Years (Updated)',
-          status: 'published',
+      const response = await patchChapterById(
+        new Request(`http://test.local/api/chapters/${testChapterId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: 'The Early Years (Updated)',
+            status: 'published',
+          }),
         }),
-      });
+        { params: Promise.resolve({ id: testChapterId }) }
+      );
 
       const data = await response.json();
 
@@ -130,15 +157,17 @@ describe('Chapters API', () => {
 
   describe('POST /api/chapters/generate', () => {
     it('should require minimum memories to generate chapters', async () => {
-      const response = await fetch(`${API_BASE}/api/chapters/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          min_memories: 5,
-        }),
-      });
+      const response = await generateChapters(
+        new Request('http://test.local/api/chapters/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            min_memories: 5,
+          }),
+        })
+      );
 
       const data = await response.json();
 
@@ -153,9 +182,12 @@ describe('Chapters API', () => {
     it('should delete a chapter and unassign its memories', async () => {
       if (!testChapterId) return;
 
-      const response = await fetch(`${API_BASE}/api/chapters/${testChapterId}`, {
-        method: 'DELETE',
-      });
+      const response = await deleteChapterById(
+        new Request(`http://test.local/api/chapters/${testChapterId}`, {
+          method: 'DELETE',
+        }),
+        { params: Promise.resolve({ id: testChapterId }) }
+      );
 
       const data = await response.json();
 

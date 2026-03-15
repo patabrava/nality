@@ -99,7 +99,7 @@ export function EnhancedTopicDropdown({
         setShowAddTopic(false)
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to create topic')
+      setError(error instanceof Error ? error.message : 'Das Thema konnte nicht erstellt werden')
     } finally {
       setCreating(false)
     }
@@ -120,13 +120,13 @@ export function EnhancedTopicDropdown({
       <div className="enhanced-topic-dropdown">
         <div className="add-topic-form">
           <div className="form-group">
-            <label className="form-label">Create Custom Topic</label>
+            <label className="form-label">Eigenes Thema anlegen</label>
             <input
               type="text"
               value={newTopicName}
               onChange={(e) => setNewTopicName(e.target.value)}
               className="form-input"
-              placeholder="Enter topic name..."
+              placeholder="Themenname eingeben..."
               maxLength={50}
               disabled={creating}
               autoFocus
@@ -145,7 +145,7 @@ export function EnhancedTopicDropdown({
               className="form-button secondary"
               disabled={creating}
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               type="button"
@@ -153,7 +153,7 @@ export function EnhancedTopicDropdown({
               className="form-button primary"
               disabled={creating || !newTopicName.trim()}
             >
-              {creating ? 'Creating...' : 'Create Topic'}
+              {creating ? 'Wird erstellt...' : 'Thema anlegen'}
             </button>
           </div>
         </div>
@@ -174,11 +174,11 @@ export function EnhancedTopicDropdown({
         disabled={disabled || loading}
       >
         {loading ? (
-          <option value="">Loading topics...</option>
+          <option value="">Themen werden geladen...</option>
         ) : (
           <>
             {/* Default Topics - CODE_EXPANSION: Preserves existing categories */}
-            <optgroup label="Categories">
+            <optgroup label="Kategorien">
               {topics
                 .filter(topic => topic.is_default)
                 .map(topic => (
@@ -190,7 +190,7 @@ export function EnhancedTopicDropdown({
 
             {/* Custom Topics */}
             {topics.some(topic => !topic.is_default) && (
-              <optgroup label="My Topics">
+              <optgroup label="Meine Themen">
                 {topics
                   .filter(topic => !topic.is_default)
                   .map(topic => (
@@ -204,7 +204,7 @@ export function EnhancedTopicDropdown({
             {/* Add Custom Topic Option */}
             {user && customTopicsAvailable && (
               <option value="add-custom" style={{ fontStyle: 'italic' }}>
-                + Add Custom Topic
+                + Eigenes Thema hinzufügen
               </option>
             )}
           </>

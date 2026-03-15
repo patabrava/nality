@@ -9,6 +9,7 @@ import InfoModal from './InfoModal'
 export default function Footer() {
   const { t, locale, setLocale } = useI18n()
   const [modalOpen, setModalOpen] = useState<string | null>(null)
+  const showLanguageToggle = SUPPORTED_LOCALES.length > 1
 
   const sections = [
     { key: 'product', data: t('footer.product') },
@@ -145,50 +146,52 @@ export default function Footer() {
       </div>
 
       {/* Language Toggle */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '1rem',
-        marginBottom: '3rem',
-        paddingTop: '2rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-      }}>
-        <Languages size={14} style={{ color: 'rgba(255, 255, 255, 0.4)' }} />
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          {SUPPORTED_LOCALES.map((l) => (
-            <button
-              key={l}
-              onClick={() => setLocale(l)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '0.25rem 0.5rem',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.7rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.15em',
-                cursor: 'pointer',
-                transition: 'color 0.2s ease',
-                color: locale === l ? '#D4AF37' : 'rgba(255, 255, 255, 0.4)',
-                fontWeight: locale === l ? '600' : '400',
-              }}
-              onMouseEnter={(e) => {
-                if (locale !== l) {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (locale !== l) {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'
-                }
-              }}
-            >
-              {t(`common.languageOptions.${l}`)}
-            </button>
-          ))}
+      {showLanguageToggle ? (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          marginBottom: '3rem',
+          paddingTop: '2rem',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        }}>
+          <Languages size={14} style={{ color: 'rgba(255, 255, 255, 0.4)' }} />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            {SUPPORTED_LOCALES.map((l) => (
+              <button
+                key={l}
+                onClick={() => setLocale(l)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.25rem 0.5rem',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.7rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  cursor: 'pointer',
+                  transition: 'color 0.2s ease',
+                  color: locale === l ? '#D4AF37' : 'rgba(255, 255, 255, 0.4)',
+                  fontWeight: locale === l ? '600' : '400',
+                }}
+                onMouseEnter={(e) => {
+                  if (locale !== l) {
+                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (locale !== l) {
+                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'
+                  }
+                }}
+              >
+                {t(`common.languageOptions.${l}`)}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Copyright */}
       <div style={{

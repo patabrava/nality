@@ -153,7 +153,7 @@ IMPORTANT: Respond ONLY with valid JSON in this exact format:
 }`;
 
     const { text } = await generateText({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-2.0-flash'),
       system: EXTRACTION_SYSTEM_PROMPT,
       prompt: jsonPrompt,
       temperature: 0.3,

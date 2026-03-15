@@ -1,6 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { getIncompleteOnboardingPath } from './src/lib/onboarding/flags'
+
+function getAdminWhitelist() {
+  const raw = process.env.ADMIN_EMAIL_WHITELIST || ''
+  return raw
+    .split(',')
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean)
+}
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -52,12 +59,12 @@ export async function middleware(request: NextRequest) {
   }
 
   const path = request.nextUrl.pathname
-  const incompletePath = getIncompleteOnboardingPath()
   const hasCompletedOnboarding = onboardingComplete === true
-  const needsOnboarding = onboardingComplete !== true
+  const adminWhitelist = getAdminWhitelist()
+  const isAdminUser = Boolean(user?.email && adminWhitelist.includes(user.email.trim().toLowerCase()))
 
   // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ['/dash', '/chat', '/onboarding', '/meeting']
+  const protectedPaths = ['/dash', '/chat', '/onboarding', '/meeting', '/admin']
   const isProtectedPath = protectedPaths.some(protectedPath =>
     path.startsWith(protectedPath)
   )
@@ -69,10 +76,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  if (path.startsWith('/admin') && user && !isAdminUser) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dash'
+    return NextResponse.redirect(url)
+  }
+
   // If user is authenticated and on login page, redirect to dashboard
   if (user && path === '/login') {
     const redirectParam = request.nextUrl.searchParams.get('redirectTo')
-    const redirectTo = hasCompletedOnboarding ? (redirectParam || '/dash') : incompletePath
+    const redirectTo = redirectParam || '/dash'
     const url = request.nextUrl.clone()
     url.pathname = redirectTo
     url.searchParams.delete('redirectTo')
@@ -82,26 +95,12 @@ export async function middleware(request: NextRequest) {
   // If user is authenticated and hits the landing page, send them to the right place
   if (user && path === '/') {
     const url = request.nextUrl.clone()
-    url.pathname = hasCompletedOnboarding ? '/dash' : incompletePath
-    return NextResponse.redirect(url)
-  }
-
-  // Keep onboarding-incomplete users out of dashboard/chat routes
-  if (user && needsOnboarding && (path.startsWith('/dash') || path.startsWith('/chat'))) {
-    const url = request.nextUrl.clone()
-    url.pathname = incompletePath
-    return NextResponse.redirect(url)
-  }
-
-  // If meeting onboarding is enabled, nudge incomplete users from legacy route to meeting route
-  if (user && needsOnboarding && incompletePath === '/meeting' && path === '/onboarding') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/meeting'
+    url.pathname = '/dash'
     return NextResponse.redirect(url)
   }
 
   // Completed users should not stay on onboarding routes
-  if (user && hasCompletedOnboarding && (path === '/onboarding' || path === '/meeting')) {
+  if (user && (path === '/onboarding' || path === '/meeting')) {
     const url = request.nextUrl.clone()
     url.pathname = '/dash'
     return NextResponse.redirect(url)
@@ -118,6 +117,7 @@ export const config = {
     '/onboarding',
     '/meeting',
     '/dash/:path*',
+    '/admin/:path*',
     '/chat/:path*',
     '/timeline',
   ],

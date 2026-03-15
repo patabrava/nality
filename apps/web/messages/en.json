@@ -495,8 +495,8 @@
   },
   "voice": {
     "selector": {
-      "title": "Your Personal Onboarding",
-      "subtitle": "In just a few minutes we'll sketch the first chapter of your biography. Choose how you'd like to share—we'll guide every step.",
+      "title": "How would you like to capture this memory?",
+      "subtitle": "Choose the mode you want to use right now. The guided interview uses your pre-onboarding details and saved memories as context.",
       "cancel": "Cancel",
       "recommended": "Recommended",
       "interview": {
@@ -654,5 +654,15 @@
       }
     },
     "profile": "Profile"
+  },
+  "chat": {
+    "error": {
+      "title": "Chat could not be started",
+      "retry": "Try again"
+    },
+    "addMemory": {
+      "subtitle": "Share your memories",
+      "welcomeMessage": "What would you like to capture today? Tell me about a special moment."
+    }
   }
 }

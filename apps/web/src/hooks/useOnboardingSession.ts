@@ -61,14 +61,12 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       const accessToken = authSession?.access_token;
       
       // Use API route to get/create session (bypasses RLS)
-      // Pass userId as query param and accessToken in header
-      const url = `/api/onboarding/session?userId=${encodeURIComponent(userId)}`;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
       
-      const response = await fetch(url, {
+      const response = await fetch('/api/onboarding/session', {
         method: 'GET',
         headers,
       });
@@ -139,11 +137,6 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       return;
     }
     
-    if (!userId) {
-      console.warn('⚠️ Cannot save message: no userId available');
-      return;
-    }
-
     try {
       // Get access token for API auth
       const { data: { session: authSession } } = await supabase.auth.getSession();
@@ -162,8 +155,6 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
           sessionId: session.id,
           role,
           content,
-          userId,
-          accessToken
         })
       });
 
@@ -175,7 +166,6 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
           error: errorData,
           sessionId: session.id,
           role,
-          userId,
           hasAccessToken: !!accessToken
         });
         return;
@@ -197,9 +187,16 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     if (!session) return;
 
     try {
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const accessToken = authSession?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
       const response = await fetch('/api/onboarding/session', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           metadata
@@ -226,15 +223,17 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       // Get access token for API auth
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const accessToken = authSession?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
       
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           markComplete: true,
-          userId,
-          accessToken
         })
       });
 

@@ -1,90 +1,358 @@
-/**
- * Interview Sessions API
- * 
- * GET: List interview sessions
- * POST: Create a new interview session
- */
-
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { InterviewSessionInput } from '@nality/schema';
+import {
+  authenticationRequiredResponse,
+  getAuthenticatedRequestContext,
+} from '@/lib/server/auth';
+import { jsonFailure, jsonSuccess, zodErrorDetails } from '@/lib/server/api';
+import { createRouteLogger } from '@/lib/server/logger';
+import { BIOGRAPHY_INTERVIEW_CATALOG_VERSION } from '@/features/biography-interview/catalog';
+import {
+  getProgressSummary,
+  seedInterviewQuestionProgress,
+} from '@/features/biography-interview/progress-store';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(req: Request) {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+const InterviewSessionQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+  sessionId: z.string().uuid().optional(),
+});
 
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+const CreateInterviewSessionBodySchema = z.object({
+  started_at: z.string().datetime().optional(),
+  ended_at: z.string().datetime().optional().nullable(),
+  topics_covered: z.array(z.string()).default([]),
+  memory_count: z.number().int().min(0).default(0),
+  processing_status: z.enum(['pending', 'processing', 'complete', 'failed']).default('pending'),
+  summary: z.string().optional().nullable(),
+  catalog_version: z.string().optional(),
+  active_question_id: z.string().optional().nullable(),
+});
+
+const UpdateInterviewSessionBodySchema = z.object({
+  ended_at: z.string().datetime().optional().nullable(),
+  topics_covered: z.array(z.string()).optional(),
+  memory_count: z.number().int().min(0).optional(),
+  processing_status: z.enum(['pending', 'processing', 'complete', 'failed']).optional(),
+  summary: z.string().optional().nullable(),
+  catalog_version: z.string().optional(),
+  active_question_id: z.string().optional().nullable(),
+});
+
+export async function GET(req: Request) {
+  const logger = createRouteLogger('api.interview-sessions.get', req);
+
+  try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse(req);
     }
 
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const parsedQuery = InterviewSessionQuerySchema.safeParse(
+      Object.fromEntries(new URL(req.url).searchParams.entries()),
+    );
 
-    const { data: sessions, error } = await supabase
+    if (!parsedQuery.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_QUERY',
+        message: 'Invalid interview sessions query',
+        details: zodErrorDetails(parsedQuery.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const serviceClient = await createServiceClient();
+    const { limit, offset, sessionId } = parsedQuery.data;
+
+    if (sessionId) {
+      const { data: session, error } = await serviceClient
+        .from('interview_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .eq('user_id', auth.user.id)
+        .maybeSingle();
+
+      if (error) {
+        logger.error('Failed to fetch interview session detail', {
+          code: error.code,
+          message: error.message,
+        });
+        return jsonFailure(req, {
+          status: 500,
+          code: 'INTERVIEW_SESSION_FETCH_FAILED',
+          message: 'Failed to fetch session',
+          correlationId: logger.correlationId,
+        });
+      }
+
+      if (!session) {
+        return jsonFailure(req, {
+          status: 404,
+          code: 'INTERVIEW_SESSION_NOT_FOUND',
+          message: 'Interview session not found',
+          correlationId: logger.correlationId,
+        });
+      }
+
+      const progressSummary = await getProgressSummary(serviceClient, {
+        interviewSessionId: sessionId,
+        userId: auth.user.id,
+        activeQuestionId: session.active_question_id ?? null,
+      });
+
+      return jsonSuccess(
+        {
+          session,
+          progressSummary,
+        },
+        req,
+        {
+          correlationId: logger.correlationId,
+        },
+      );
+    }
+
+    const { data: sessions, error } = await serviceClient
       .from('interview_sessions')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', auth.user.id)
       .order('started_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error('Error fetching interview sessions:', error);
-      return NextResponse.json({ error: 'Failed to fetch sessions' }, { status: 500 });
+      logger.error('Failed to fetch interview sessions', {
+        code: error.code,
+        message: error.message,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'INTERVIEW_SESSIONS_FETCH_FAILED',
+        message: 'Failed to fetch sessions',
+        correlationId: logger.correlationId,
+      });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: sessions,
+    return jsonSuccess(sessions ?? [], req, {
+      correlationId: logger.correlationId,
     });
   } catch (error) {
-    console.error('Interview sessions GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    logger.error('Unexpected interview sessions GET error', {
+      error: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonFailure(req, {
+      status: 500,
+      code: 'INTERVIEW_SESSIONS_GET_FAILED',
+      message: 'Internal server error',
+      correlationId: logger.correlationId,
+    });
   }
 }
 
 export async function POST(req: Request) {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const logger = createRouteLogger('api.interview-sessions.post', req);
 
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse(req);
     }
 
-    const body: Partial<InterviewSessionInput> = await req.json();
+    const body = await req.json().catch(() => null);
+    const parsedBody = CreateInterviewSessionBodySchema.safeParse(body);
 
+    if (!parsedBody.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_BODY',
+        message: 'Invalid interview session payload',
+        details: zodErrorDetails(parsedBody.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const serviceClient = await createServiceClient();
+    const payload = parsedBody.data;
     const sessionData: InterviewSessionInput = {
-      user_id: user.id,
-      started_at: body.started_at || new Date().toISOString(),
-      ended_at: body.ended_at || null,
-      topics_covered: body.topics_covered || [],
-      memory_count: body.memory_count || 0,
-      processing_status: body.processing_status || 'pending',
-      summary: body.summary || null,
+      user_id: auth.user.id,
+      started_at: payload.started_at || new Date().toISOString(),
+      ended_at: payload.ended_at || null,
+      topics_covered: payload.topics_covered,
+      memory_count: payload.memory_count,
+      processing_status: payload.processing_status,
+      summary: payload.summary || null,
+      catalog_version: payload.catalog_version || BIOGRAPHY_INTERVIEW_CATALOG_VERSION,
+      active_question_id: payload.active_question_id ?? null,
     };
 
-    const { data: session, error } = await supabase
+    const { data: session, error } = await serviceClient
       .from('interview_sessions')
       .insert(sessionData)
       .select()
       .single();
 
     if (error) {
-      console.error('Error creating interview session:', error);
-      return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
+      logger.error('Failed to create interview session', {
+        code: error.code,
+        message: error.message,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'INTERVIEW_SESSION_CREATE_FAILED',
+        message: 'Failed to create session',
+        correlationId: logger.correlationId,
+      });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: session,
-    }, { status: 201 });
+    try {
+      await seedInterviewQuestionProgress(serviceClient, {
+        interviewSessionId: session.id,
+        userId: auth.user.id,
+      });
+    } catch (seedError) {
+      logger.error('Failed to seed interview question progress', {
+        error: seedError instanceof Error ? seedError.message : 'unknown',
+        sessionId: session.id,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'INTERVIEW_PROGRESS_SEED_FAILED',
+        message: 'Failed to initialize interview progress',
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const progressSummary = await getProgressSummary(serviceClient, {
+      interviewSessionId: session.id,
+      userId: auth.user.id,
+      activeQuestionId: session.active_question_id ?? null,
+    });
+
+    return jsonSuccess({
+      ...session,
+      progressSummary,
+    }, req, {
+      status: 201,
+      correlationId: logger.correlationId,
+    });
   } catch (error) {
-    console.error('Interview sessions POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    logger.error('Unexpected interview sessions POST error', {
+      error: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonFailure(req, {
+      status: 500,
+      code: 'INTERVIEW_SESSIONS_POST_FAILED',
+      message: 'Internal server error',
+      correlationId: logger.correlationId,
+    });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const logger = createRouteLogger('api.interview-sessions.patch', req);
+
+  try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse(req);
+    }
+
+    const parsedQuery = InterviewSessionQuerySchema.safeParse(
+      Object.fromEntries(new URL(req.url).searchParams.entries()),
+    );
+
+    if (!parsedQuery.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_QUERY',
+        message: 'Invalid interview sessions query',
+        details: zodErrorDetails(parsedQuery.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
+    if (!parsedQuery.data.sessionId) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'SESSION_ID_REQUIRED',
+        message: 'sessionId is required',
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const body = await req.json().catch(() => null);
+    const parsedBody = UpdateInterviewSessionBodySchema.safeParse(body);
+
+    if (!parsedBody.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_BODY',
+        message: 'Invalid interview session patch payload',
+        details: zodErrorDetails(parsedBody.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const serviceClient = await createServiceClient();
+    const sessionId = parsedQuery.data.sessionId;
+    const payload = parsedBody.data;
+    const updates = {
+      ended_at: payload.ended_at ?? undefined,
+      topics_covered: payload.topics_covered ?? undefined,
+      memory_count: payload.memory_count ?? undefined,
+      processing_status: payload.processing_status ?? undefined,
+      summary: payload.summary ?? undefined,
+      catalog_version: payload.catalog_version ?? undefined,
+      active_question_id: payload.active_question_id ?? undefined,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: session, error } = await serviceClient
+      .from('interview_sessions')
+      .update(updates)
+      .eq('id', sessionId)
+      .eq('user_id', auth.user.id)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      logger.error('Failed to update interview session', {
+        code: error.code,
+        message: error.message,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'INTERVIEW_SESSION_UPDATE_FAILED',
+        message: 'Failed to update session',
+        correlationId: logger.correlationId,
+      });
+    }
+
+    if (!session) {
+      return jsonFailure(req, {
+        status: 404,
+        code: 'INTERVIEW_SESSION_NOT_FOUND',
+        message: 'Interview session not found',
+        correlationId: logger.correlationId,
+      });
+    }
+
+    return jsonSuccess(session, req, {
+      correlationId: logger.correlationId,
+    });
+  } catch (error) {
+    logger.error('Unexpected interview sessions PATCH error', {
+      error: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonFailure(req, {
+      status: 500,
+      code: 'INTERVIEW_SESSIONS_PATCH_FAILED',
+      message: 'Internal server error',
+      correlationId: logger.correlationId,
+    });
   }
 }

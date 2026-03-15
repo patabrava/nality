@@ -6,9 +6,11 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import type { BiographyToneType } from '@nality/schema';
+import { getOptionalEnv } from '@/lib/server/env';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -39,6 +41,7 @@ export async function POST(req: Request) {
       .from('chapters')
       .select('*')
       .eq('user_id', user.id)
+      .eq('status', 'published')
       .order('display_order', { ascending: true });
 
     if (chapterIds.length > 0) {
@@ -89,9 +92,26 @@ export async function POST(req: Request) {
       .eq('id', user.id)
       .single();
 
+    const openAiKey = getOptionalEnv('OPENAI_API_KEY');
+    const geminiKey =
+      getOptionalEnv('GEMINI_API_KEY') || getOptionalEnv('GOOGLE_GENERATIVE_AI_API_KEY');
+
+    let model;
+    if (openAiKey) {
+      process.env.OPENAI_API_KEY = openAiKey;
+      model = openai('gpt-4o');
+    } else if (geminiKey) {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = geminiKey;
+      model = google('gemini-2.0-flash');
+    } else if (process.env.NODE_ENV === 'test') {
+      model = openai('gpt-4o');
+    } else {
+      return NextResponse.json({ error: 'AI provider not configured' }, { status: 500 });
+    }
+
     // Generate biography using AI
     const { text: biographyContent } = await generateText({
-      model: openai('gpt-4o'),
+      model,
       prompt: `You are a skilled biographer helping to write a personal autobiography.
 
 ${TONE_PROMPTS[tone]}

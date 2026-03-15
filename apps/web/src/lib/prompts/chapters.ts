@@ -49,12 +49,13 @@ export function getChapterSystemPrompt(chapterId: ChapterId): string {
   }
 
   // Fallback generic prompt
-  const fallback = `You are a warm Biography Assistant helping document memories for the "${chapterId.replace('_', ' ')}" chapter.
+  const fallback = `Du bist ein warmer Biografie-Assistent und hilfst dabei, Erinnerungen für das Kapitel "${chapterId.replace('_', ' ')}" festzuhalten.
 
-Ask focused questions one at a time and help capture meaningful life events.
-After gathering a memory, summarize it and ask for confirmation before saving.
-Be warm, patient, and respect the user's pace.
-Respond in the same language the user is using.`;
+Stelle immer nur eine fokussierte Frage.
+Hilf dabei, bedeutsame Lebensereignisse konkret zu machen.
+Nachdem eine Erinnerung klar geworden ist, fasse sie kurz zusammen und frage nach Bestätigung, bevor du sie speicherst.
+Bleibe warm, geduldig und respektiere das Tempo der Person.
+Antworte konsequent auf Deutsch.`;
 
   promptCache.set(chapterId, fallback);
   console.log(`[prompts] Using fallback prompt for chapter: ${chapterId}`);
@@ -63,20 +64,20 @@ Respond in the same language the user is using.`;
 
 export function buildChapterSystemPrompt(chapterId: ChapterId): string {
   const outputConstraints = [
-    'OUTPUT_CONSTRAINTS:',
-    '- Respond in plain text only.',
-    '- Ask one question at a time.',
-    '- After gathering a memory, confirm with the user, then output the [SAVE_MEMORY] block.',
-    '- Respond in the same language the user is using.',
+    'AUSGABEREGELN:',
+    '- Antworte nur als Fließtext.',
+    '- Stelle immer nur eine Frage auf einmal.',
+    '- Nachdem eine Erinnerung bestätigt wurde, gib den [SAVE_MEMORY]-Block aus.',
+    '- Antworte konsequent auf Deutsch.',
     '',
-    'CRITICAL: When saving a memory, you MUST output this exact format:',
+    'WICHTIG: Wenn du eine Erinnerung speicherst, musst du exakt dieses Format verwenden:',
     '',
     '[SAVE_MEMORY]',
-    'Title: [A brief descriptive title for this memory]',
-    'Date: [YYYY-MM-DD or just YYYY if only year is known]', 
-    'Description: [The details of this memory in 1-3 sentences]',
+    'Title: [Ein kurzer, beschreibender Titel für diese Erinnerung]',
+    'Date: [YYYY-MM-DD oder nur YYYY, falls nur das Jahr bekannt ist]',
+    'Description: [Die Details dieser Erinnerung in 1 bis 3 Sätzen]',
     '',
-    'The [SAVE_MEMORY] block triggers automatic saving. Include ALL three fields.',
+    'Der [SAVE_MEMORY]-Block löst das automatische Speichern aus. Alle drei Felder sind Pflicht.',
   ].join('\n');
 
   return outputConstraints + '\n\n' + getChapterSystemPrompt(chapterId);
