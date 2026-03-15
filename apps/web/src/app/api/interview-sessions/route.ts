@@ -20,6 +20,7 @@ const InterviewSessionQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   offset: z.coerce.number().int().min(0).default(0),
   sessionId: z.string().uuid().optional(),
+  active: z.coerce.boolean().optional().default(false),
 });
 
 const CreateInterviewSessionBodySchema = z.object({
@@ -60,14 +61,14 @@ export async function GET(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_QUERY',
-        message: 'Invalid interview sessions query',
+        message: 'Ungültige Interviewsitzungsanfrage',
         details: zodErrorDetails(parsedQuery.error),
         correlationId: logger.correlationId,
       });
     }
 
     const serviceClient = await createServiceClient();
-    const { limit, offset, sessionId } = parsedQuery.data;
+    const { limit, offset, sessionId, active } = parsedQuery.data;
 
     if (sessionId) {
       const { data: session, error } = await serviceClient
@@ -85,7 +86,7 @@ export async function GET(req: Request) {
         return jsonFailure(req, {
           status: 500,
           code: 'INTERVIEW_SESSION_FETCH_FAILED',
-          message: 'Failed to fetch session',
+          message: 'Sitzung konnte nicht geladen werden',
           correlationId: logger.correlationId,
         });
       }
@@ -94,7 +95,7 @@ export async function GET(req: Request) {
         return jsonFailure(req, {
           status: 404,
           code: 'INTERVIEW_SESSION_NOT_FOUND',
-          message: 'Interview session not found',
+          message: 'Interviewsitzung nicht gefunden',
           correlationId: logger.correlationId,
         });
       }
@@ -117,6 +118,59 @@ export async function GET(req: Request) {
       );
     }
 
+    if (active) {
+      const { data: sessions, error } = await serviceClient
+        .from('interview_sessions')
+        .select('*')
+        .eq('user_id', auth.user.id)
+        .order('updated_at', { ascending: false })
+        .limit(Math.min(limit, 20));
+
+      if (error) {
+        logger.error('Failed to fetch active interview session', {
+          code: error.code,
+          message: error.message,
+        });
+        return jsonFailure(req, {
+          status: 500,
+          code: 'INTERVIEW_ACTIVE_SESSION_FETCH_FAILED',
+          message: 'Aktive Sitzung konnte nicht geladen werden',
+          correlationId: logger.correlationId,
+        });
+      }
+
+      const resumableSessions = (sessions ?? []).filter(
+        (session) => session.processing_status !== 'failed',
+      );
+
+      for (const candidate of resumableSessions) {
+        const progressSummary = await getProgressSummary(serviceClient, {
+          interviewSessionId: candidate.id,
+          userId: auth.user.id,
+          activeQuestionId: candidate.active_question_id ?? null,
+        });
+
+        if (progressSummary.counts.remainingRequired <= 0) {
+          continue;
+        }
+
+        return jsonSuccess(
+          {
+            session: candidate,
+            progressSummary,
+          },
+          req,
+          {
+            correlationId: logger.correlationId,
+          },
+        );
+      }
+
+      return jsonSuccess(null, req, {
+        correlationId: logger.correlationId,
+      });
+    }
+
     const { data: sessions, error } = await serviceClient
       .from('interview_sessions')
       .select('*')
@@ -132,7 +186,7 @@ export async function GET(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'INTERVIEW_SESSIONS_FETCH_FAILED',
-        message: 'Failed to fetch sessions',
+        message: 'Sitzungen konnten nicht geladen werden',
         correlationId: logger.correlationId,
       });
     }
@@ -147,7 +201,7 @@ export async function GET(req: Request) {
     return jsonFailure(req, {
       status: 500,
       code: 'INTERVIEW_SESSIONS_GET_FAILED',
-      message: 'Internal server error',
+      message: 'Interner Serverfehler',
       correlationId: logger.correlationId,
     });
   }
@@ -169,7 +223,7 @@ export async function POST(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_BODY',
-        message: 'Invalid interview session payload',
+        message: 'Ungültige Interviewsitzungsdaten',
         details: zodErrorDetails(parsedBody.error),
         correlationId: logger.correlationId,
       });
@@ -203,7 +257,7 @@ export async function POST(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'INTERVIEW_SESSION_CREATE_FAILED',
-        message: 'Failed to create session',
+        message: 'Sitzung konnte nicht erstellt werden',
         correlationId: logger.correlationId,
       });
     }
@@ -221,7 +275,7 @@ export async function POST(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'INTERVIEW_PROGRESS_SEED_FAILED',
-        message: 'Failed to initialize interview progress',
+        message: 'Interviewfortschritt konnte nicht initialisiert werden',
         correlationId: logger.correlationId,
       });
     }
@@ -246,7 +300,7 @@ export async function POST(req: Request) {
     return jsonFailure(req, {
       status: 500,
       code: 'INTERVIEW_SESSIONS_POST_FAILED',
-      message: 'Internal server error',
+      message: 'Interner Serverfehler',
       correlationId: logger.correlationId,
     });
   }
@@ -269,7 +323,7 @@ export async function PATCH(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_QUERY',
-        message: 'Invalid interview sessions query',
+        message: 'Ungültige Interviewsitzungsanfrage',
         details: zodErrorDetails(parsedQuery.error),
         correlationId: logger.correlationId,
       });
@@ -279,7 +333,7 @@ export async function PATCH(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'SESSION_ID_REQUIRED',
-        message: 'sessionId is required',
+        message: 'Eine Sitzungs-ID ist erforderlich',
         correlationId: logger.correlationId,
       });
     }
@@ -291,7 +345,7 @@ export async function PATCH(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_BODY',
-        message: 'Invalid interview session patch payload',
+        message: 'Ungültige Aktualisierungsdaten für die Interviewsitzung',
         details: zodErrorDetails(parsedBody.error),
         correlationId: logger.correlationId,
       });
@@ -327,7 +381,7 @@ export async function PATCH(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'INTERVIEW_SESSION_UPDATE_FAILED',
-        message: 'Failed to update session',
+        message: 'Sitzung konnte nicht aktualisiert werden',
         correlationId: logger.correlationId,
       });
     }
@@ -336,7 +390,7 @@ export async function PATCH(req: Request) {
       return jsonFailure(req, {
         status: 404,
         code: 'INTERVIEW_SESSION_NOT_FOUND',
-        message: 'Interview session not found',
+        message: 'Interviewsitzung nicht gefunden',
         correlationId: logger.correlationId,
       });
     }
@@ -351,7 +405,7 @@ export async function PATCH(req: Request) {
     return jsonFailure(req, {
       status: 500,
       code: 'INTERVIEW_SESSIONS_PATCH_FAILED',
-      message: 'Internal server error',
+      message: 'Interner Serverfehler',
       correlationId: logger.correlationId,
     });
   }

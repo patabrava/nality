@@ -316,7 +316,7 @@ export function useDeepgramVoiceSession(
     });
 
     if (!response.ok) {
-      throw new Error('Voice agent session bootstrap failed');
+      throw new Error('Die Initialisierung der Sprachsitzung ist fehlgeschlagen');
     }
 
     const payload = (await response.json()) as {
@@ -324,12 +324,12 @@ export function useDeepgramVoiceSession(
     };
 
     if (!payload.data) {
-      throw new Error('Voice agent session bootstrap missing data');
+      throw new Error('Für die Sprachsitzung fehlen Initialisierungsdaten');
     }
 
     if (payload.data.transport === 'legacy') {
       throw new Error(
-        `VOICE_AGENT_FALLBACK:${payload.data.fallbackReason || 'legacy voice transport required'}`,
+        `VOICE_AGENT_FALLBACK:${payload.data.fallbackReason || 'klassischer Sprachtransport erforderlich'}`,
       );
     }
 
@@ -406,35 +406,16 @@ export function useDeepgramVoiceSession(
       }
 
       if (eventType === 'Error') {
-        reportError(new Error(extractEventText(event) || 'Deepgram voice agent error'));
+        reportError(new Error(extractEventText(event) || 'Deepgram-Sprachagentfehler'));
       }
     },
     [appendConversation, reportError, startMicrophoneStream, stopPlayback],
   );
 
   const endSession = useCallback(() => {
-    const sessionId = interviewSessionIdRef.current;
     teardown();
     setAgentState('idle');
-
-    if (sessionId) {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (session?.access_token) {
-        headers.Authorization = `Bearer ${session.access_token}`;
-      }
-
-      void fetch(`/api/interview-sessions?sessionId=${sessionId}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({
-          ended_at: new Date().toISOString(),
-          processing_status: 'complete',
-        }),
-      });
-    }
-  }, [session?.access_token, teardown]);
+  }, [teardown]);
 
   const startSession = useCallback(async () => {
     if (isActiveRef.current) {
@@ -485,14 +466,14 @@ export function useDeepgramVoiceSession(
       };
 
       socket.onerror = () => {
-        reportError(new Error('Deepgram voice agent connection failed'));
+        reportError(new Error('Die Verbindung zum Deepgram-Sprachagenten ist fehlgeschlagen'));
       };
 
       socket.onclose = () => {
         const shouldReport = isActiveRef.current;
         teardown();
         if (shouldReport) {
-          reportError(new Error('Deepgram voice agent connection closed'));
+          reportError(new Error('Die Verbindung zum Deepgram-Sprachagenten wurde geschlossen'));
         }
       };
     } catch (nextError) {

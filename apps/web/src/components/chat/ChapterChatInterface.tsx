@@ -372,10 +372,15 @@ export function ChapterChatInterface({
   }, [accessToken, chapter?.id, isBiographyMode, onEventCreated, user?.id]);
 
   const handleClose = useCallback(() => {
+    if (isBiographyMode) {
+      onClose()
+      return
+    }
+
     void finalizeInterviewSession().finally(() => {
       onClose()
     })
-  }, [finalizeInterviewSession, onClose])
+  }, [finalizeInterviewSession, isBiographyMode, onClose])
 
   // Watch for AI messages that indicate saving
   useEffect(() => {
@@ -450,7 +455,7 @@ export function ChapterChatInterface({
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: 'var(--md-sys-color-on-surface)' }}>
-                {isBiographyMode ? 'Biografie-Assistent' : 'Add Memory'}
+                {isBiographyMode ? 'Biografie-Assistent' : 'Erinnerung hinzufügen'}
               </h2>
               <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--md-sys-color-on-surface-variant)' }}>
                 {isBiographyMode ? 'Fast wie ein Gespräch unter Freunden.' : chapter?.title}
@@ -493,7 +498,7 @@ export function ChapterChatInterface({
               }}
               onMouseOver={(e) => e.currentTarget.style.background = 'var(--md-sys-color-surface-container-high)'}
               onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-              aria-label="Close"
+              aria-label="Schließen"
               onClick={handleClose}
             >
               ×

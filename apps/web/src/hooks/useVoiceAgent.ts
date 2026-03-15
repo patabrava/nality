@@ -425,27 +425,13 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
       clearStartedBiographyVoiceSession(interviewSessionId);
     }
 
-    if (voiceMode === 'biography' && interviewSessionId) {
-      void fetch(`/api/interview-sessions?sessionId=${interviewSessionId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authHeaders || {}),
-        },
-        body: JSON.stringify({
-          ended_at: new Date().toISOString(),
-          processing_status: 'complete',
-        }),
-      });
-    }
-
     setIsActive(false);
     isActiveRef.current = false;
     isTransitioningRef.current = false;
     voiceInput.stopListening();
     audioPlayer.stop();
     setAgentState('idle');
-  }, [audioPlayer, authHeaders, interviewSessionId, voiceInput, voiceMode]);
+  }, [audioPlayer, interviewSessionId, voiceInput, voiceMode]);
 
   // Handle new assistant messages - trigger TTS
   useEffect(() => {

@@ -39,7 +39,7 @@ export function BiographyInterviewModal({
     committedSessionIdRef.current = interviewSessionId
   }, [interviewSessionId])
 
-  const createInterviewSession = useCallback(async (signal?: AbortSignal) => {
+  const ensureInterviewSession = useCallback(async (signal?: AbortSignal) => {
     if (hasRequestedSessionRef.current || committedSessionIdRef.current) {
       return
     }
@@ -49,6 +49,23 @@ export function BiographyInterviewModal({
     setSessionError(null)
 
     try {
+      const lookupResponse = await fetch('/api/interview-sessions?active=true', {
+        method: 'GET',
+        ...(signal ? { signal } : {}),
+        ...(authHeaders ? { headers: authHeaders } : {}),
+      })
+
+      if (lookupResponse.ok) {
+        const lookupData = await lookupResponse.json()
+        const activeSessionId = lookupData?.data?.session?.id ?? null
+
+        if (activeSessionId) {
+          committedSessionIdRef.current = activeSessionId
+          setInterviewSessionId(activeSessionId)
+          return
+        }
+      }
+
       const response = await fetch('/api/interview-sessions', {
         method: 'POST',
         ...(signal ? { signal } : {}),
@@ -91,7 +108,7 @@ export function BiographyInterviewModal({
 
   useEffect(() => {
     const abortController = new AbortController()
-    void createInterviewSession(abortController.signal)
+    void ensureInterviewSession(abortController.signal)
 
     return () => {
       abortController.abort()
@@ -99,7 +116,7 @@ export function BiographyInterviewModal({
         hasRequestedSessionRef.current = false
       }
     }
-  }, [createInterviewSession])
+  }, [ensureInterviewSession])
 
   if (isCreatingSession) {
     return (
@@ -142,7 +159,7 @@ export function BiographyInterviewModal({
           />
           <h2 style={{ margin: '0 0 8px', fontSize: '1.25rem' }}>Interview wird vorbereitet</h2>
           <p style={{ margin: 0, color: 'rgba(255, 255, 255, 0.64)', lineHeight: 1.5 }}>
-            Der Biografie-Assistent lädt deine bisherigen Erinnerungen und Vorab-Angaben.
+            Der Biografie-Assistent lädt deine bisherige Sitzung und Vorab-Angaben.
           </p>
         </div>
       </div>
@@ -186,7 +203,7 @@ export function BiographyInterviewModal({
               onClick={() => {
                 hasRequestedSessionRef.current = false
                 committedSessionIdRef.current = null
-                void createInterviewSession()
+                void ensureInterviewSession()
               }}
               style={{
                 padding: '12px 20px',
