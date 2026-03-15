@@ -224,7 +224,23 @@ export function InterviewInterface({
               fontSize: '0.875rem',
             }}
           >
-            {error.message}
+            <div>{error.message}</div>
+            {onSwitchToText && (
+              <button
+                onClick={onSwitchToText}
+                style={{
+                  marginTop: '12px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
+                  color: 'var(--md-sys-color-on-surface)',
+                  cursor: 'pointer',
+                }}
+              >
+                Zum Textmodus wechseln
+              </button>
+            )}
           </div>
         )}
 

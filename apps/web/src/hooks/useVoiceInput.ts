@@ -67,6 +67,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
     onError,
     language = 'en-US',
     interimResults = true,
+    utteranceEndMs = 1500,
   } = options;
 
   const [state, setState] = useState<VoiceInputState>('idle');
@@ -246,11 +247,19 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
           silenceTimeoutRef.current = setTimeout(() => {
             if (transcriptRef.current.trim() && isListeningRef.current) {
               console.log('🔇 Silence detected - triggering utterance end');
-              onUtteranceEnd?.(transcriptRef.current.trim());
+              const fullTranscript = transcriptRef.current.trim();
+              isListeningRef.current = false;
               transcriptRef.current = '';
               setTranscript('');
+              setInterimTranscript('');
+              try {
+                recognitionRef.current?.stop();
+              } catch (stopError) {
+                console.warn('⚠️ Failed to stop speech recognition after utterance end:', stopError);
+              }
+              onUtteranceEnd?.(fullTranscript);
             }
-          }, 1500); // 1.5 second silence = end of utterance
+          }, utteranceEndMs);
         }
 
         if (interim) {
@@ -332,7 +341,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       setState('error');
       cleanup();
     }
-  }, [state, language, interimResults, onTranscript, onUtteranceEnd, onError, cleanup]);
+  }, [state, language, interimResults, onTranscript, onUtteranceEnd, onError, cleanup, utteranceEndMs]);
 
   const stopListening = useCallback(() => {
     console.log('🛑 Stopping voice input');

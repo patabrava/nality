@@ -3,6 +3,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVoiceInput } from './useVoiceInput';
 import { useAudioPlayer } from './useAudioPlayer';
+import { useDeepgramVoiceSession } from './useDeepgramVoiceSession';
+import {
+  clearStartedBiographyVoiceSession,
+  getBiographyVoiceSessionTransport,
+  hasStartedBiographyVoiceSession,
+  getLastBiographyVoiceAssistantMessageId,
+  markBiographyVoiceSessionStarted,
+  setBiographyVoiceSessionTransport,
+  setLastBiographyVoiceAssistantMessageId,
+} from './biographyVoiceSessionRegistry';
 import { useChat } from '@ai-sdk/react';
 import { useAuth } from './useAuth';
 import { BIOGRAPHY_INTERVIEW_START_TOKEN } from '@/lib/biography/interview';
@@ -50,7 +60,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     onMemorySaved,
     onError,
     autoStart = false,
-    voice = 'aura-2-viktoria-de',
+    voice = 'aura-2-elara-de',
     onComplete,
     mode = 'biography',
     interviewSessionId: externalInterviewSessionId = null,
@@ -68,22 +78,55 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   const [error, setError] = useState<Error | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [biographyTransport, setBiographyTransport] = useState<'deepgram' | 'legacy'>(() => {
+    if (externalInterviewSessionId) {
+      return getBiographyVoiceSessionTransport(externalInterviewSessionId) ?? 'deepgram';
+    }
+
+    return 'deepgram';
+  });
   const completionHandledRef = useRef(false);
+  const biographyAutoStartKeyRef = useRef<string | null>(null);
   const [onboardingSessionId, setOnboardingSessionId] = useState<string | null>(null);
   const [isOnboardingResuming, setIsOnboardingResuming] = useState(false);
   const [interviewSessionId, setInterviewSessionId] = useState<string | null>(externalInterviewSessionId);
-
-  useEffect(() => {
-    if (externalInterviewSessionId) {
-      setInterviewSessionId(externalInterviewSessionId);
-    }
-  }, [externalInterviewSessionId]);
-
   // Refs for state machine control (avoid stale closures in callbacks)
   const processedMessageIdRef = useRef<string | null>(null);
   const isTransitioningRef = useRef(false);
   const isActiveRef = useRef(false);
   const isMutedRef = useRef(false);
+  const handleBiographyVoiceError = useCallback(
+    (err: Error) => {
+      if (err.message.startsWith('VOICE_AGENT_FALLBACK:')) {
+        if (interviewSessionId) {
+          setBiographyVoiceSessionTransport(interviewSessionId, 'legacy');
+        }
+        setBiographyTransport('legacy');
+        return;
+      }
+
+      onError?.(err);
+    },
+    [interviewSessionId, onError],
+  );
+
+  const deepgramBiographySession = useDeepgramVoiceSession({
+    interviewSessionId,
+    voice,
+    onError: handleBiographyVoiceError,
+    ...(onComplete ? { onComplete } : {}),
+  });
+
+  useEffect(() => {
+    if (externalInterviewSessionId) {
+      setInterviewSessionId(externalInterviewSessionId);
+      setBiographyTransport(getBiographyVoiceSessionTransport(externalInterviewSessionId) ?? 'deepgram');
+      processedMessageIdRef.current = getLastBiographyVoiceAssistantMessageId(externalInterviewSessionId);
+    } else {
+      processedMessageIdRef.current = null;
+    }
+    biographyAutoStartKeyRef.current = null;
+  }, [externalInterviewSessionId]);
 
   // Initialize chat with AI SDK
   const { 
@@ -285,6 +328,23 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     });
   }, [onError]);
 
+  const resumeBiographySession = useCallback(async () => {
+    console.log('🎤 Resuming biography voice session without bootstrap');
+    setError(null);
+    setIsActive(true);
+    isActiveRef.current = true;
+
+    try {
+      await startListeningInternal();
+    } catch (err) {
+      const resumeError =
+        err instanceof Error ? err : new Error('Failed to resume biography voice session');
+      setError(resumeError);
+      setAgentState('error');
+      onError?.(resumeError);
+    }
+  }, [onError, startListeningInternal]);
+
   // Handle utterance end - user stopped speaking
   const handleUtteranceEnd = useCallback(async (transcript: string) => {
     if (!transcript.trim()) return;
@@ -315,6 +375,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   // Initialize voice input
   const voiceInput = useVoiceInput({
     language: sttLanguage,
+    utteranceEndMs: voiceMode === 'biography' ? 900 : 1500,
     onUtteranceEnd: handleUtteranceEnd,
     onError: (err) => {
       console.error('❌ Voice input error:', err);
@@ -361,6 +422,10 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
   // End voice session
   const endSession = useCallback(() => {
     if (voiceMode === 'biography' && interviewSessionId) {
+      clearStartedBiographyVoiceSession(interviewSessionId);
+    }
+
+    if (voiceMode === 'biography' && interviewSessionId) {
       void fetch(`/api/interview-sessions?sessionId=${interviewSessionId}`, {
         method: 'PATCH',
         headers: {
@@ -389,6 +454,16 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     const lastMessage = messages[messages.length - 1];
     if (!lastMessage || lastMessage.role !== 'assistant') return;
+
+    if (
+      voiceMode === 'biography' &&
+      interviewSessionId &&
+      !processedMessageIdRef.current &&
+      getLastBiographyVoiceAssistantMessageId(interviewSessionId) === lastMessage.id
+    ) {
+      processedMessageIdRef.current = lastMessage.id;
+      return;
+    }
 
     // Skip if we already processed this message
     if (processedMessageIdRef.current === lastMessage.id) return;
@@ -464,6 +539,9 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
     console.log('🔊 Speaking assistant message:', lastMessage.id, content.length, 'chars');
     processedMessageIdRef.current = lastMessage.id;
+    if (voiceMode === 'biography' && interviewSessionId) {
+      setLastBiographyVoiceAssistantMessageId(interviewSessionId, lastMessage.id);
+    }
 
     if (!isMuted) {
       audioPlayer.playText(content);
@@ -496,6 +574,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
     endSession,
     onComplete,
     ensureOnboardingSession,
+    interviewSessionId,
     onboardingSessionId,
     saveOnboardingMessage,
   ]);
@@ -546,6 +625,9 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
       try {
         setAgentState('thinking');
+        markBiographyVoiceSessionStarted(biographySessionId, 'legacy');
+        setBiographyVoiceSessionTransport(biographySessionId, 'legacy');
+        setLastBiographyVoiceAssistantMessageId(biographySessionId, null);
         await append(
           {
             role: 'user',
@@ -560,6 +642,7 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
           },
         );
       } catch (err) {
+        clearStartedBiographyVoiceSession(biographySessionId);
         const bootstrapError =
           err instanceof Error ? err : new Error('Failed to bootstrap biography interview');
         setError(bootstrapError);
@@ -615,26 +698,78 @@ export function useVoiceAgent(options: UseVoiceAgentOptions = {}): UseVoiceAgent
 
   // Auto-start if enabled
   const hasAutoStarted = useRef(false);
+  const legacyBiographyStartSessionRef = useRef(startSession);
+  const deepgramBiographyStartSessionRef = useRef(deepgramBiographySession.startSession);
   useEffect(() => {
+    legacyBiographyStartSessionRef.current = startSession;
+  }, [startSession]);
+  useEffect(() => {
+    deepgramBiographyStartSessionRef.current = deepgramBiographySession.startSession;
+  }, [deepgramBiographySession.startSession]);
+  useEffect(() => {
+    if (voiceMode === 'biography') {
+      return;
+    }
+
     if (autoStart && !hasAutoStarted.current) {
       hasAutoStarted.current = true;
       startSession();
     }
-  }, [autoStart]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoStart, startSession, voiceMode]);
 
   // Cleanup on unmount
   useEffect(() => {
+    if (voiceMode === 'biography') {
+      return undefined;
+    }
+
     return () => {
       voiceInput.stopListening();
       audioPlayer.stop();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [audioPlayer, voiceInput, voiceMode]);
 
   // Build conversation history for display
   const conversationHistory = messages.map(m => ({
     role: m.role as 'user' | 'assistant',
     content: m.content,
-  }));
+  })).filter((message) =>
+    !(voiceMode === 'biography' && message.role === 'user' && message.content === BIOGRAPHY_INTERVIEW_START_TOKEN),
+  );
+
+  useEffect(() => {
+    if (voiceMode !== 'biography' || !autoStart) {
+      biographyAutoStartKeyRef.current = null;
+      return;
+    }
+
+    const autoStartKey = `${biographyTransport}:${interviewSessionId ?? 'pending'}`;
+
+    if (interviewSessionId && hasStartedBiographyVoiceSession(interviewSessionId)) {
+      if (biographyAutoStartKeyRef.current === autoStartKey) {
+        return;
+      }
+
+      biographyAutoStartKeyRef.current = autoStartKey;
+      void resumeBiographySession();
+      return;
+    }
+
+    if (biographyAutoStartKeyRef.current === autoStartKey) {
+      return;
+    }
+
+    biographyAutoStartKeyRef.current = autoStartKey;
+    if (biographyTransport === 'deepgram') {
+      void deepgramBiographyStartSessionRef.current();
+    } else {
+      void legacyBiographyStartSessionRef.current();
+    }
+  }, [autoStart, biographyTransport, interviewSessionId, resumeBiographySession, voiceMode]);
+
+  if (voiceMode === 'biography' && biographyTransport === 'deepgram') {
+    return deepgramBiographySession;
+  }
 
   return {
     agentState,
