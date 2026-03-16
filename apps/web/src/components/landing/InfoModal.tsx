@@ -85,7 +85,7 @@ export default function InfoModal({ isOpen, onClose, title, content }: InfoModal
             onMouseLeave={(e) => {
               e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'
             }}
-            aria-label="Close modal"
+            aria-label="Modal schließen"
           >
             <X size={24} />
           </button>

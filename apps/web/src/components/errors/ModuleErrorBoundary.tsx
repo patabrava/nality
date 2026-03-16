@@ -123,7 +123,7 @@ export class ModuleErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
                   color: 'var(--c-primary-invert)'
                 }}
               >
-                Try Again
+                Erneut versuchen
               </button>
               
               <div className="space-x-3">
@@ -135,7 +135,7 @@ export class ModuleErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
                     color: 'var(--c-neutral-dark)'
                   }}
                 >
-                  Back to Dashboard
+                  Zurück zum Arbeitsbereich
                 </button>
                 
                 <button
@@ -146,7 +146,7 @@ export class ModuleErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
                     color: 'var(--c-neutral-dark)'
                   }}
                 >
-                  Reload Page
+                  Seite neu laden
                 </button>
               </div>
             </div>

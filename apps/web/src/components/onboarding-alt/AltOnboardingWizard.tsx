@@ -189,9 +189,9 @@ export function AltOnboardingWizard() {
 
   const stageLabel = useMemo(() => {
     if (!draft.path) return 'Startfrage';
-    if (draft.stage === 'neutral') return 'Neutraler Storytelling-Block';
+    if (draft.stage === 'neutral') return 'Neutraler Erzählblock';
     if (draft.stage === 'registration') return 'Registrierung';
-    if (!currentStep) return 'Onboarding';
+    if (!currentStep) return 'Einstieg';
     const index = getStepIndex(draft.path, currentStep.id);
     return `Schritt ${index + 1} von ${PATH_STEPS[draft.path].length}`;
   }, [currentStep, draft.path, draft.stage]);
@@ -596,7 +596,7 @@ export function AltOnboardingWizard() {
               fontSize: '0.75rem',
             }}
           >
-            Pre-Registration Onboarding
+            Einstieg vor der Registrierung
           </p>
           <h1 style={{ margin: '8px 0 0', fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: '2rem' }}>
             Willkommen bei Nality

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid payload', issues: parsed.error.flatten() },
+        { error: 'Ungültige Daten', issues: parsed.error.flatten() },
         { status: 400 },
       );
     }
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
     if (expireOlderError) {
       console.error('[alt-onboarding] failed to expire pending payloads', expireOlderError);
-      return NextResponse.json({ error: 'Failed to store onboarding link' }, { status: 500 });
+      return NextResponse.json({ error: 'Onboarding-Link konnte nicht gespeichert werden' }, { status: 500 });
     }
 
     const { error: insertError } = await serviceClient.from('alt_onboarding_pending').insert({
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     if (insertError) {
       console.error('[alt-onboarding] failed to insert pending payload', insertError);
-      return NextResponse.json({ error: 'Failed to store onboarding link' }, { status: 500 });
+      return NextResponse.json({ error: 'Onboarding-Link konnte nicht gespeichert werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -90,6 +90,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('[alt-onboarding] pending endpoint error', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

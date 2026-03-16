@@ -32,12 +32,12 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const parsedBody = ChapterPlanningRequestSchema.safeParse(await req.json().catch(() => ({})));
     if (!parsedBody.success) {
-      return NextResponse.json({ error: 'Invalid chapter planning request' }, { status: 400 });
+      return NextResponse.json({ error: 'Ungültige Anfrage zur Kapitelplanung' }, { status: 400 });
     }
 
     const { force_regenerate: forceRegenerate } = parsedBody.data;
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     if (publishedChapters.length > 0 && !forceRegenerate) {
       return NextResponse.json({
-        error: 'Published chapters already exist. Confirmation flow has already completed.',
+        error: 'Es existieren bereits veröffentlichte Kapitel. Der Bestätigungsschritt wurde schon abgeschlossen.',
       }, { status: 400 });
     }
 
@@ -131,6 +131,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('Chapter generation error:', error);
-    return NextResponse.json({ error: 'Failed to generate chapters' }, { status: 500 });
+    return NextResponse.json({ error: 'Kapitel konnten nicht erstellt werden' }, { status: 500 });
   }
 }

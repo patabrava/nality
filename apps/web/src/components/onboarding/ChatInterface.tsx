@@ -700,7 +700,7 @@ export default function ChatInterface({
         >
           <form onSubmit={handleSubmitResponse}>
             <div style={{ position: 'relative', marginBottom: '12px' }}>
-              <label htmlFor="onboarding-response" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Your response</label>
+              <label htmlFor="onboarding-response" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Deine Antwort</label>
               <textarea
                 id="onboarding-response"
                 ref={textareaRef}

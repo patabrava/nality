@@ -151,7 +151,7 @@
     "features": [
       {
         "title": "Intelligenter Einstieg",
-        "description": "Beginne mit einem geführten Chat, der deine Erinnerungen in strukturierte Ereignisse verwandelt. Bearbeite jederzeit mit Leichtigkeit."
+        "description": "Beginne mit einem geführten Gespräch, das deine Erinnerungen in strukturierte Ereignisse verwandelt. Bearbeite jederzeit mit Leichtigkeit."
       },
       {
         "title": "Lebendige Zeitleiste",
@@ -277,7 +277,7 @@
         "price": "39 €",
         "period": "/ Monat",
         "yearlyPrice": "399 € / Jahr",
-        "description": "Professionelles Storytelling mit Experten-Interviews",
+        "description": "Professionelle Lebensgeschichten mit Experten-Interviews",
         "features": [
           "Alles aus Storyteller",
           "Sitzungen mit Experten-Interviewern",
@@ -458,11 +458,11 @@
       },
       "contact": {
         "title": "Kontakt",
-        "content": "Wir freuen uns, von Ihnen zu hören.\n\nKontaktmöglichkeiten\n\nAllgemeine Anfragen\nE-Mail: info@nality.com\nAntwortzeit: Innerhalb von 24 Stunden\n\nKundensupport\nE-Mail: support@nality.com\nVerfügbar: Mo-Fr, 9:00-18:00 CET\n\nPartnerschaftsanfragen\nE-Mail: partnerships@nality.com\n\nMedienanfragen\nE-Mail: press@nality.com\n\nTechnischer Support\nFür technische Probleme nutzen Sie bitte unseren Nachrichten-Support im Dashboard oder senden Sie eine E-Mail an support@nality.com mit detaillierten Informationen zum Problem.\n\nInterview-Buchung\nUm einen professionellen Interviewtermin zu buchen, loggen Sie sich in Ihr Konto ein und navigieren Sie zum Interview-Bereich oder kontaktieren Sie uns unter interview@nality.com.\n\nGeschäftsadresse\nNALITY GmbH\nMaximilianstraße 123\n80539 München\nDeutschland\n\nWir freuen uns darauf, Ihnen bei Ihrer Lebensgeschichte zu helfen."
+        "content": "Wir freuen uns, von Ihnen zu hören.\n\nKontaktmöglichkeiten\n\nAllgemeine Anfragen\nE-Mail: info@nality.com\nAntwortzeit: Innerhalb von 24 Stunden\n\nKundensupport\nE-Mail: support@nality.com\nVerfügbar: Mo-Fr, 9:00-18:00 CET\n\nPartnerschaftsanfragen\nE-Mail: partnerships@nality.com\n\nMedienanfragen\nE-Mail: press@nality.com\n\nTechnischer Support\nFür technische Probleme nutzen Sie bitte unseren Nachrichten-Support im geschützten Bereich oder senden Sie eine E-Mail an support@nality.com mit detaillierten Informationen zum Problem.\n\nInterview-Buchung\nUm einen professionellen Interviewtermin zu buchen, loggen Sie sich in Ihr Konto ein und navigieren Sie zum Interview-Bereich oder kontaktieren Sie uns unter interview@nality.com.\n\nGeschäftsadresse\nNALITY GmbH\nMaximilianstraße 123\n80539 München\nDeutschland\n\nWir freuen uns darauf, Ihnen bei Ihrer Lebensgeschichte zu helfen."
       },
       "careers": {
         "title": "Karriere",
-        "content": "Werde Teil unserer Mission, Lebensgeschichten zu bewahren.\n\nWarum NALITY?\n\nBei NALITY arbeiten Sie an einem Produkt, das echten Wert schafft. Wir helfen Menschen, ihre wertvollsten Erinnerungen für die Ewigkeit festzuhalten.\n\nUnsere Kultur\n- Ortsunabhängiges Arbeiten: Arbeiten Sie von überall\n- Innovation: Nutzen Sie modernste Technologien\n- Ausgewogene Arbeitskultur: Flexible Arbeitszeiten\n- Wachstum: Kontinuierliche Lern- und Entwicklungsmöglichkeiten\n- Sinn: Arbeit mit gesellschaftlicher Wirkung\n\nAktuelle Positionen\n\nWir suchen regelmäßig nach talentierten Menschen in folgenden Bereichen:\n\n- Full-Stack-Entwicklerinnen und -Entwickler (TypeScript, React, Node.js)\n- KI/ML-Entwicklerinnen und -Entwickler (NLP, Sprachverarbeitung)\n- UX/UI-Designerinnen und -Designer (Luxuriöses digitales Design)\n- Autorinnen, Autoren und Biografinnen\n- Managerinnen und Manager für Kundenerfolg\n- Fachkräfte für Marketing und Wachstum\n\nBewerbungsprozess\n1. Senden Sie Ihren Lebenslauf an careers@nality.com\n2. Erstes Gespräch (30 Minuten)\n3. Technisches Gespräch / Portfolio-Besprechung\n4. Teamgespräch\n5. Angebot\n\nWas wir bieten\n- Wettbewerbsfähiges Gehalt\n- Beteiligungsoptionen\n- Flexible Arbeitszeiten\n- Weiterbildungsbudget\n- Moderner Technik-Stack\n- Internationale Teamtreffen\n\nKontakt\ncareers@nality.com\n\nWir freuen uns auf Ihre Bewerbung!"
+        "content": "Werde Teil unserer Mission, Lebensgeschichten zu bewahren.\n\nWarum NALITY?\n\nBei NALITY arbeiten Sie an einem Produkt, das echten Wert schafft. Wir helfen Menschen, ihre wertvollsten Erinnerungen für die Ewigkeit festzuhalten.\n\nUnsere Kultur\n- Ortsunabhängiges Arbeiten: Arbeiten Sie von überall\n- Innovation: Nutzen Sie modernste Technologien\n- Ausgewogene Arbeitskultur: Flexible Arbeitszeiten\n- Wachstum: Kontinuierliche Lern- und Entwicklungsmöglichkeiten\n- Sinn: Arbeit mit gesellschaftlicher Wirkung\n\nAktuelle Positionen\n\nWir suchen regelmäßig nach talentierten Menschen in folgenden Bereichen:\n\n- Entwicklerinnen und Entwickler für Frontend und Backend (TypeScript, React, Node.js)\n- KI/ML-Entwicklerinnen und -Entwickler (NLP, Sprachverarbeitung)\n- UX/UI-Designerinnen und -Designer (luxuriöses digitales Design)\n- Autorinnen, Autoren und Biografinnen\n- Managerinnen und Manager für Kundenerfolg\n- Fachkräfte für Marketing und Wachstum\n\nBewerbungsprozess\n1. Senden Sie Ihren Lebenslauf an careers@nality.com\n2. Erstes Gespräch (30 Minuten)\n3. Technisches Gespräch / Portfolio-Besprechung\n4. Teamgespräch\n5. Angebot\n\nWas wir bieten\n- Wettbewerbsfähiges Gehalt\n- Beteiligungsoptionen\n- Flexible Arbeitszeiten\n- Weiterbildungsbudget\n- Moderne Technologiegrundlage\n- Internationale Teamtreffen\n\nKontakt\ncareers@nality.com\n\nWir freuen uns auf Ihre Bewerbung!"
       }
     }
   },
@@ -560,11 +560,11 @@
       "foundPrefix": "Gefunden:",
       "memory": "Erinnerung",
       "memories": "Erinnerungen",
-      "previewTitle": "Überprüfe und bestätige, um sie deiner Timeline hinzuzufügen",
+      "previewTitle": "Überprüfe und bestätige, um sie deiner Zeitleiste hinzuzufügen",
       "tryAgain": "Nochmal versuchen",
       "saveMemories": "Erinnerungen speichern",
       "success": "Erinnerungen gespeichert!",
-      "successBody": "Deine Erinnerungen wurden der Timeline hinzugefügt",
+      "successBody": "Deine Erinnerungen wurden deiner Zeitleiste hinzugefügt",
       "recordingShort": "Aufnahme zu kurz. Bitte sprich etwas länger.",
       "failedProcess": "Fehler beim Verarbeiten der Aufnahme. Bitte versuche es erneut.",
       "failedSave": "Fehler beim Speichern der Erinnerungen. Bitte versuche es erneut."

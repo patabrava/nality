@@ -74,7 +74,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       if (!response.ok) {
         const errorData = await response.json();
         console.error('❌ Error fetching onboarding session:', errorData);
-        setError('Failed to load session');
+        setError('Sitzung konnte nicht geladen werden');
         setIsLoading(false);
         return;
       }
@@ -93,7 +93,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       
     } catch (err) {
       console.error('❌ Unexpected error in loadOrCreateSession:', err);
-      setError('Unexpected error loading session');
+      setError('Unerwarteter Fehler beim Laden der Sitzung');
     } finally {
       setIsLoading(false);
     }

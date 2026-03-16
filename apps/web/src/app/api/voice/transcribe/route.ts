@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   
   if (!apiKey) {
     console.error('❌ DEEPGRAM_KEY not configured');
-    return new Response(JSON.stringify({ error: 'Voice service not configured' }), {
+    return new Response(JSON.stringify({ error: 'Sprachdienst ist nicht konfiguriert' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const audioData = await req.arrayBuffer();
     
     if (!audioData || audioData.byteLength === 0) {
-      return new Response(JSON.stringify({ error: 'No audio data received' }), {
+      return new Response(JSON.stringify({ error: 'Keine Audiodaten empfangen' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -37,13 +37,13 @@ export async function POST(req: Request) {
       {
         model: 'nova-2',
         smart_format: true,
-        language: 'en-US',
+        language: 'de-DE',
       }
     );
 
     if (error) {
       console.error('❌ Deepgram transcription error:', error);
-      return new Response(JSON.stringify({ error: 'Transcription failed' }), {
+      return new Response(JSON.stringify({ error: 'Transkription fehlgeschlagen' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('❌ Transcription failed:', error);
-    return new Response(JSON.stringify({ error: 'Transcription failed' }), {
+    return new Response(JSON.stringify({ error: 'Transkription fehlgeschlagen' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

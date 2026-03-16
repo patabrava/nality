@@ -60,7 +60,7 @@ KRITISCHE REGELN:
 ABSCHLUSS:
 Nach Q7 beende persönlich und warm.
 Du-Variante:
-"Danke, [Vorname]. Das war ein erster Blick auf dein Leben – die Umrisse einer Geschichte, die wir nun gemeinsam vertiefen können. Im Dashboard findest du sechs Kapitel deiner Biografie."
+"Danke, [Vorname]. Das war ein erster Blick auf dein Leben – die Umrisse einer Geschichte, die wir nun gemeinsam vertiefen können. Im geschützten Bereich findest du sechs Kapitel deiner Biografie."
 Sie-Variante entsprechend förmlich.
 
 Füge danach exakt diesen Marker ein:

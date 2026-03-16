@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     
     if (fetchError) {
       console.error('❌ Error fetching session:', fetchError);
-      return NextResponse.json({ error: 'Failed to fetch session' }, { status: 500 });
+      return NextResponse.json({ error: 'Sitzung konnte nicht geladen werden' }, { status: 500 });
     }
     
     let session = null;
@@ -97,7 +97,7 @@ export async function GET(request: Request) {
     }
 
     if (!session) {
-      return NextResponse.json({ error: 'Failed to load session' }, { status: 500 });
+      return NextResponse.json({ error: 'Sitzung konnte nicht geladen werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -108,7 +108,7 @@ export async function GET(request: Request) {
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
     const { sessionId, role, content, markComplete } = body;
     
     if (!sessionId) {
-      return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Eine Sitzungs-ID ist erforderlich' }, { status: 400 });
     }
     
     const serviceClient = await createServiceClient();
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
       .single();
 
     if (sessionCheckError || !sessionCheck) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Sitzung nicht gefunden' }, { status: 404 });
     }
 
     if (sessionCheck.user_id !== auth.user.id) {
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
       
       if (updateError) {
         console.error('❌ Error marking session complete:', updateError);
-        return NextResponse.json({ error: 'Failed to mark complete' }, { status: 500 });
+        return NextResponse.json({ error: 'Abschluss konnte nicht gespeichert werden' }, { status: 500 });
       }
       
       // Also mark user as onboarding complete (using service client to bypass RLS)
@@ -191,7 +191,7 @@ export async function POST(request: Request) {
         .single();
       
       if (insertError) {
-        return NextResponse.json({ error: 'Failed to save message', details: insertError.message }, { status: 500 });
+        return NextResponse.json({ error: 'Nachricht konnte nicht gespeichert werden', details: insertError.message }, { status: 500 });
       }
       
       // Update session's updated_at
@@ -203,11 +203,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ message });
     }
     
-    return NextResponse.json({ error: 'Invalid request - role and content are required' }, { status: 400 });
+    return NextResponse.json({ error: 'Ungültige Anfrage - Rolle und Inhalt sind erforderlich' }, { status: 400 });
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -226,7 +226,7 @@ export async function PATCH(request: Request) {
     const { sessionId, metadata } = body;
     
     if (!sessionId) {
-      return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Eine Sitzungs-ID ist erforderlich' }, { status: 400 });
     }
     
     const serviceClient = await createServiceClient();
@@ -239,7 +239,7 @@ export async function PATCH(request: Request) {
       .single();
 
     if (!session) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Sitzung nicht gefunden' }, { status: 404 });
     }
 
     if (session.user_id !== auth.user.id) {
@@ -258,21 +258,21 @@ export async function PATCH(request: Request) {
     
     if (updateError) {
       console.error('❌ Error updating session:', updateError);
-      return NextResponse.json({ error: 'Failed to update session' }, { status: 500 });
+      return NextResponse.json({ error: 'Sitzung konnte nicht aktualisiert werden' }, { status: 500 });
     }
     
     return NextResponse.json({ success: true, metadata: newMetadata });
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
 async function createNewSession(supabase: ReturnType<typeof createServiceClient> extends Promise<infer T> ? T : never, userId: string) {
   const sessionData = {
     user_id: userId,
-    title: 'Onboarding',
+    title: 'Einstieg',
     type: 'onboarding',
     metadata: {
       progress: 0,

@@ -81,7 +81,7 @@ export function authenticationRequiredResponse(request?: Request) {
   return jsonFailure(request, {
     status: 401,
     code: 'AUTH_REQUIRED',
-    message: 'Authentication required',
+    message: 'Authentifizierung erforderlich',
   });
 }
 
@@ -89,6 +89,6 @@ export function authorizationDeniedResponse(request?: Request) {
   return jsonFailure(request, {
     status: 403,
     code: 'AUTH_FORBIDDEN',
-    message: 'Forbidden',
+    message: 'Zugriff verweigert',
   });
 }

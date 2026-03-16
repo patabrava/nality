@@ -17,9 +17,9 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 const TONE_PROMPTS: Record<BiographyToneType, string> = {
-  neutral: 'Write in a clear, balanced, and accessible style. Use straightforward language that is engaging but not overly emotional.',
-  poetic: 'Write in a lyrical, expressive style. Use vivid imagery, metaphors, and emotional language to create a deeply personal and moving narrative.',
-  formal: 'Write in a professional, structured style. Use formal language and clear organization, suitable for official documentation or publication.',
+  neutral: 'Schreibe klar, ausgewogen und gut zugänglich. Nutze eine direkte, lebendige Sprache, ohne übertrieben emotional zu werden.',
+  poetic: 'Schreibe lyrisch und ausdrucksstark. Nutze starke Bilder, Metaphern und emotionale Sprache für eine persönliche, berührende Erzählung.',
+  formal: 'Schreibe professionell und strukturiert. Nutze formale Sprache und eine klare Gliederung, geeignet für Dokumentation oder Veröffentlichung.',
 };
 
 export async function POST(req: Request) {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -52,12 +52,12 @@ export async function POST(req: Request) {
 
     if (chaptersError) {
       console.error('Error fetching chapters:', chaptersError);
-      return NextResponse.json({ error: 'Failed to fetch chapters' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnten nicht geladen werden' }, { status: 500 });
     }
 
     if (!chapters || chapters.length === 0) {
       return NextResponse.json({
-        error: 'No chapters available to generate biography from',
+        error: 'Es sind keine Kapitel für die Biografieerstellung verfügbar',
       }, { status: 400 });
     }
 
@@ -106,39 +106,39 @@ export async function POST(req: Request) {
     } else if (process.env.NODE_ENV === 'test') {
       model = openai('gpt-4o');
     } else {
-      return NextResponse.json({ error: 'AI provider not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'KI-Anbieter ist nicht konfiguriert' }, { status: 500 });
     }
 
     // Generate biography using AI
     const { text: biographyContent } = await generateText({
       model,
-      prompt: `You are a skilled biographer helping to write a personal autobiography.
+      prompt: `Du bist eine erfahrene Biografin bzw. ein erfahrener Biograf und hilfst dabei, eine persönliche Autobiografie zu verfassen.
 
 ${TONE_PROMPTS[tone]}
 
-Here is information about the person:
-- Name: ${userProfile?.full_name || 'Unknown'}
-- Birth Date: ${userProfile?.birth_date || 'Unknown'}
-- Birth Place: ${userProfile?.birth_place || 'Unknown'}
+Wichtige Informationen über die Person:
+- Name: ${userProfile?.full_name || 'Unbekannt'}
+- Geburtsdatum: ${userProfile?.birth_date || 'Unbekannt'}
+- Geburtsort: ${userProfile?.birth_place || 'Unbekannt'}
 
-Here are the chapters of their life story:
+Hier sind die Kapitel ihrer Lebensgeschichte:
 
 ${chapterContents.map((ch, idx) => `
-## Chapter ${idx + 1}: ${ch.title}
-Time Period: ${ch.timeRange}
-Summary: ${ch.summary || 'No summary available'}
+## Kapitel ${idx + 1}: ${ch.title}
+Zeitraum: ${ch.timeRange}
+Zusammenfassung: ${ch.summary || 'Keine Zusammenfassung vorhanden'}
 
-Memories:
-${ch.content || 'No specific memories recorded for this chapter.'}
+Erinnerungen:
+${ch.content || 'Für dieses Kapitel wurden noch keine konkreten Erinnerungen festgehalten.'}
 `).join('\n\n')}
 
-Write a cohesive, flowing autobiography that weaves together these chapters into a compelling narrative. 
-- Begin with an introduction that sets the scene
-- Transition smoothly between life periods
-- Capture the essence of their experiences and emotions
-- End with a reflection on their journey
+Schreibe daraus eine zusammenhängende, fließende Autobiografie auf Deutsch, die diese Kapitel zu einer starken Erzählung verbindet.
+- Beginne mit einer Einführung, die den Rahmen setzt
+- Führe weich zwischen den Lebensabschnitten über
+- Fange die Essenz der Erfahrungen und Gefühle ein
+- Beende den Text mit einer Reflexion über den Lebensweg
 
-The biography should be approximately 500-1000 words, depending on the depth of material available.`,
+Die Biografie sollte je nach Materialtiefe etwa 500 bis 1000 Wörter umfassen.`,
     });
 
     // Check if we should create new version or this is first
@@ -177,7 +177,7 @@ The biography should be approximately 500-1000 words, depending on the depth of 
 
     if (saveError) {
       console.error('Error saving biography:', saveError);
-      return NextResponse.json({ error: 'Failed to save biography' }, { status: 500 });
+      return NextResponse.json({ error: 'Biografie konnte nicht gespeichert werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -190,6 +190,6 @@ The biography should be approximately 500-1000 words, depending on the depth of 
     });
   } catch (error) {
     console.error('Biography generation error:', error);
-    return NextResponse.json({ error: 'Failed to generate biography' }, { status: 500 });
+    return NextResponse.json({ error: 'Biografie konnte nicht erstellt werden' }, { status: 500 });
   }
 }

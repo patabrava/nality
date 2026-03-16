@@ -284,7 +284,7 @@ export function ChaptersModule() {
                         marginBottom: '10px',
                       }}>
                         <Book size={13} />
-                        Draft
+                        Entwurf
                       </div>
                       <h3 style={{
                         margin: '0 0 6px',
@@ -335,10 +335,10 @@ export function ChaptersModule() {
               fontFamily: 'var(--font-playfair, Playfair Display, serif)',
               fontSize: '1.45rem',
             }}>
-              Published Chapters
+              Veröffentliche Kapitel
             </h2>
             <p style={{ margin: 0, color: 'rgba(255, 255, 255, 0.62)', lineHeight: 1.6 }}>
-              These chapters are now the confirmed structure that your biography generator will use.
+              Diese Kapitel bilden jetzt die bestätigte Struktur, die für deine Biografie verwendet wird.
             </p>
           </div>
 
@@ -377,7 +377,7 @@ export function ChaptersModule() {
             color: '#fff',
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
           }}>
-            Chapter planning will start here
+            Hier beginnt deine Kapitelplanung
           </h2>
           <p style={{
             margin: '0 auto',
@@ -385,7 +385,7 @@ export function ChaptersModule() {
             color: 'rgba(255, 255, 255, 0.62)',
             lineHeight: 1.7,
           }}>
-            As soon as the saved memories hold enough breadth and detail, this space will quietly turn into your first chapter outline.
+            Sobald deine gespeicherten Erinnerungen genug Breite und Tiefe haben, entsteht hier dein erster Kapitelentwurf.
           </p>
         </section>
       )}
@@ -405,14 +405,14 @@ export function ChaptersModule() {
             color: '#fff',
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
           }}>
-            Ready to Create Your Biography?
+            Bereit für deine Biografie?
           </h3>
           <p style={{ 
             color: 'rgba(255, 255, 255, 0.6)', 
             marginBottom: '20px',
             fontSize: '0.9rem',
           }}>
-            Your published chapters are in place. Biography generation remains a separate, manual step.
+            Deine veröffentlichten Kapitel stehen bereit. Die Biografieerstellung bleibt ein bewusster, manueller Schritt.
           </p>
           <button 
             onClick={() => router.push('/dash/biography')}
@@ -427,7 +427,7 @@ export function ChaptersModule() {
               fontSize: '0.9rem',
             }}
           >
-            View Biography
+            Biografie ansehen
           </button>
         </div>
       )}

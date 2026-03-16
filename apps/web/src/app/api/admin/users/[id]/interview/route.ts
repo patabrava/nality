@@ -104,7 +104,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 401,
       code: 'AUTH_REQUIRED',
-      message: 'Authentication required',
+      message: 'Authentifizierung erforderlich',
       correlationId: logger.correlationId,
     });
   }
@@ -113,7 +113,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 403,
       code: 'ADMIN_FORBIDDEN',
-      message: 'Admin access required',
+      message: 'Admin-Zugriff erforderlich',
       correlationId: logger.correlationId,
     });
   }
@@ -124,7 +124,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 400,
       code: 'INVALID_USER_ID',
-      message: 'Invalid admin interview target',
+      message: 'Ungültiges Ziel für das Admin-Interview',
       details: zodErrorDetails(parsedParams.error),
       correlationId: logger.correlationId,
     });
@@ -181,7 +181,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 500,
       code: 'ADMIN_INTERVIEW_CONTEXT_FAILED',
-      message: 'Failed to load the interview context',
+      message: 'Interviewkontext konnte nicht geladen werden',
       correlationId: logger.correlationId,
     });
   }
@@ -190,7 +190,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 404,
       code: 'USER_NOT_FOUND',
-      message: 'Target user not found',
+      message: 'Zielbenutzer nicht gefunden',
       correlationId: logger.correlationId,
     });
   }
@@ -218,7 +218,7 @@ export async function POST(
     return jsonFailure(request, {
       status: 500,
       code: 'AI_PROVIDER_NOT_CONFIGURED',
-      message: 'AI provider not configured',
+      message: 'KI-Anbieter ist nicht konfiguriert',
       correlationId: logger.correlationId,
     });
   }
@@ -321,7 +321,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 401,
       code: 'AUTH_REQUIRED',
-      message: 'Authentication required',
+      message: 'Authentifizierung erforderlich',
       correlationId: logger.correlationId,
     });
   }
@@ -330,7 +330,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 403,
       code: 'ADMIN_FORBIDDEN',
-      message: 'Admin access required',
+      message: 'Admin-Zugriff erforderlich',
       correlationId: logger.correlationId,
     });
   }
@@ -341,7 +341,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 400,
       code: 'INVALID_USER_ID',
-      message: 'Invalid admin interview target',
+      message: 'Ungültiges Ziel für das Admin-Interview',
       details: zodErrorDetails(parsedParams.error),
       correlationId: logger.correlationId,
     });
@@ -353,7 +353,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 400,
       code: 'INVALID_BODY',
-      message: 'Invalid admin interview patch payload',
+      message: 'Ungültige Admin-Interviewdaten',
       details: zodErrorDetails(parsedBody.error),
       correlationId: logger.correlationId,
     });
@@ -385,7 +385,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 500,
       code: 'ADMIN_INTERVIEW_UPDATE_FAILED',
-      message: 'Failed to update the interview session',
+      message: 'Interviewsitzung konnte nicht aktualisiert werden',
       correlationId: logger.correlationId,
     });
   }
@@ -394,7 +394,7 @@ export async function PATCH(
     return jsonFailure(request, {
       status: 404,
       code: 'INTERVIEW_SESSION_NOT_FOUND',
-      message: 'Interview session not found for target user',
+      message: 'Für den Zielbenutzer wurde keine Interviewsitzung gefunden',
       correlationId: logger.correlationId,
     });
   }

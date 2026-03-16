@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("❌ Convert Onboarding API error:", error);
     return NextResponse.json(
-      { error: "Failed to convert onboarding data" },
+      { error: "Onboarding-Daten konnten nicht umgewandelt werden" },
       { status: 500 }
     );
   }

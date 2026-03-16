@@ -183,14 +183,14 @@ export function validateMediaObject(data: unknown): { success: true; data: Media
  */
 export function formatDateRange(startDate: string, endDate?: string | null, isOngoing?: boolean): string {
   const start = new Date(startDate)
-  const startFormatted = start.toLocaleDateString('en-US', { 
+  const startFormatted = start.toLocaleDateString('de-DE', { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric' 
   })
   
   if (isOngoing) {
-    return `${startFormatted} - Present`
+    return `${startFormatted} - Heute`
   }
   
   if (!endDate || endDate === startDate) {
@@ -198,7 +198,7 @@ export function formatDateRange(startDate: string, endDate?: string | null, isOn
   }
   
   const end = new Date(endDate)
-  const endFormatted = end.toLocaleDateString('en-US', { 
+  const endFormatted = end.toLocaleDateString('de-DE', { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric' 

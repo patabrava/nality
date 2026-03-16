@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     return jsonFailure(request, {
       status: 401,
       code: 'AUTH_REQUIRED',
-      message: 'Authentication required',
+      message: 'Authentifizierung erforderlich',
     });
   }
 
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     return jsonFailure(request, {
       status: 403,
       code: 'ADMIN_FORBIDDEN',
-      message: 'Admin access required',
+      message: 'Admin-Zugriff erforderlich',
     });
   }
 
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     return jsonFailure(request, {
       status: 400,
       code: 'INVALID_QUERY',
-      message: 'Invalid admin overview query',
+      message: 'Ungültige Admin-Übersichtsanfrage',
       details: zodErrorDetails(parsedQuery.error),
     });
   }
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
     return jsonFailure(request, {
       status: 500,
       code: 'ADMIN_OVERVIEW_QUERY_FAILED',
-      message: 'Failed to load admin overview metrics',
+      message: 'Admin-Übersichtsdaten konnten nicht geladen werden',
     });
   }
 

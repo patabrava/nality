@@ -63,7 +63,7 @@ export async function GET(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_QUERY',
-        message: 'Invalid memories query',
+        message: 'Ungültige Erinnerungsanfrage',
         details: zodErrorDetails(parsedQuery.error),
         correlationId: logger.correlationId,
       });
@@ -97,7 +97,7 @@ export async function GET(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'MEMORIES_FETCH_FAILED',
-        message: 'Failed to fetch memories',
+        message: 'Erinnerungen konnten nicht geladen werden',
         correlationId: logger.correlationId,
       });
     }
@@ -125,7 +125,7 @@ export async function GET(req: Request) {
     return jsonFailure(req, {
       status: 500,
       code: 'MEMORIES_GET_FAILED',
-      message: 'Internal server error',
+      message: 'Interner Serverfehler',
       correlationId: logger.correlationId,
     });
   }
@@ -146,7 +146,7 @@ export async function POST(req: Request) {
       return jsonFailure(req, {
         status: 400,
         code: 'INVALID_BODY',
-        message: 'Invalid memory payload',
+        message: 'Ungültige Erinnerungsdaten',
         details: zodErrorDetails(parsedBody.error),
         correlationId: logger.correlationId,
       });
@@ -191,7 +191,7 @@ export async function POST(req: Request) {
       return jsonFailure(req, {
         status: 500,
         code: 'MEMORY_CREATE_FAILED',
-        message: 'Failed to create memory',
+        message: 'Erinnerung konnte nicht erstellt werden',
         correlationId: logger.correlationId,
       });
     }
@@ -207,7 +207,7 @@ export async function POST(req: Request) {
     return jsonFailure(req, {
       status: 500,
       code: 'MEMORIES_POST_FAILED',
-      message: 'Internal server error',
+      message: 'Interner Serverfehler',
       correlationId: logger.correlationId,
     });
   }

@@ -257,13 +257,13 @@ export function formatDateHeader(dateKey: string): string {
   yesterday.setDate(yesterday.getDate() - 1)
   
   if (dateKey === today.toISOString().split('T')[0]) {
-    return 'Today'
+    return 'Heute'
   }
   if (dateKey === yesterday.toISOString().split('T')[0]) {
-    return 'Yesterday'
+    return 'Gestern'
   }
   
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('de-DE', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -290,10 +290,10 @@ export function getMemoryModeLabel(mode: MemoryCaptureModeType): string {
     case 'interview':
       return 'Interview'
     case 'free_talk':
-      return 'Free Talk'
+      return 'Freies Sprechen'
     case 'text':
-      return 'Written'
+      return 'Geschrieben'
     default:
-      return 'Memory'
+      return 'Erinnerung'
   }
 }

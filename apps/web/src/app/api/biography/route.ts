@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
 
       if (error) {
         console.error('Error fetching biographies:', error);
-        return NextResponse.json({ error: 'Failed to fetch biographies' }, { status: 500 });
+        return NextResponse.json({ error: 'Biografien konnten nicht geladen werden' }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -56,11 +56,11 @@ export async function GET(req: Request) {
         return NextResponse.json({
           success: true,
           data: null,
-          message: 'No biography exists yet',
+          message: 'Es gibt noch keine Biografie',
         });
       }
       console.error('Error fetching biography:', error);
-      return NextResponse.json({ error: 'Failed to fetch biography' }, { status: 500 });
+      return NextResponse.json({ error: 'Biografie konnte nicht geladen werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -69,7 +69,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error('Biography GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -79,13 +79,13 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body: Partial<BiographyInput> = await req.json();
 
     if (!body.content) {
-      return NextResponse.json({ error: 'content is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Inhalt ist erforderlich' }, { status: 400 });
     }
 
     // Get latest version number
@@ -124,7 +124,7 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error('Error creating biography:', error);
-      return NextResponse.json({ error: 'Failed to create biography' }, { status: 500 });
+      return NextResponse.json({ error: 'Biografie konnte nicht erstellt werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -133,6 +133,6 @@ export async function POST(req: Request) {
     }, { status: 201 });
   } catch (error) {
     console.error('Biography POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

@@ -23,7 +23,7 @@ export default function DatabaseSetupPage() {
   }
 
   const checkDatabaseStatus = async () => {
-    addLog('🔍 Checking database status...')
+    addLog('🔍 Datenbankstatus wird geprüft...')
     try {
       const response = await fetch('/api/migrate')
       const result = await response.json()
@@ -33,19 +33,19 @@ export default function DatabaseSetupPage() {
           ready: result.database_ready,
           tables: result.tables
         })
-        addLog(`✅ Database check completed. Ready: ${result.database_ready}`)
-        addLog(`📊 Found tables: ${result.tables.join(', ') || 'none'}`)
+        addLog(`✅ Datenbankprüfung abgeschlossen. Bereit: ${result.database_ready}`)
+        addLog(`📊 Gefundene Tabellen: ${result.tables.join(', ') || 'keine'}`)
       } else {
         setDatabaseStatus({
           ready: false,
           tables: [],
           error: result.error
         })
-        addLog(`❌ Database check failed: ${result.error}`)
+        addLog(`❌ Datenbankprüfung fehlgeschlagen: ${result.error}`)
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
-      addLog(`❌ Database check failed: ${message}`)
+      addLog(`❌ Datenbankprüfung fehlgeschlagen: ${message}`)
       setDatabaseStatus({
         ready: false,
         tables: [],
@@ -64,10 +64,10 @@ export default function DatabaseSetupPage() {
       const sqlScript = await response.text()
       
       await navigator.clipboard.writeText(sqlScript)
-      addLog('📋 Setup script copied to clipboard!')
+      addLog('📋 Einrichtungs-Skript in die Zwischenablage kopiert!')
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
-      addLog(`❌ Failed to copy setup script: ${message}`)
+      addLog(`❌ Einrichtungs-Skript konnte nicht kopiert werden: ${message}`)
     }
   }
 
@@ -76,10 +76,10 @@ export default function DatabaseSetupPage() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🔧 Database Setup & Migration
+            🔧 Datenbankeinrichtung und Migration
           </h1>
           <p className="text-gray-600 mb-8">
-            Initialize your Nality database with the required tables and policies.
+            Richte deine Nality-Datenbank mit den erforderlichen Tabellen und Richtlinien ein.
           </p>
           
           {/* Status Card */}
@@ -93,13 +93,13 @@ export default function DatabaseSetupPage() {
                 {databaseStatus.ready ? '✅' : '⚠️'}
               </span>
               <h2 className="text-lg font-semibold">
-                Database Status: {databaseStatus.ready ? 'Ready' : 'Needs Setup'}
+                Datenbankstatus: {databaseStatus.ready ? 'Bereit' : 'Einrichtung nötig'}
               </h2>
             </div>
             <p className="text-sm text-gray-600">
               {databaseStatus.ready 
-                ? `Found ${databaseStatus.tables.length} tables: ${databaseStatus.tables.join(', ')}`
-                : 'The life_event table and related schema need to be created.'
+                ? `${databaseStatus.tables.length} Tabellen gefunden: ${databaseStatus.tables.join(', ')}`
+                : 'Die Tabelle life_event und das zugehörige Schema müssen erstellt werden.'
               }
             </p>
           </div>
@@ -110,21 +110,21 @@ export default function DatabaseSetupPage() {
               onClick={checkDatabaseStatus}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
             >
-              🔍 Check Database Status
+              🔍 Datenbankstatus prüfen
             </button>
             
             <button
               onClick={openSupabaseDashboard}
               className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
             >
-              🚀 Open Supabase SQL Editor
+              🚀 Supabase-SQL-Editor öffnen
             </button>
             
             <button
               onClick={copySetupScript}
               className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
             >
-              📋 Copy Setup Script
+              📋 Einrichtungs-Skript kopieren
             </button>
           </div>
 
@@ -132,14 +132,14 @@ export default function DatabaseSetupPage() {
           {!databaseStatus.ready && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                🔧 Setup Instructions
+                🔧 Einrichtungsanleitung
               </h3>
               <ol className="list-decimal list-inside space-y-2 text-blue-800">
-                <li>Click "Open Supabase SQL Editor" above to open your dashboard</li>
-                <li>Click "Copy Setup Script" to copy the database setup SQL</li>
-                <li>Paste the SQL script in the Supabase SQL Editor</li>
-                <li>Click "Run" to execute the script</li>
-                <li>Return here and click "Check Database Status" to verify</li>
+                <li>Klicke oben auf „Supabase-SQL-Editor öffnen“, um deinen Bereich zu öffnen</li>
+                <li>Klicke auf „Einrichtungs-Skript kopieren“, um das SQL-Skript zu kopieren</li>
+                <li>Füge das SQL-Skript in den Supabase-SQL-Editor ein</li>
+                <li>Klicke auf „Ausführen“, um das Skript auszuführen</li>
+                <li>Kehre hierher zurück und prüfe den Datenbankstatus erneut</li>
               </ol>
             </div>
           )}
@@ -148,16 +148,16 @@ export default function DatabaseSetupPage() {
           {databaseStatus.ready && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
               <h3 className="text-lg font-semibold text-green-900 mb-2">
-                🎉 Database Ready!
+                🎉 Datenbank bereit!
               </h3>
               <p className="text-green-800">
-                Your database is properly configured. You can now use the timeline feature.
+                Deine Datenbank ist korrekt eingerichtet. Du kannst jetzt die Zeitleiste nutzen.
               </p>
               <a 
                 href="/timeline" 
                 className="inline-block mt-3 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
-                Go to Timeline →
+                Zur Zeitleiste →
               </a>
             </div>
           )}
@@ -165,35 +165,35 @@ export default function DatabaseSetupPage() {
           {/* Logs */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Setup Progress</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Einrichtungsfortschritt</h2>
               <div className="bg-gray-900 text-green-400 p-4 rounded-md h-64 overflow-y-auto font-mono text-sm">
                 {logs.map((log, index) => (
                   <div key={index} className="mb-1">{log}</div>
                 ))}
                 {logs.length === 0 && (
-                  <div className="text-gray-500">Click "Check Database Status" to start...</div>
+                  <div className="text-gray-500">Klicke auf „Datenbankstatus prüfen“, um zu beginnen...</div>
                 )}
               </div>
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">What Gets Created</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Was erstellt wird</h2>
               <div className="space-y-3 text-sm">
                 <div className="p-3 bg-gray-50 rounded border-l-4 border-blue-500">
-                  <strong>users table</strong><br/>
-                  User profiles linked to Supabase auth
+                  <strong>Benutzerdaten</strong><br/>
+                  Benutzerprofile, die mit Supabase-Auth verknüpft sind
                 </div>
                 <div className="p-3 bg-gray-50 rounded border-l-4 border-green-500">
-                  <strong>life_event table</strong><br/>
-                  Core timeline events with dates, categories, and metadata
+                  <strong>Lebensereignisse</strong><br/>
+                  Zentrale Zeitleisten-Ereignisse mit Daten, Kategorien und Metadaten
                 </div>
                 <div className="p-3 bg-gray-50 rounded border-l-4 border-purple-500">
-                  <strong>media_object table</strong><br/>
-                  Images, videos, and documents linked to events
+                  <strong>Medienobjekte</strong><br/>
+                  Bilder, Videos und Dokumente, die Ereignissen zugeordnet sind
                 </div>
                 <div className="p-3 bg-gray-50 rounded border-l-4 border-yellow-500">
-                  <strong>RLS Policies</strong><br/>
-                  Row-level security ensuring users only see their own data
+                  <strong>RLS-Richtlinien</strong><br/>
+                  Zeilenbasierte Sicherheit, damit Nutzer nur ihre eigenen Daten sehen
                 </div>
               </div>
             </div>

@@ -65,7 +65,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
     onTranscript,
     onUtteranceEnd,
     onError,
-    language = 'en-US',
+    language = 'de-DE',
     interimResults = true,
     utteranceEndMs = 1500,
   } = options;

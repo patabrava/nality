@@ -25,13 +25,13 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
-      setError('Please select an image file (JPEG, PNG, GIF, or WebP)')
+      setError('Bitte wähle eine Bilddatei aus (JPEG, PNG, GIF oder WebP)')
       return
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError('File size must be less than 5MB')
+      setError('Die Datei muss kleiner als 5 MB sein')
       return
     }
 
@@ -67,7 +67,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
 
       if (uploadError) {
         console.error('Upload error:', uploadError)
-        setError(`Upload failed: ${uploadError.message}`)
+        setError(`Hochladen fehlgeschlagen: ${uploadError.message}`)
         setUploading(false)
         return
       }
@@ -94,7 +94,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
 
       if (mediaError) {
         console.error('Media record error:', mediaError)
-        setError(`Failed to save media record: ${mediaError.message}`)
+        setError(`Medieneintrag konnte nicht gespeichert werden: ${mediaError.message}`)
         setUploading(false)
         return
       }
@@ -104,7 +104,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
       
     } catch (err) {
       console.error('Unexpected upload error:', err)
-      setError('Unexpected error during upload')
+      setError('Beim Hochladen ist ein unerwarteter Fehler aufgetreten')
     } finally {
       setUploading(false)
     }
@@ -125,7 +125,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
         fontWeight: 600,
         color: 'var(--md-sys-color-on-surface)'
       }}>
-        Add Photo
+        Foto hinzufügen
       </h3>
 
       {/* File Input Area */}
@@ -144,7 +144,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
         {preview ? (
           <img 
             src={preview} 
-            alt="Preview" 
+            alt="Vorschau" 
             style={{ 
               maxWidth: '100%', 
               maxHeight: '200px', 
@@ -159,7 +159,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
               color: 'var(--md-sys-color-on-surface-variant)',
               fontSize: '0.875rem'
             }}>
-              Click to select an image
+              Klicke hier, um ein Bild auszuwählen
             </p>
             <p style={{ 
               margin: '4px 0 0', 
@@ -167,7 +167,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
               fontSize: '0.75rem',
               opacity: 0.7
             }}>
-              JPEG, PNG, GIF, WebP • Max 5MB
+              JPEG, PNG, GIF, WebP • Maximal 5 MB
             </p>
           </>
         )}
@@ -213,7 +213,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
               fontSize: '0.875rem',
             }}
           >
-            Cancel
+            Abbrechen
           </button>
         )}
         <button
@@ -231,7 +231,7 @@ export function MediaUpload({ eventId, onUploadComplete, onClose }: MediaUploadP
             fontWeight: 600,
           }}
         >
-          {uploading ? 'Uploading...' : 'Upload'}
+          {uploading ? 'Wird hochgeladen...' : 'Hochladen'}
         </button>
       </div>
     </div>

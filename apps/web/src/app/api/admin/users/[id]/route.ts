@@ -16,7 +16,7 @@ export async function GET(
     return jsonFailure(request, {
       status: 401,
       code: 'AUTH_REQUIRED',
-      message: 'Authentication required',
+      message: 'Authentifizierung erforderlich',
     });
   }
 
@@ -24,7 +24,7 @@ export async function GET(
     return jsonFailure(request, {
       status: 403,
       code: 'ADMIN_FORBIDDEN',
-      message: 'Admin access required',
+      message: 'Admin-Zugriff erforderlich',
     });
   }
 
@@ -35,7 +35,7 @@ export async function GET(
     return jsonFailure(request, {
       status: 400,
       code: 'INVALID_USER_ID',
-      message: 'Invalid admin user id',
+      message: 'Ungültige Admin-Benutzer-ID',
       details: zodErrorDetails(parsedParams.error),
     });
   }
@@ -108,7 +108,7 @@ export async function GET(
     return jsonFailure(request, {
       status: 500,
       code: 'ADMIN_USER_DETAIL_FAILED',
-      message: 'Failed to load admin user workspace',
+      message: 'Admin-Arbeitsbereich des Benutzers konnte nicht geladen werden',
     });
   }
 
@@ -116,7 +116,7 @@ export async function GET(
     return jsonFailure(request, {
       status: 404,
       code: 'USER_NOT_FOUND',
-      message: 'Target user not found',
+      message: 'Zielbenutzer nicht gefunden',
     });
   }
 

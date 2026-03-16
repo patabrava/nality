@@ -112,7 +112,7 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 
 function formatDateTime(value: string | null) {
   if (!value) {
-    return 'Not available';
+    return 'Nicht verfügbar';
   }
 
   return new Intl.DateTimeFormat('de-DE', {
@@ -127,7 +127,7 @@ function formatDateTime(value: string | null) {
 function excerpt(value: string | null | undefined, length = 180) {
   const text = value?.trim();
   if (!text) {
-    return 'No content yet.';
+    return 'Noch kein Inhalt vorhanden.';
   }
 
   return text.length <= length ? text : `${text.slice(0, length).trim()}...`;
@@ -157,7 +157,7 @@ function describeSignalValue(value: unknown): string | null {
       .filter((entry): entry is string => Boolean(entry));
 
     if (summaries.length === 0) {
-      return `${value.length} saved entries`;
+      return `${value.length} gespeicherte Einträge`;
     }
 
     return `${summaries.join(' | ')}${value.length > 3 ? ' ...' : ''}`;
@@ -172,10 +172,135 @@ function describeSignalValue(value: unknown): string | null {
       })
       .filter((entry): entry is string => Boolean(entry));
 
-    return entries.length > 0 ? entries.join(' | ') : `${Object.keys(value as object).length} saved fields`;
+    return entries.length > 0 ? entries.join(' | ') : `${Object.keys(value as object).length} gespeicherte Felder`;
   }
 
   return null;
+}
+
+function localizeTopic(value: string | null | undefined) {
+  switch (value) {
+    case 'identity':
+      return 'Identität';
+    case 'origins':
+      return 'Herkunft';
+    case 'family':
+      return 'Familie';
+    case 'education':
+      return 'Bildung';
+    case 'career':
+    case 'work':
+      return 'Beruf';
+    case 'influences':
+      return 'Einflüsse';
+    case 'values':
+      return 'Werte';
+    case 'roots':
+      return 'Wurzeln';
+    case 'growing_up':
+      return 'Aufwachsen';
+    case 'learning':
+      return 'Lernen';
+    case 'love':
+      return 'Liebe';
+    case 'moments':
+      return 'Momente';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeProcessingStatus(value: string | null | undefined) {
+  switch (value) {
+    case 'pending':
+      return 'Ausstehend';
+    case 'processing':
+      return 'In Bearbeitung';
+    case 'complete':
+      return 'Abgeschlossen';
+    case 'failed':
+      return 'Fehlgeschlagen';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeChapterStatus(value: string | null | undefined) {
+  switch (value) {
+    case 'draft':
+      return 'Entwurf';
+    case 'published':
+      return 'Veröffentlicht';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeCaptureMode(value: string | null | undefined) {
+  switch (value) {
+    case 'interview':
+      return 'Interview';
+    case 'free_talk':
+      return 'Freies Sprechen';
+    case 'text':
+      return 'Text';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeSource(value: string | null | undefined) {
+  switch (value) {
+    case 'voice':
+      return 'Sprache';
+    case 'text':
+      return 'Text';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeLifeEventCategory(value: string | null | undefined) {
+  switch (value) {
+    case 'family':
+      return 'Familie';
+    case 'education':
+      return 'Bildung';
+    case 'career':
+      return 'Beruf';
+    case 'milestone':
+      return 'Meilenstein';
+    case 'travel':
+      return 'Reise';
+    case 'relationship':
+      return 'Beziehung';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
+}
+
+function localizeChatSessionType(value: string | null | undefined) {
+  switch (value) {
+    case 'onboarding':
+      return 'Einstieg';
+    case 'general':
+      return 'Gespräch';
+    default:
+      return 'Gespräch';
+  }
+}
+
+function localizeTone(value: string | null | undefined) {
+  switch (value) {
+    case 'neutral':
+      return 'Neutral';
+    case 'poetic':
+      return 'Poetisch';
+    case 'formal':
+      return 'Formal';
+    default:
+      return value ? formatSignalLabel(value) : 'Unbekannt';
+  }
 }
 
 function extractHighlights(payload: unknown): Highlight[] {
@@ -673,30 +798,30 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
           <div className={styles.contentGrid}>
             <div className={styles.stack}>
               <Panel
-                title="Profile cues"
-                subtitle="Core demographics and profile preferences."
-                badge="identity"
+                title="Profilsignale"
+                subtitle="Zentrale Stammdaten und Profilpräferenzen."
+                badge="Identität"
               >
                 <div className={styles.splitGrid}>
                   <div className={styles.infoCard}>
                     <div className={styles.metricLabel}>
                       <User size={16} aria-hidden="true" />
-                      <span>Demographics</span>
+                      <span>Stammdaten</span>
                     </div>
                     <div className={styles.infoText}>
                       <div>
-                        <span className={styles.infoTextStrong}>Birth date:</span> {detail.user.birth_date || 'Not provided'}
+                        <span className={styles.infoTextStrong}>Geburtsdatum:</span> {detail.user.birth_date || 'Nicht angegeben'}
                       </div>
                       <div>
-                        <span className={styles.infoTextStrong}>Birth place:</span> {detail.user.birth_place || 'Not provided'}
+                        <span className={styles.infoTextStrong}>Geburtsort:</span> {detail.user.birth_place || 'Nicht angegeben'}
                       </div>
                       <div>
-                        <span className={styles.infoTextStrong}>Form of address:</span>{' '}
-                        {detail.user.form_of_address || 'Unknown'}
+                        <span className={styles.infoTextStrong}>Anrede:</span>{' '}
+                        {detail.user.form_of_address || 'Unbekannt'}
                       </div>
                       <div>
-                        <span className={styles.infoTextStrong}>Language style:</span>{' '}
-                        {detail.user.language_style || 'Unknown'}
+                        <span className={styles.infoTextStrong}>Sprachstil:</span>{' '}
+                        {detail.user.language_style || 'Unbekannt'}
                       </div>
                     </div>
                   </div>
@@ -704,21 +829,21 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
                   <div className={styles.infoCard}>
                     <div className={styles.metricLabel}>
                       <FileText size={16} aria-hidden="true" />
-                      <span>Profile signals</span>
+                      <span>Profilmerkmale</span>
                     </div>
                     <div className={styles.infoText}>
                       <div>
-                        <span className={styles.infoTextStrong}>Motto:</span> {detail.profile?.motto || 'No motto saved yet.'}
+                        <span className={styles.infoTextStrong}>Motto:</span> {detail.profile?.motto || 'Noch kein Motto gespeichert.'}
                       </div>
                       <div>
-                        <span className={styles.infoTextStrong}>Values:</span>{' '}
-                        {detail.profile?.values?.length ? detail.profile.values.join(', ') : 'No explicit values'}
+                        <span className={styles.infoTextStrong}>Werte:</span>{' '}
+                        {detail.profile?.values?.length ? detail.profile.values.join(', ') : 'Keine Werte hinterlegt'}
                       </div>
                       <div>
-                        <span className={styles.infoTextStrong}>Favorite authors:</span>{' '}
+                        <span className={styles.infoTextStrong}>Lieblingsautorinnen und -autoren:</span>{' '}
                         {detail.profile?.favorite_authors?.length
                           ? detail.profile.favorite_authors.join(', ')
-                          : 'No authors recorded'}
+                          : 'Keine Angaben vorhanden'}
                       </div>
                     </div>
                   </div>
@@ -728,66 +853,66 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
                   <div className={styles.infoCard}>
                     <div className={styles.metricLabel}>
                       <BadgeCheck size={16} aria-hidden="true" />
-                      <span>Influences</span>
+                      <span>Einflüsse</span>
                     </div>
                     {detail.profile?.influences?.length ? (
                       <div className={styles.list}>
                         {detail.profile.influences.map((entry, index) => (
                           <DetailItem
                             key={`${entry.name}-${index}`}
-                            title={entry.name || 'Unknown'}
+                            title={entry.name || 'Unbekannt'}
                             badge={entry.type || undefined}
                           >
-                            {entry.why || 'No explanation recorded.'}
+                            {entry.why || 'Keine Begründung hinterlegt.'}
                           </DetailItem>
                         ))}
                       </div>
                     ) : (
-                      <EmptyState>No influence records yet.</EmptyState>
+                      <EmptyState>Noch keine Einflüsse erfasst.</EmptyState>
                     )}
                   </div>
 
                   <div className={styles.infoCard}>
                     <div className={styles.metricLabel}>
                       <BookText size={16} aria-hidden="true" />
-                      <span>Role models</span>
+                      <span>Vorbilder</span>
                     </div>
                     {detail.profile?.role_models?.length ? (
                       <div className={styles.list}>
                         {detail.profile.role_models.map((entry, index) => (
                           <DetailItem
                             key={`${entry.name}-${index}`}
-                            title={entry.name || 'Unknown'}
+                            title={entry.name || 'Unbekannt'}
                             badge={entry.relationship || undefined}
                           >
-                            {entry.traits?.length ? entry.traits.join(', ') : 'No traits recorded.'}
+                            {entry.traits?.length ? entry.traits.join(', ') : 'Keine Merkmale hinterlegt.'}
                           </DetailItem>
                         ))}
                       </div>
                     ) : (
-                      <EmptyState>No role model records yet.</EmptyState>
+                      <EmptyState>Noch keine Vorbilder erfasst.</EmptyState>
                     )}
                   </div>
                 </div>
               </Panel>
 
               <Panel
-                title="Life-event grounding"
-                subtitle="Structured events attached to this participant."
-                badge={`${detail.lifeEvents.length} events`}
+                title="Ereignisgrundlage"
+                subtitle="Strukturierte Ereignisse dieser Person."
+                badge={`${detail.lifeEvents.length} Ereignisse`}
               >
                 {detail.lifeEvents.length === 0 ? (
-                  <EmptyState>No structured life events are saved for this participant yet.</EmptyState>
+                  <EmptyState>Für diese Person sind noch keine strukturierten Lebensereignisse gespeichert.</EmptyState>
                 ) : (
                   <div className={styles.list}>
                     {detail.lifeEvents.map((event) => (
                       <DetailItem
                         key={event.id}
                         title={event.title}
-                        badge={event.category}
+                        badge={localizeLifeEventCategory(event.category)}
                         meta={`${formatDateTime(event.start_date)}${event.location ? ` • ${event.location}` : ''}`}
                       >
-                        {event.end_date ? `Ends ${formatDateTime(event.end_date)}.` : 'Single-point life event.'}
+                        {event.end_date ? `Endet am ${formatDateTime(event.end_date)}.` : 'Einzelnes Lebensereignis.'}
                       </DetailItem>
                     ))}
                   </div>
@@ -797,9 +922,9 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
 
             <div className={styles.stickyRail}>
               <Panel
-                title="Private onboarding packet"
-                subtitle="Admin-only private onboarding data."
-                badge="restricted"
+                title="Privates Onboarding-Paket"
+                subtitle="Private Onboarding-Daten nur für Admins."
+                badge="geschützt"
                 muted
               >
                 {onboardingHighlights.length > 0 ? (
@@ -812,7 +937,7 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
                     ))}
                   </div>
                 ) : (
-                  <EmptyState>No private onboarding packet was stored for this participant.</EmptyState>
+                  <EmptyState>Für diese Person wurde kein privates Onboarding-Paket gespeichert.</EmptyState>
                 )}
 
                 <pre className={styles.codeBlock}>
@@ -826,23 +951,23 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
         {tab === 'content' ? (
           <div className={styles.contentGrid}>
             <Panel
-              title="Captured memories"
-              subtitle="Recent captured material."
-              badge={`${detail.memories.length} memories`}
+              title="Erfasste Erinnerungen"
+              subtitle="Zuletzt gesammeltes Material."
+              badge={`${detail.memories.length} Erinnerungen`}
             >
               {detail.memories.length === 0 ? (
-                <EmptyState>No memories have been captured for this participant yet.</EmptyState>
+                <EmptyState>Für diese Person wurden noch keine Erinnerungen erfasst.</EmptyState>
               ) : (
                 <div className={styles.list}>
                   {detail.memories.map((memory) => (
                     <DetailItem
                       key={memory.id}
-                      title={memory.interview_topic || memory.capture_mode}
-                      badge={memory.processing_status}
-                      meta={`${formatDateTime(memory.captured_at)} • ${memory.source}`}
+                      title={memory.interview_topic ? localizeTopic(memory.interview_topic) : localizeCaptureMode(memory.capture_mode)}
+                      badge={localizeProcessingStatus(memory.processing_status)}
+                      meta={`${formatDateTime(memory.captured_at)} • ${localizeSource(memory.source)}`}
                     >
                       {memory.interview_question ? (
-                        <div className={styles.detailListMeta}>Prompt: {memory.interview_question}</div>
+                        <div className={styles.detailListMeta}>Frage: {memory.interview_question}</div>
                       ) : null}
                       {excerpt(memory.cleaned_content || memory.raw_transcript, 260)}
                     </DetailItem>
@@ -853,20 +978,20 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
 
             <div className={styles.stickyRail}>
               <Panel
-                title="Chapter outputs"
-                subtitle="Generated chapter slices."
-                badge={`${detail.chapters.length} chapters`}
+                title="Kapitelausgaben"
+                subtitle="Erzeugte Kapitelbausteine."
+                badge={`${detail.chapters.length} Kapitel`}
               >
                 {detail.chapters.length === 0 ? (
-                  <EmptyState>No chapter outputs exist yet.</EmptyState>
+                  <EmptyState>Es gibt noch keine Kapitelausgaben.</EmptyState>
                 ) : (
                   <div className={styles.list}>
                     {detail.chapters.map((chapter) => (
                       <DetailItem
                         key={chapter.id}
                         title={chapter.title}
-                        badge={chapter.status}
-                        meta={`${chapter.memory_count} linked memories • Updated ${formatDateTime(chapter.updated_at)}`}
+                        badge={localizeChapterStatus(chapter.status)}
+                        meta={`${chapter.memory_count} verknüpfte Erinnerungen • Aktualisiert ${formatDateTime(chapter.updated_at)}`}
                       >
                         {excerpt(chapter.summary, 180)}
                       </DetailItem>
@@ -876,23 +1001,23 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
               </Panel>
 
               <Panel
-                title="Biography output"
-                subtitle="Current biography output."
-                badge={currentBiography ? `v${currentBiography.version}` : 'none'}
+                title="Biografieausgabe"
+                subtitle="Aktuelle Biografiefassung."
+                badge={currentBiography ? `v${currentBiography.version}` : 'keine'}
                 muted
               >
                 {currentBiography ? (
                   <div className={styles.list}>
                     <DetailItem
-                      title={`Current biography (${currentBiography.tone})`}
-                      badge={currentBiography.is_current ? 'current' : 'archived'}
-                        meta={`Updated ${formatDateTime(currentBiography.updated_at)}`}
+                      title={`Aktuelle Biografie (${localizeTone(currentBiography.tone)})`}
+                      badge={currentBiography.is_current ? 'aktuell' : 'archiviert'}
+                        meta={`Aktualisiert ${formatDateTime(currentBiography.updated_at)}`}
                       >
                         {excerpt(currentBiography.content, 360)}
                       </DetailItem>
                   </div>
                 ) : (
-                  <EmptyState>No biography output has been generated yet.</EmptyState>
+                  <EmptyState>Es wurde noch keine Biografie erzeugt.</EmptyState>
                 )}
               </Panel>
             </div>
@@ -902,24 +1027,24 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
         {tab === 'sessions' ? (
           <div className={styles.contentGrid}>
             <Panel
-              title="Interview session history"
-              subtitle="Guided interview sessions for this participant."
-              badge={`${detail.interviewSessions.length} sessions`}
+              title="Interviewverlauf"
+              subtitle="Geführte Interviewsitzungen dieser Person."
+              badge={`${detail.interviewSessions.length} Sitzungen`}
             >
               {detail.interviewSessions.length === 0 ? (
-                <EmptyState>No interview sessions are stored for this participant.</EmptyState>
+                <EmptyState>Für diese Person sind keine Interviewsitzungen gespeichert.</EmptyState>
               ) : (
                 <div className={styles.list}>
                   {detail.interviewSessions.map((session) => (
                     <DetailItem
                       key={session.id}
                       title={formatDateTime(session.started_at)}
-                      badge={session.processing_status}
-                      meta={`${session.memory_count} memories${
+                      badge={localizeProcessingStatus(session.processing_status)}
+                      meta={`${session.memory_count} Erinnerungen${
                         session.topics_covered?.length ? ` • ${session.topics_covered.join(', ')}` : ''
                       }`}
                     >
-                      {session.summary ? excerpt(session.summary, 220) : 'No session summary yet.'}
+                      {session.summary ? excerpt(session.summary, 220) : 'Noch keine Sitzungszusammenfassung vorhanden.'}
                     </DetailItem>
                   ))}
                 </div>
@@ -928,20 +1053,20 @@ export function AdminUserWorkspaceModule({ userId }: { userId: string }) {
 
             <div className={styles.stickyRail}>
               <Panel
-                title="Chat sessions"
-                subtitle="Saved chat sessions."
-                badge={`${detail.chatSessions.length} chats`}
+                title="Chatsitzungen"
+                subtitle="Gespeicherte Chatsitzungen."
+                badge={`${detail.chatSessions.length} Chats`}
               >
                 {detail.chatSessions.length === 0 ? (
-                  <EmptyState>No chat sessions are stored for this participant.</EmptyState>
+                  <EmptyState>Für diese Person sind keine Chatsitzungen gespeichert.</EmptyState>
                 ) : (
                   <div className={styles.list}>
                     {detail.chatSessions.map((session) => (
                       <DetailItem
                         key={session.id}
-                        title={session.title || 'Untitled session'}
-                        badge={session.type || 'chat'}
-                        meta={`Updated ${formatDateTime(session.updated_at)}`}
+                        title={session.title || 'Unbenannte Sitzung'}
+                        badge={localizeChatSessionType(session.type)}
+                        meta={`Aktualisiert ${formatDateTime(session.updated_at)}`}
                       >
                         {excerpt(JSON.stringify(session.metadata), 180)}
                       </DetailItem>

@@ -363,7 +363,7 @@ export function useChapter(chapterId: string): UseChapterReturn {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch chapter',
+        error: error instanceof Error ? error.message : 'Kapitel konnte nicht geladen werden',
       }))
     }
   }, [isAuthenticated, user, chapterId])

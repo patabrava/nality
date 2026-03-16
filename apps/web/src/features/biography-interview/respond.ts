@@ -213,7 +213,7 @@ export async function prepareBiographyInterviewTurn(
       error: {
         status: 500,
         code: 'BIOGRAPHY_INTERVIEW_CONTEXT_FAILED',
-        message: 'Failed to load biography interview context',
+        message: 'Kontext des Biografie-Interviews konnte nicht geladen werden',
         correlationId: logger.correlationId,
       },
     };
@@ -225,7 +225,7 @@ export async function prepareBiographyInterviewTurn(
       error: {
         status: 404,
         code: 'INTERVIEW_SESSION_NOT_FOUND',
-        message: 'Interview session not found',
+        message: 'Interviewsitzung nicht gefunden',
         correlationId: logger.correlationId,
       },
     };
@@ -297,7 +297,7 @@ export async function prepareBiographyInterviewTurn(
           error: {
             status: 500,
             code: 'BIOGRAPHY_MEMORY_PERSIST_FAILED',
-            message: 'Failed to persist biography memory',
+            message: 'Biografie-Erinnerung konnte nicht gespeichert werden',
             correlationId: logger.correlationId,
           },
         };

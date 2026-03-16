@@ -30,7 +30,7 @@ interface UseAudioPlayerReturn {
  */
 export function useAudioPlayer(options: UseAudioPlayerOptions = {}): UseAudioPlayerReturn {
   const {
-    voice = 'aura-asteria-en',
+    voice = 'aura-2-viktoria-de',
     onPlayStart,
     onPlayEnd,
     onError,
@@ -90,7 +90,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}): UseAudioPla
 
       if (!response.ok) {
         const bodyText = await response.text().catch(() => '');
-        throw new Error(`Failed to generate speech (${response.status}): ${bodyText || response.statusText}`);
+        throw new Error(`Sprachausgabe konnte nicht erzeugt werden (${response.status}): ${bodyText || response.statusText}`);
       }
 
       const arrayBuffer = await response.arrayBuffer();
@@ -127,7 +127,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}): UseAudioPla
         console.log('🔇 Audio playback aborted');
       } else {
         console.error('❌ Audio playback error:', err);
-        const error = err instanceof Error ? err : new Error('Audio playback failed');
+        const error = err instanceof Error ? err : new Error('Audiowiedergabe fehlgeschlagen');
         setError(error);
         onError?.(error);
         setState('error');

@@ -188,7 +188,7 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
         console.warn('⚠️ Could not fetch life events:', lifeEventsError.message);
       }
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to fetch profile');
+      const error = err instanceof Error ? err : new Error('Profil konnte nicht geladen werden');
       setError(error);
       console.error('❌ Error fetching user profile:', error);
     } finally {

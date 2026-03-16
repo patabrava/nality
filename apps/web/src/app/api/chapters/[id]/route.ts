@@ -24,7 +24,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     // Get chapter
@@ -37,10 +37,10 @@ export async function GET(req: Request, { params }: RouteParams) {
 
     if (chapterError) {
       if (chapterError.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Chapter not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Kapitel nicht gefunden' }, { status: 404 });
       }
       console.error('Error fetching chapter:', chapterError);
-      return NextResponse.json({ error: 'Failed to fetch chapter' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnte nicht geladen werden' }, { status: 500 });
     }
 
     // Get associated memories
@@ -64,7 +64,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Chapter GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -75,7 +75,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body: ChapterUpdate = await req.json();
@@ -93,10 +93,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Chapter not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Kapitel nicht gefunden' }, { status: 404 });
       }
       console.error('Error updating chapter:', error);
-      return NextResponse.json({ error: 'Failed to update chapter' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnte nicht aktualisiert werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -105,7 +105,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Chapter PATCH error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -116,7 +116,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     // First, unassign memories from this chapter
@@ -135,15 +135,15 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     if (error) {
       console.error('Error deleting chapter:', error);
-      return NextResponse.json({ error: 'Failed to delete chapter' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnte nicht gelöscht werden' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Chapter deleted successfully',
+      message: 'Kapitel erfolgreich gelöscht',
     });
   } catch (error) {
     console.error('Chapter DELETE error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

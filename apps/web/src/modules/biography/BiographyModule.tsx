@@ -286,7 +286,7 @@ export function BiographyModule() {
           }}
         >
           <Edit size={16} />
-          {isEditing ? 'Cancel' : 'Edit'}
+          {isEditing ? 'Abbrechen' : 'Bearbeiten'}
         </button>
         <button 
           onClick={() => regenerate()}
@@ -305,12 +305,12 @@ export function BiographyModule() {
           }}
         >
           <RefreshCw size={16} />
-          {generating ? 'Regenerating...' : 'Regenerate'}
+          {generating ? 'Wird neu erstellt...' : 'Neu erstellen'}
         </button>
         <button
           onClick={() => exportPdf()}
           disabled={exporting}
-          aria-label="Export biography as PDF"
+          aria-label="Biografie als PDF exportieren"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -326,7 +326,7 @@ export function BiographyModule() {
           }}
         >
           <Download size={16} />
-          {exporting ? 'Exporting...' : 'Export PDF'}
+          {exporting ? 'Export läuft...' : 'PDF exportieren'}
         </button>
       </div>
     </div>

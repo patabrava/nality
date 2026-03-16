@@ -14,7 +14,7 @@ export async function GET(_req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const { data: biography, error: biographyError } = await supabase
@@ -26,15 +26,15 @@ export async function GET(_req: Request) {
 
     if (biographyError) {
       if (biographyError.code === 'PGRST116') {
-        return NextResponse.json({ error: 'No biography available to export' }, { status: 404 });
+        return NextResponse.json({ error: 'Keine Biografie zum Export verfügbar' }, { status: 404 });
       }
 
       console.error('Error fetching biography export source:', biographyError);
-      return NextResponse.json({ error: 'Failed to load biography for export' }, { status: 500 });
+      return NextResponse.json({ error: 'Biografie für den Export konnte nicht geladen werden' }, { status: 500 });
     }
 
     if (!biography) {
-      return NextResponse.json({ error: 'No biography available to export' }, { status: 404 });
+      return NextResponse.json({ error: 'Keine Biografie zum Export verfügbar' }, { status: 404 });
     }
 
     const typedBiography = biography as Biography;
@@ -53,12 +53,12 @@ export async function GET(_req: Request) {
 
     if (profileError) {
       console.error('Error loading biography export profile:', profileError);
-      return NextResponse.json({ error: 'Failed to load biography author profile' }, { status: 500 });
+      return NextResponse.json({ error: 'Autorenprofil der Biografie konnte nicht geladen werden' }, { status: 500 });
     }
 
     if (chaptersError) {
       console.error('Error loading biography export chapters:', chaptersError);
-      return NextResponse.json({ error: 'Failed to load biography chapters for export' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel der Biografie konnten für den Export nicht geladen werden' }, { status: 500 });
     }
 
     const chaptersById = new Map(
@@ -94,6 +94,6 @@ export async function GET(_req: Request) {
     });
   } catch (error) {
     console.error('Biography export error:', error);
-    return NextResponse.json({ error: 'Failed to export biography' }, { status: 500 });
+    return NextResponse.json({ error: 'Biografie konnte nicht exportiert werden' }, { status: 500 });
   }
 }

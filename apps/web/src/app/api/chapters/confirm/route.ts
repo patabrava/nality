@@ -24,12 +24,12 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const parsedBody = ChapterConfirmationSchema.safeParse(await req.json().catch(() => ({})));
     if (!parsedBody.success) {
-      return NextResponse.json({ error: 'Invalid chapter confirmation payload' }, { status: 400 });
+      return NextResponse.json({ error: 'Ungültige Bestätigungsdaten für Kapitel' }, { status: 400 });
     }
 
     const result = await confirmDraftChapters(supabase, {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     });
 
     if (result.chapters.length === 0) {
-      return NextResponse.json({ error: 'No draft chapters available to confirm' }, { status: 400 });
+      return NextResponse.json({ error: 'Es sind keine Entwurfskapitel zur Bestätigung vorhanden' }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -51,6 +51,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('Chapter confirmation error:', error);
-    return NextResponse.json({ error: 'Failed to confirm chapters' }, { status: 500 });
+    return NextResponse.json({ error: 'Kapitel konnten nicht bestätigt werden' }, { status: 500 });
   }
 }

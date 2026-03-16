@@ -131,11 +131,11 @@ export function validateChapter(data: unknown): { success: true; data: Chapter }
  */
 export function formatChapterTimeRange(chapter: Chapter): string {
   if (!chapter.time_range_start) {
-    return 'Time range pending'
+    return 'Zeitraum ausstehend'
   }
   
   const start = new Date(chapter.time_range_start)
-  const startFormatted = start.toLocaleDateString('en-US', {
+  const startFormatted = start.toLocaleDateString('de-DE', {
     month: 'short',
     year: 'numeric',
   })
@@ -145,7 +145,7 @@ export function formatChapterTimeRange(chapter: Chapter): string {
   }
   
   const end = new Date(chapter.time_range_end)
-  const endFormatted = end.toLocaleDateString('en-US', {
+  const endFormatted = end.toLocaleDateString('de-DE', {
     month: 'short',
     year: 'numeric',
   })

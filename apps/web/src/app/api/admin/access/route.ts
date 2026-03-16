@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return jsonFailure(request, {
       status: 401,
       code: 'AUTH_REQUIRED',
-      message: 'Authentication required',
+      message: 'Authentifizierung erforderlich',
     });
   }
 

@@ -95,14 +95,14 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
 
   const formatDateRange = (startDate: string, endDate?: string | null, isOngoing?: boolean): string => {
     const start = new Date(startDate)
-    const startFormatted = start.toLocaleDateString('en-US', { 
+    const startFormatted = start.toLocaleDateString('de-DE', { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
     })
     
     if (isOngoing) {
-      return `${startFormatted} - Present`
+      return `${startFormatted} - Heute`
     }
     
     if (!endDate || endDate === startDate) {
@@ -110,7 +110,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
     }
     
     const end = new Date(endDate)
-    const endFormatted = end.toLocaleDateString('en-US', { 
+    const endFormatted = end.toLocaleDateString('de-DE', { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
@@ -161,7 +161,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
         setState(prev => ({ 
           ...prev, 
           loading: false, 
-          error: `Failed to load events: ${error.message}${error.hint ? ` (${error.hint})` : ''}` 
+          error: `Ereignisse konnten nicht geladen werden: ${error.message}${error.hint ? ` (${error.hint})` : ''}` 
         }))
         return
       }
@@ -193,7 +193,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
       setState(prev => ({ 
         ...prev, 
         loading: false, 
-        error: 'An unexpected error occurred while loading events' 
+        error: 'Beim Laden der Ereignisse ist ein unerwarteter Fehler aufgetreten' 
       }))
     }
   }, [user?.id, categoryFilter])
@@ -229,7 +229,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
         setState(prev => ({ 
           ...prev, 
           creating: false, 
-          error: `Failed to create event: ${error.message}` 
+          error: `Ereignis konnte nicht erstellt werden: ${error.message}` 
         }))
         return null
       }
@@ -253,7 +253,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
       setState(prev => ({ 
         ...prev, 
         creating: false, 
-        error: 'An unexpected error occurred while creating the event' 
+        error: 'Beim Erstellen des Ereignisses ist ein unerwarteter Fehler aufgetreten' 
       }))
       return null
     }
@@ -283,7 +283,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
         setState(prev => ({ 
           ...prev,
           updating: false,
-          error: `Failed to update event: ${error?.message || 'Unknown error'}`
+          error: `Ereignis konnte nicht aktualisiert werden: ${error?.message || 'Unbekannter Fehler'}`
         }))
         return null
       }
@@ -316,7 +316,7 @@ export function useLifeEvents(options: UseLifeEventsOptions = {}): UseLifeEvents
       setState(prev => ({ 
         ...prev, 
         updating: false, 
-        error: 'An unexpected error occurred while updating the event' 
+        error: 'Beim Aktualisieren des Ereignisses ist ein unerwarteter Fehler aufgetreten' 
       }))
       return null
     }
@@ -344,7 +344,7 @@ const deleteEvent = async (id: string): Promise<boolean> => {
       setState(prev => ({ 
         ...prev, 
         deleting: false, 
-        error: `Failed to delete event: ${error.message}` 
+        error: `Ereignis konnte nicht gelöscht werden: ${error.message}` 
       }))
       return false
     }
@@ -365,7 +365,7 @@ const deleteEvent = async (id: string): Promise<boolean> => {
     setState(prev => ({ 
       ...prev, 
       deleting: false, 
-      error: 'An unexpected error occurred while deleting the event' 
+      error: 'Beim Löschen des Ereignisses ist ein unerwarteter Fehler aufgetreten' 
     }))
     return false
   }

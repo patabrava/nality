@@ -54,7 +54,7 @@ export default function OnboardingPage() {
               color: 'var(--md-sys-color-on-surface)'
             }}
           >
-            Dashboard wird geöffnet
+            Bereich wird geöffnet
           </h1>
           <p
             style={{
@@ -65,7 +65,7 @@ export default function OnboardingPage() {
               color: 'var(--md-sys-color-on-surface-variant)'
             }}
           >
-            Das alte Onboarding-Interview ist deaktiviert. Erinnerungen werden jetzt direkt im Dashboard mit dem Biografie-Assistenten gesammelt.
+            Das alte Onboarding-Interview ist deaktiviert. Erinnerungen werden jetzt direkt im geschützten Bereich mit dem Biografie-Assistenten gesammelt.
           </p>
         </section>
         <div
@@ -82,7 +82,7 @@ export default function OnboardingPage() {
             fontSize: '1rem',
           }}
         >
-          {loading ? 'Bitte einen Moment warten ...' : 'Weiterleitung zum Dashboard ...'}
+          {loading ? 'Bitte einen Moment warten ...' : 'Weiterleitung in den geschützten Bereich ...'}
         </div>
       </main>
     </div>

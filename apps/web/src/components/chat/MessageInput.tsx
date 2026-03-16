@@ -18,7 +18,7 @@ interface MessageInputProps {
 export function MessageInput({
   onSendMessage,
   isLoading = false,
-  placeholder = "Type your message...",
+  placeholder = "Schreibe deine Nachricht...",
   className = '',
   disabled = false
 }: MessageInputProps) {
@@ -54,7 +54,7 @@ export function MessageInput({
       }}>
         <div style={{ flex: 1 }}>
           <label htmlFor="chat-input" className="sr-only">
-            Type your message
+            Schreibe deine Nachricht
           </label>
           <input
             id="chat-input"
@@ -79,7 +79,7 @@ export function MessageInput({
             }}
             autoComplete="off"
             aria-describedby="input-help"
-            aria-label="Type your message"
+            aria-label="Schreibe deine Nachricht"
             tabIndex={0}
             onFocus={(e) => {
               e.currentTarget.style.boxShadow = '0 0 0 2px var(--c-accent-100)';
@@ -89,7 +89,7 @@ export function MessageInput({
             }}
           />
           <div id="input-help" className="sr-only">
-            Type your message and press Enter or click Send
+            Schreibe deine Nachricht und drücke die Eingabetaste oder klicke auf Senden
           </div>
         </div>
         
@@ -113,7 +113,7 @@ export function MessageInput({
             border: 'none',
             boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
           }}
-          aria-label={isLoading ? 'Sending message' : 'Send message'}
+          aria-label={isLoading ? 'Nachricht wird gesendet' : 'Nachricht senden'}
           tabIndex={0}
           onFocus={(e) => {
             e.currentTarget.style.boxShadow = '0 0 0 2px var(--c-accent-100)';
@@ -132,7 +132,7 @@ export function MessageInput({
               : 'var(--c-accent-100)';
           }}
         >
-          {isLoading ? '⏳ Sending...' : '📤 Send'}
+          {isLoading ? '⏳ Wird gesendet...' : '📤 Senden'}
         </button>
       </div>
     </form>

@@ -72,15 +72,15 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
       }}>
         <div>
           <h1 id="memory-modal-title" style={{ margin: 0, fontSize: '1.125rem', color: '#fff' }}>
-            Write a Memory
+            Erinnerung schreiben
           </h1>
           <p style={{ margin: '4px 0 0', fontSize: '0.75rem', opacity: 0.6, color: '#fff' }}>
-            Capture your thoughts in writing
+            Halte deine Gedanken schriftlich fest
           </p>
         </div>
         <button
           onClick={onClose}
-          aria-label="Close"
+          aria-label="Schließen"
           style={{
             background: 'transparent',
             border: 'none',
@@ -99,12 +99,12 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
         display: 'flex',
         flexDirection: 'column',
       }}>
-        <label htmlFor="memory-content" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Your memory</label>
+        <label htmlFor="memory-content" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Deine Erinnerung</label>
         <textarea
           id="memory-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="What's on your mind? Share a memory, a thought, or something you want to remember..."
+          placeholder="Was geht dir durch den Kopf? Teile eine Erinnerung, einen Gedanken oder etwas, das du festhalten möchtest..."
           autoFocus
           style={{
             flex: 1,
@@ -141,7 +141,7 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
             fontSize: '0.9rem',
           }}
         >
-          Cancel
+          Abbrechen
         </button>
         <button
           onClick={handleSave}
@@ -161,7 +161,7 @@ export function TextMemoryInput({ onClose, onSave }: TextMemoryInputProps) {
           }}
         >
           <Send size={16} />
-          {saving ? 'Saving...' : 'Save Memory'}
+          {saving ? 'Wird gespeichert...' : 'Erinnerung speichern'}
         </button>
       </footer>
     </div>

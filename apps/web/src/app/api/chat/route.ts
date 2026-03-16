@@ -60,7 +60,7 @@ export async function POST(req: Request) {
           .maybeSingle();
 
         if (!session || session.user_id !== auth.user.id) {
-          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+          return NextResponse.json({ error: 'Sitzung nicht gefunden' }, { status: 404 });
         }
 
         const { data: dbMessages, error: dbError } = await serviceClient
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
           }));
         }
       } catch (dbErr) {
-        return NextResponse.json({ error: 'Failed to load session messages' }, { status: 500 });
+        return NextResponse.json({ error: 'Sitzungsnachrichten konnten nicht geladen werden' }, { status: 500 });
       }
     }
 
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
     if (assistantQ1Count >= 2) {
       const userAnswer = lastUserMessage?.content ? sanitizeContent(String(lastUserMessage.content)) : 'Keine Antwort erkannt';
       extraSystemGuidance.push(
-        `Q1 (form of address/name/style) has already been asked. User's latest reply: "${userAnswer}". Do NOT repeat Q1. Continue with the next onboarding question (Q2: origins). If style is missing, default to "locker".`
+        `Q1 (Anrede/Name/Stil) wurde bereits gestellt. Die letzte Antwort der Person lautet: "${userAnswer}". Wiederhole Q1 nicht. Fahre mit der nächsten Onboarding-Frage (Q2: Herkunft) fort. Falls der Stil fehlt, verwende standardmäßig "locker".`
       );
     }
 

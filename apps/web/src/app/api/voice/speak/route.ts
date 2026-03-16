@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   if (!apiKey) {
     console.error('❌ DEEPGRAM_KEY not configured');
     return NextResponse.json(
-      { error: 'Voice service not configured' }, 
+      { error: 'Sprachdienst ist nicht konfiguriert' }, 
       { status: 500 }
     );
   }
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     if (!rawBody) {
       console.error('❌ Empty TTS request body');
       return NextResponse.json(
-        { error: 'Text is required' },
+        { error: 'Text ist erforderlich' },
         { status: 400 }
       );
     }
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     } catch (e) {
       console.error('❌ Invalid JSON for TTS request:', e);
       return NextResponse.json(
-        { error: 'Invalid JSON body' },
+        { error: 'Ungültiger JSON-Body' },
         { status: 400 }
       );
     }
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     
     if (!text || typeof text !== 'string') {
       return NextResponse.json(
-        { error: 'Text is required' }, 
+        { error: 'Text ist erforderlich' }, 
         { status: 400 }
       );
     }
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     if (!stream) {
       console.error('❌ No audio stream returned from Deepgram');
       return NextResponse.json(
-        { error: 'Failed to generate audio' }, 
+        { error: 'Audio konnte nicht erzeugt werden' }, 
         { status: 500 }
       );
     }
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('❌ TTS generation failed:', error);
     return NextResponse.json(
-      { error: 'Failed to generate speech' }, 
+      { error: 'Sprachausgabe konnte nicht erzeugt werden' }, 
       { status: 500 }
     );
   }
