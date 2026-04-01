@@ -1,7 +1,7 @@
-import { AltOnboardingWizard } from '@/components/onboarding-alt/AltOnboardingWizard';
+import { MeetingPreOnboardingFlow } from '@/app/meeting/MeetingPreOnboardingFlow';
 
 export const dynamic = 'force-dynamic';
 
 export default function MeetingPage() {
-  return <AltOnboardingWizard />;
+  return <MeetingPreOnboardingFlow />;
 }

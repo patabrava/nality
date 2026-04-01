@@ -2,6 +2,14 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getIncompleteOnboardingPath } from './src/lib/onboarding/flags'
 
+function resolveSafeLoginRedirect(redirectParam: string | null): string | null {
+  if (!redirectParam) return null
+  if (!redirectParam.startsWith('/')) return null
+  if (redirectParam.startsWith('/_next')) return null
+  if (redirectParam.startsWith('/api')) return null
+  return redirectParam
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -72,7 +80,8 @@ export async function middleware(request: NextRequest) {
   // If user is authenticated and on login page, redirect to dashboard
   if (user && path === '/login') {
     const redirectParam = request.nextUrl.searchParams.get('redirectTo')
-    const redirectTo = hasCompletedOnboarding ? (redirectParam || '/dash') : incompletePath
+    const safeRedirect = resolveSafeLoginRedirect(redirectParam)
+    const redirectTo = hasCompletedOnboarding ? (safeRedirect || '/dash') : incompletePath
     const url = request.nextUrl.clone()
     url.pathname = redirectTo
     url.searchParams.delete('redirectTo')

@@ -449,6 +449,13 @@
       "methodMagicLink": "Email Link",
       "emailLabel": "Email Address",
       "emailPlaceholder": "Enter your email",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Enter your first name",
+      "nicknameLabel": "Nickname",
+      "nicknamePlaceholder": "Enter your nickname",
+      "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "Enter your last name",
+      "optional": "optional",
       "passwordLabel": "Password",
       "passwordPlaceholderSignIn": "Enter your password",
       "passwordPlaceholderSignUp": "Create a password",
@@ -487,7 +494,8 @@
       "errors": {
         "emailRequired": "Email is required",
         "invalidEmail": "Please enter a valid email",
-        "passwordRequired": "Password is required"
+        "passwordRequired": "Password is required",
+        "firstNameRequired": "First name is required"
       },
       "footerMagicLink": "We'll send you a secure link to sign in. No passwords required.",
       "footerPassword": "Your account is protected with enterprise-grade security."

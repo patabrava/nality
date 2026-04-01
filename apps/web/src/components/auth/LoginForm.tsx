@@ -593,6 +593,10 @@ const styles = `
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [firstNameError, setFirstNameError] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [authMethod, setAuthMethod] = useState<'magic-link' | 'password'>('password')
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -632,8 +636,27 @@ export function LoginForm() {
     } else {
       if (!password.trim()) return
 
+      if (isSignUp && !firstName.trim()) {
+        setFirstNameError(t('auth.login.errors.firstNameRequired'))
+        return
+      }
+
       if (isSignUp) {
-        result = await signUpWithPassword(email, password)
+        const signUpData: Record<string, string> = {
+          first_name: firstName.trim()
+        }
+
+        if (nickname.trim()) {
+          signUpData.nickname = nickname.trim()
+        }
+
+        if (lastName.trim()) {
+          signUpData.last_name = lastName.trim()
+        }
+
+        result = await signUpWithPassword(email, password, {
+          data: signUpData
+        })
       } else {
         result = await signInWithPassword(email, password)
       }
@@ -698,6 +721,7 @@ export function LoginForm() {
       if (!password.trim()) return true
       // Only validate password strength for sign up, not sign in
       if (isSignUp && !validatePassword(password).isValid) return true
+      if (isSignUp && !firstName.trim()) return true
     }
 
     return false
@@ -739,6 +763,10 @@ export function LoginForm() {
                 setIsSubmitted(false)
                 setEmail('')
                 setPassword('')
+                setFirstName('')
+                setNickname('')
+                setLastName('')
+                setFirstNameError('')
               }}
               className="secondary-button"
             >
@@ -796,6 +824,74 @@ export function LoginForm() {
                 disabled={loading}
               />
             </div>
+
+            {authMethod === 'password' && isSignUp && (
+              <>
+                <div className="input-group">
+                  <label htmlFor="firstName" className="input-label">
+                    {t('auth.login.firstNameLabel')} <span aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => {
+                      setFirstName(e.target.value)
+                      if (firstNameError && e.target.value.trim()) {
+                        setFirstNameError('')
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!firstName.trim()) {
+                        setFirstNameError(t('auth.login.errors.firstNameRequired'))
+                      }
+                    }}
+                    placeholder={t('auth.login.firstNamePlaceholder')}
+                    className="input-field"
+                    required
+                    aria-required="true"
+                    aria-invalid={firstNameError ? 'true' : 'false'}
+                    aria-describedby={firstNameError ? 'firstName-error' : undefined}
+                    disabled={loading}
+                  />
+                  {firstNameError && (
+                    <p id="firstName-error" className="error-text" style={{ marginTop: '8px' }}>
+                      {firstNameError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="nickname" className="input-label">
+                    {t('auth.login.nicknameLabel')} ({t('auth.login.optional')})
+                  </label>
+                  <input
+                    id="nickname"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder={t('auth.login.nicknamePlaceholder')}
+                    className="input-field"
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="lastName" className="input-label">
+                    {t('auth.login.lastNameLabel')} ({t('auth.login.optional')})
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder={t('auth.login.lastNamePlaceholder')}
+                    className="input-field"
+                    disabled={loading}
+                  />
+                </div>
+              </>
+            )}
 
             {authMethod === 'password' && (
               <div className="input-group">
@@ -894,6 +990,10 @@ export function LoginForm() {
                     onClick={() => {
                       if (isSignUp) {
                         setIsSignUp(false)
+                        setFirstName('')
+                        setNickname('')
+                        setLastName('')
+                        setFirstNameError('')
                         return
                       }
 

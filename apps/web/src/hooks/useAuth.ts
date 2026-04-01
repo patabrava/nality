@@ -11,6 +11,41 @@ interface AuthState {
   error: AuthError | null
 }
 
+function buildAuthError(message: string, code: string, status = 400): AuthError {
+  return new AuthError(message, status, code)
+}
+
+function normalizeSignUpError(error: AuthError): AuthError {
+  const code = (error as { code?: string }).code
+  const message = error.message ?? 'Registrierung fehlgeschlagen.'
+
+  if (code === 'over_email_send_rate_limit') {
+    return buildAuthError(
+      'Bestätigungs-E-Mail wurde gerade bereits angefragt. Bitte kurz warten und dann erneut versuchen.',
+      code,
+      (error as { status?: number }).status ?? 429
+    )
+  }
+
+  if (code === 'validation_failed' && /redirect|emailRedirectTo|callback/i.test(message)) {
+    return buildAuthError(
+      'Registrierung konnte nicht gestartet werden: Callback-URL ist in Supabase nicht erlaubt. Bitte Admin kontaktieren.',
+      code,
+      (error as { status?: number }).status ?? 400
+    )
+  }
+
+  if (code === 'unexpected_failure' && /email|smtp|confirmation/i.test(message)) {
+    return buildAuthError(
+      'Registrierung wurde angenommen, aber die Bestätigungs-E-Mail konnte nicht versendet werden. Bitte Admin kontaktieren.',
+      code,
+      (error as { status?: number }).status ?? 500
+    )
+  }
+
+  return error
+}
+
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -128,21 +163,48 @@ export function useAuth() {
         signUpOptions.data = options.data
       }
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: signUpOptions
       })
       
       if (error) {
-        setState(prev => ({ ...prev, loading: false, error }))
-        return { error }
+        const normalizedError = normalizeSignUpError(error)
+        console.error('Sign-up failed', {
+          code: (normalizedError as { code?: string }).code,
+          status: (normalizedError as { status?: number }).status,
+          message: normalizedError.message,
+          emailRedirectTo: signUpOptions.emailRedirectTo,
+        })
+        setState(prev => ({ ...prev, loading: false, error: normalizedError }))
+        return { error: normalizedError }
+      }
+
+      const hasIdentities = Array.isArray(data.user?.identities) && data.user.identities.length > 0
+      if (!data.session && !hasIdentities) {
+        const existingAccountError = buildAuthError(
+          'Für diese E-Mail existiert bereits ein Konto oder eine ausstehende Registrierung. Bitte einloggen oder Passwort zurücksetzen.',
+          'signup_existing_or_obfuscated',
+          409
+        )
+        console.warn('Sign-up returned obfuscated/no-identity user response', {
+          code: (existingAccountError as { code?: string }).code,
+          emailRedirectTo: signUpOptions.emailRedirectTo,
+        })
+        setState(prev => ({ ...prev, loading: false, error: existingAccountError }))
+        return { error: existingAccountError }
       }
       
       setState(prev => ({ ...prev, loading: false }))
       return { error: null }
     } catch (error) {
-      const authError = error as AuthError
+      const authError = normalizeSignUpError(error as AuthError)
+      console.error('Sign-up exception', {
+        code: (authError as { code?: string }).code,
+        status: (authError as { status?: number }).status,
+        message: authError.message,
+      })
       setState(prev => ({ ...prev, loading: false, error: authError }))
       return { error: authError }
     }
