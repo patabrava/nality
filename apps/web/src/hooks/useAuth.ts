@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
+import { normalizeSignUpError } from '@/hooks/useAuthErrors'
 
 interface AuthState {
   user: User | null
@@ -13,37 +14,6 @@ interface AuthState {
 
 function buildAuthError(message: string, code: string, status = 400): AuthError {
   return new AuthError(message, status, code)
-}
-
-function normalizeSignUpError(error: AuthError): AuthError {
-  const code = (error as { code?: string }).code
-  const message = error.message ?? 'Registrierung fehlgeschlagen.'
-
-  if (code === 'over_email_send_rate_limit') {
-    return buildAuthError(
-      'Bestätigungs-E-Mail wurde gerade bereits angefragt. Bitte kurz warten und dann erneut versuchen.',
-      code,
-      (error as { status?: number }).status ?? 429
-    )
-  }
-
-  if (code === 'validation_failed' && /redirect|emailRedirectTo|callback/i.test(message)) {
-    return buildAuthError(
-      'Registrierung konnte nicht gestartet werden: Callback-URL ist in Supabase nicht erlaubt. Bitte Admin kontaktieren.',
-      code,
-      (error as { status?: number }).status ?? 400
-    )
-  }
-
-  if (code === 'unexpected_failure' && /email|smtp|confirmation/i.test(message)) {
-    return buildAuthError(
-      'Registrierung wurde angenommen, aber die Bestätigungs-E-Mail konnte nicht versendet werden. Bitte Admin kontaktieren.',
-      code,
-      (error as { status?: number }).status ?? 500
-    )
-  }
-
-  return error
 }
 
 export function useAuth() {

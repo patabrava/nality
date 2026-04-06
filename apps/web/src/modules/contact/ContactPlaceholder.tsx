@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Send, Calendar, Wrench, MessageSquare, Lightbulb, Mail } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Send, Calendar, X, Wrench, MessageSquare, Lightbulb, Mail } from 'lucide-react'
 
 /**
  * Contact Module
@@ -9,6 +9,9 @@ import { Send, Calendar, Wrench, MessageSquare, Lightbulb, Mail } from 'lucide-r
  */
 export function ContactPlaceholder() {
   console.log('[ContactPlaceholder] Component mounted')
+
+  const bookingButtonRef = useRef<HTMLButtonElement | null>(null)
+  const closeBookingButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const [formData, setFormData] = useState({
     category: '',
@@ -20,7 +23,7 @@ export function ContactPlaceholder() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false)
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
 
   const categories = [
     { id: 'technical', label: 'Technical Issues', icon: Wrench },
@@ -78,9 +81,35 @@ export function ContactPlaceholder() {
     }, 1000)
   }
 
-  const handleCalendarClick = () => {
-    console.log('[CalendarBooking] Calendar popup opened')
-    setShowCalendar(true)
+  useEffect(() => {
+    if (!isBookingModalOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsBookingModalOpen(false)
+        bookingButtonRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    closeBookingButtonRef.current?.focus()
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [isBookingModalOpen])
+
+  const openBookingModal = () => setIsBookingModalOpen(true)
+
+  const closeBookingModal = () => {
+    setIsBookingModalOpen(false)
+    bookingButtonRef.current?.focus()
   }
 
   return (
@@ -132,21 +161,26 @@ export function ContactPlaceholder() {
         }}>
           Work with Our Biography Experts
         </h2>
-        <p style={{
-          color: 'rgba(255, 255, 255, 0.6)',
-          fontSize: '0.9rem',
-          marginBottom: '24px',
-          lineHeight: 1.6,
+         <p style={{
+           color: 'rgba(255, 255, 255, 0.6)',
+           fontSize: '0.9rem',
+           marginBottom: '24px',
+           lineHeight: 1.6,
           maxWidth: '500px',
           marginLeft: 'auto',
           marginRight: 'auto',
-        }}>
-          Schedule a professional interview session with our experienced team to capture your life story. 
-          We'll guide you through the process of creating your personalized autobiography.
-        </p>
+         }}>
+           Schedule a professional interview session with our experienced team to capture your life story.
+          Book directly via Cal.com in a secure popup.
+         </p>
         <button
+          ref={bookingButtonRef}
           type="button"
-          onClick={handleCalendarClick}
+          onClick={openBookingModal}
+          aria-haspopup="dialog"
+          aria-expanded={isBookingModalOpen}
+          aria-controls="contact-cal-booking-modal"
+          aria-label="Open Cal.com booking popup"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -169,7 +203,7 @@ export function ContactPlaceholder() {
           }}
         >
           <Calendar size={20} />
-          Book Your Interview Session
+          Jetzt einen Termin mit Cal.com buchen
         </button>
       </section>
 
@@ -430,84 +464,113 @@ export function ContactPlaceholder() {
             fontSize: '0.9rem',
             textAlign: 'center',
           }}>
-            ✓ Message sent successfully! We'll get back to you soon.
+            ✓ Message sent successfully! We&apos;ll get back to you soon.
           </div>
         )}
       </form>
 
-      {/* Calendar Popup Modal */}
-      {showCalendar && (
+      {isBookingModalOpen && (
         <div
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.8)',
+            inset: 0,
+            zIndex: 10000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 9999,
-            padding: '20px',
+            padding: '24px',
           }}
-          onClick={() => setShowCalendar(false)}
         >
-          <div
+          <button
+            type="button"
+            aria-label="Close Cal.com booking popup"
+            onClick={closeBookingModal}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.75)',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          />
+
+          <section
+            id="contact-cal-booking-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-cal-booking-modal-title"
             style={{
               position: 'relative',
+              zIndex: 1,
               width: '100%',
-              maxWidth: '900px',
-              height: '90vh',
-              maxHeight: '700px',
-              background: '#fff',
+              maxWidth: '980px',
+              height: '85vh',
+              background: 'rgba(12, 12, 12, 0.98)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
               overflow: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setShowCalendar(false)}
+            <header
               style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                background: 'rgba(0, 0, 0, 0.5)',
-                border: 'none',
-                color: '#fff',
-                fontSize: '24px',
-                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10000,
-                transition: 'background 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)'
+                justifyContent: 'space-between',
+                padding: '14px 16px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
-              ×
-            </button>
+              <h3
+                id="contact-cal-booking-modal-title"
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                }}
+              >
+                Book your interview with Cal.com
+              </h3>
+
+              <button
+                ref={closeBookingButtonRef}
+                type="button"
+                onClick={closeBookingModal}
+                aria-label="Close booking popup"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '999px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'transparent',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </header>
+
             <iframe
-              src="https://calendar.app.google/hTLQhe9koce2qVXp9"
+              title="Cal.com booking"
+              src="https://cal.com/nality"
               style={{
                 width: '100%',
                 height: '100%',
                 border: 'none',
+                background: '#fff',
               }}
-              title="Book Interview Session"
             />
-          </div>
+          </section>
         </div>
       )}
+
     </div>
   )
 }

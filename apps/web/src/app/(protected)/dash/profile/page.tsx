@@ -1,18 +1,77 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useRouter } from 'next/navigation'
 import { ProfileCard } from '@/components/profile/ProfileCard'
-import { User, Mail, Calendar, Shield, LogOut, ArrowLeft, Sparkles } from 'lucide-react'
+import { User, Mail, Calendar, Shield, LogOut, ArrowLeft, Sparkles, ClipboardList } from 'lucide-react'
+import {
+  PREONBOARDING_COMPOSITE_OPTIONS,
+  PREONBOARDING_QUESTION_TITLES,
+  PREONBOARDING_SINGLE_CHOICE_OPTIONS,
+  applyDraftToAnswers,
+  buildProfilePreOnboardingDraft,
+  type PreOnboardingDraftEntry,
+} from '@/lib/profile/preOnboardingProfile'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
 export default function ProfilePage() {
   const { user, signOut, loading } = useAuth()
-  const { profile, isLoading: profileLoading } = useUserProfile(user?.id)
+  const {
+    profile,
+    preOnboardingSession,
+    isLoading: profileLoading,
+    updateRegistrationNames,
+    updatePreOnboardingAnswers,
+  } = useUserProfile(user?.id)
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'profile' | 'preonboarding'>('profile')
+  const [firstName, setFirstName] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [nameError, setNameError] = useState<string | null>(null)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
+  const [preOnboardingDraft, setPreOnboardingDraft] = useState<PreOnboardingDraftEntry[]>([])
+  const [preOnboardingSaveStatus, setPreOnboardingSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
+
+  useEffect(() => {
+    if (!profile) return
+    setFirstName(profile.first_name ?? '')
+    setNickname(profile.nickname ?? '')
+    setLastName(profile.last_name ?? '')
+  }, [profile])
+
+  useEffect(() => {
+    const answers = preOnboardingSession?.answers
+    if (!answers) {
+      setPreOnboardingDraft([])
+      return
+    }
+    setPreOnboardingDraft(buildProfilePreOnboardingDraft(answers))
+  }, [preOnboardingSession])
+
+  const updateDraftSingle = (questionId: string, selectedOptionId: string) => {
+    setPreOnboardingDraft((current) =>
+      current.map((entry) =>
+        entry.questionId === questionId && entry.type === 'single'
+          ? { ...entry, selectedOptionId }
+          : entry,
+      ),
+    )
+  }
+
+  const updateDraftComposite = (questionId: string, key: 'birthDecade' | 'genderIdentity', value: string) => {
+    setPreOnboardingDraft((current) =>
+      current.map((entry) =>
+        entry.questionId === questionId && entry.type === 'composite'
+          ? { ...entry, [key]: value }
+          : entry,
+      ),
+    )
+  }
 
   const handleSignOut = async () => {
     const { error } = await signOut()
@@ -21,9 +80,31 @@ export default function ProfilePage() {
     }
   }
 
-  const handleEditProfile = () => {
-    // TODO: Navigate to profile edit page or open modal
-    console.log('Edit profile clicked')
+  const handleRegistrationNameSave = async () => {
+    if (!firstName.trim()) {
+      setNameError('Vorname ist erforderlich.')
+      return
+    }
+
+    setNameError(null)
+    setSaveStatus('saving')
+
+    const ok = await updateRegistrationNames({
+      firstName,
+      nickname,
+      lastName,
+    })
+
+    setSaveStatus(ok ? 'success' : 'error')
+  }
+
+  const handlePreOnboardingSave = async () => {
+    if (!preOnboardingSession) return
+
+    setPreOnboardingSaveStatus('saving')
+    const mergedAnswers = applyDraftToAnswers(preOnboardingSession.answers ?? {}, preOnboardingDraft)
+    const ok = await updatePreOnboardingAnswers(mergedAnswers)
+    setPreOnboardingSaveStatus(ok ? 'success' : 'error')
   }
 
   return (
@@ -64,7 +145,205 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Personal Information Edit Section - removed (legacy UI) */}
+          <div className="profile-tabs" role="tablist" aria-label="Profilbereiche">
+            <button
+              type="button"
+              role="tab"
+              id="profile-tab"
+              aria-selected={activeTab === 'profile'}
+              aria-controls="profile-tab-panel"
+              className={`tab-button ${activeTab === 'profile' ? 'tab-button-active' : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              Profil
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="preonboarding-tab"
+              aria-selected={activeTab === 'preonboarding'}
+              aria-controls="preonboarding-tab-panel"
+              className={`tab-button ${activeTab === 'preonboarding' ? 'tab-button-active' : ''}`}
+              onClick={() => setActiveTab('preonboarding')}
+            >
+              Vorgespräch
+            </button>
+          </div>
+
+          <div
+            className="personal-info-card"
+            role="tabpanel"
+            id="profile-tab-panel"
+            aria-labelledby="profile-tab"
+            hidden={activeTab !== 'profile'}
+          >
+            <div className="card-header">
+              <User size={20} className="card-icon" />
+              <h2 id="registration-name-title" className="card-title">Profil</h2>
+            </div>
+
+            <div className="form-grid">
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="profile-first-name">Vorname *</label>
+                  <input
+                    id="profile-first-name"
+                    type="text"
+                    className="form-input"
+                    value={firstName}
+                    onChange={(event) => {
+                      setFirstName(event.target.value)
+                      if (nameError && event.target.value.trim()) {
+                        setNameError(null)
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={nameError ? 'true' : 'false'}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="profile-nickname">Spitzname</label>
+                  <input
+                    id="profile-nickname"
+                    type="text"
+                    className="form-input"
+                    value={nickname}
+                    onChange={(event) => setNickname(event.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-last-name">Nachname</label>
+                <input
+                  id="profile-last-name"
+                  type="text"
+                  className="form-input"
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                />
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="save-button"
+                  onClick={handleRegistrationNameSave}
+                  disabled={saveStatus === 'saving'}
+                >
+                  {saveStatus === 'saving' ? 'Speichern…' : 'Profil speichern'}
+                </button>
+              </div>
+
+              {nameError ? (
+                <p className="error-text" role="status" aria-live="polite">{nameError}</p>
+              ) : null}
+
+              {saveStatus === 'success' ? (
+                <p className="preview-message" role="status" aria-live="polite">Profildaten wurden gespeichert.</p>
+              ) : null}
+
+              {saveStatus === 'error' ? (
+                <p className="error-text" role="status" aria-live="polite">Speichern fehlgeschlagen. Bitte erneut versuchen.</p>
+              ) : null}
+            </div>
+          </div>
+
+          <div
+            className="personal-info-card"
+            role="tabpanel"
+            id="preonboarding-tab-panel"
+            aria-labelledby="preonboarding-tab"
+            hidden={activeTab !== 'preonboarding'}
+          >
+            <div className="card-header">
+              <ClipboardList size={20} className="card-icon" />
+              <h2 className="card-title">Vorgespräch</h2>
+            </div>
+
+            {!preOnboardingSession ? (
+              <p className="preview-message">Es wurde noch kein verknüpftes Vorgespräch gefunden.</p>
+            ) : preOnboardingDraft.length === 0 ? (
+              <p className="preview-message">Für dein Vorgespräch liegen noch keine bearbeitbaren Antworten vor.</p>
+            ) : (
+              <div className="form-grid">
+                {preOnboardingDraft.map((entry) => {
+                  const title = PREONBOARDING_QUESTION_TITLES[entry.questionId] ?? entry.questionId
+
+                  if (entry.type === 'single') {
+                    const options = PREONBOARDING_SINGLE_CHOICE_OPTIONS[entry.questionId] ?? []
+
+                    return (
+                      <div className="form-group" key={entry.questionId}>
+                        <label className="form-label" htmlFor={`preonboarding-${entry.questionId}`}>{title}</label>
+                        <select
+                          id={`preonboarding-${entry.questionId}`}
+                          className="form-input"
+                          value={entry.selectedOptionId}
+                          onChange={(event) => updateDraftSingle(entry.questionId, event.target.value)}
+                        >
+                          {options.map((option) => (
+                            <option key={option.id} value={option.id}>{option.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div className="form-row" key={entry.questionId}>
+                      <div className="form-group">
+                        <label className="form-label" htmlFor={`preonboarding-${entry.questionId}-decade`}>{title} (Dekade)</label>
+                        <select
+                          id={`preonboarding-${entry.questionId}-decade`}
+                          className="form-input"
+                          value={entry.birthDecade}
+                          onChange={(event) => updateDraftComposite(entry.questionId, 'birthDecade', event.target.value)}
+                        >
+                          {PREONBOARDING_COMPOSITE_OPTIONS.decade.map((option) => (
+                            <option key={option.id} value={option.id}>{option.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label" htmlFor={`preonboarding-${entry.questionId}-gender`}>{title} (Geschlecht)</label>
+                        <select
+                          id={`preonboarding-${entry.questionId}-gender`}
+                          className="form-input"
+                          value={entry.genderIdentity}
+                          onChange={(event) => updateDraftComposite(entry.questionId, 'genderIdentity', event.target.value)}
+                        >
+                          {PREONBOARDING_COMPOSITE_OPTIONS.gender.map((option) => (
+                            <option key={option.id} value={option.id}>{option.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    className="save-button"
+                    onClick={handlePreOnboardingSave}
+                    disabled={preOnboardingSaveStatus === 'saving'}
+                  >
+                    {preOnboardingSaveStatus === 'saving' ? 'Speichern…' : 'Vorgespräch speichern'}
+                  </button>
+                </div>
+
+                {preOnboardingSaveStatus === 'success' ? (
+                  <p className="preview-message" role="status" aria-live="polite">Vorgesprächsdaten wurden gespeichert.</p>
+                ) : null}
+
+                {preOnboardingSaveStatus === 'error' ? (
+                  <p className="error-text" role="status" aria-live="polite">Speichern fehlgeschlagen. Bitte erneut versuchen.</p>
+                ) : null}
+              </div>
+            )}
+          </div>
 
           {/* Account Information Card */}
           <div className="profile-info-card">
@@ -223,6 +502,35 @@ export default function ProfilePage() {
         /* Profile Attributes Section */
         .profile-attributes-section {
           margin-bottom: 24px;
+        }
+
+        .profile-tabs {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+
+        .tab-button {
+          border: 1px solid var(--md-sys-color-outline-variant);
+          background: var(--md-sys-color-surface-container-low);
+          color: var(--md-sys-color-on-surface-variant);
+          border-radius: 999px;
+          padding: 8px 16px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all var(--md-sys-motion-duration-short2, 200ms) var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
+        }
+
+        .tab-button-active {
+          background: var(--md-sys-color-primary);
+          border-color: var(--md-sys-color-primary);
+          color: var(--md-sys-color-on-primary);
+        }
+
+        .tab-button:focus-visible {
+          outline: 2px solid var(--md-sys-color-primary);
+          outline-offset: 2px;
         }
 
         /* Personal Information Card */
@@ -386,6 +694,13 @@ export default function ProfilePage() {
           line-height: 1.5;
           margin-bottom: 16px;
           text-align: center;
+        }
+
+        .error-text {
+          color: var(--md-sys-color-error);
+          font-size: 0.875rem;
+          margin: 0;
+          text-align: left;
         }
 
         .preview-fields {

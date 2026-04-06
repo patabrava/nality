@@ -13,6 +13,13 @@ Validiert den deklarativen Flow gemäß `documentation/development/onboarding.md
 3. Browser öffnen: `http://localhost:3000/meeting`
 
 ## Ausführung
+0. **Design-/Layout-Sanity (neu):**
+   - `/meeting` öffnen
+   - Erwartung: Primär-/Sekundär-Buttons folgen den globalen `btn`/`btn-primary`/`btn-secondary` Styles (nicht gold überschrieben)
+   - Erwartung: Radio-Selection (Q1/Q2/...) markiert in Gold
+   - Zwischen mehreren Fragen navigieren (z. B. Q1 → Q2 → Q3 und zurück)
+   - Erwartung: Aktionsleiste (Zurück/Weiter/Direkt zur Anmeldung) bleibt am unteren Bereich stabil positioniert
+
 1. **Strang 1 (Extrovertiert):**
    - Q1_O1 wählen
    - Q2 → Q3 → Q4 ausfüllen
@@ -25,7 +32,9 @@ Validiert den deklarativen Flow gemäß `documentation/development/onboarding.md
    - Q8_O4 wählen
    - Erwartung: direkter Sprung zu Q5 (kein Q9/Q10 dazwischen)
    - Q5_O3 wählen
-   - Erwartung: E1 mit Button „Okay"
+   - Erwartung: E1 mit Buttons „Okay" und „Jetzt doch fortsetzen"
+   - „Jetzt doch fortsetzen" klicken
+   - Erwartung: Weiterleitung auf Login/Registrierung (`/login?mode=signup&preonboarding_session_id=...`)
 
 3. **Strang 3 (Für Dritte):**
    - Q1_O5 wählen

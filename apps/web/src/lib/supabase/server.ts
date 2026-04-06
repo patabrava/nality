@@ -34,23 +34,15 @@ export async function createClient() {
 export async function createServiceClient() {
   const { createClient } = await import('@supabase/supabase-js')
   
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-  
-  // Debug: Check if values are loading correctly
-  console.log('🔧 Service Client Debug:')
-  console.log('  - URL:', supabaseUrl)
-  console.log('  - URL length:', supabaseUrl?.length || 0)
-  console.log('  - Key length:', serviceKey?.length || 0)
-  console.log('  - Key starts with:', serviceKey?.substring(0, 20) || 'N/A')
-  console.log('  - Key ends with:', serviceKey?.substring(serviceKey.length - 10) || 'N/A')
-  
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
   if (!supabaseUrl || !supabaseUrl.includes('supabase.co')) {
-    console.error('⚠️ SUPABASE_URL appears invalid:', supabaseUrl)
+    throw new Error('Missing or invalid NEXT_PUBLIC_SUPABASE_URL for service client')
   }
-  
+
   if (!serviceKey || serviceKey.length < 100) {
-    console.error('⚠️ SERVICE_KEY appears invalid, length:', serviceKey?.length || 0)
+    throw new Error('Missing or invalid SUPABASE_SERVICE_ROLE_KEY for service client')
   }
   
   return createClient(supabaseUrl, serviceKey, {

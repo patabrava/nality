@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/components/i18n/I18nProvider'
@@ -112,6 +113,32 @@ const styles = `
     text-align: center;
     margin-bottom: 48px;
     position: relative;
+  }
+
+  .login-top-link {
+    margin-bottom: 24px;
+  }
+
+  .login-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+
+  .login-back-link:hover {
+    color: var(--accent-gold);
+  }
+
+  .login-back-link:focus-visible {
+    outline: 1px solid var(--accent-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .login-title {
@@ -606,6 +633,7 @@ export function LoginForm() {
   const { t } = useI18n()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const preOnboardingSessionId = searchParams.get('preonboarding_session_id')?.trim() ?? ''
 
   useEffect(() => {
     const mode = searchParams.get('mode')?.toLowerCase()
@@ -652,6 +680,10 @@ export function LoginForm() {
 
         if (lastName.trim()) {
           signUpData.last_name = lastName.trim()
+        }
+
+        if (preOnboardingSessionId) {
+          signUpData.preonboarding_session_id = preOnboardingSessionId
         }
 
         result = await signUpWithPassword(email, password, {
@@ -735,6 +767,12 @@ export function LoginForm() {
         <style dangerouslySetInnerHTML={{ __html: styles }} />
         <div className="login-container">
           <div className="login-card">
+            <div className="login-top-link">
+              <Link href="/" className="login-back-link" aria-label="Back to landing page">
+                <span aria-hidden="true">←</span>
+                <span>Back to landing</span>
+              </Link>
+            </div>
             <div className="login-header">
               <h1 className="login-title">
                 {isSignUpSuccess ? t('auth.login.success.accountCreated') : t('auth.login.success.checkEmail')}
@@ -783,6 +821,12 @@ export function LoginForm() {
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="login-container">
         <div className="login-card">
+          <div className="login-top-link">
+            <Link href="/" className="login-back-link" aria-label="Back to landing page">
+              <span aria-hidden="true">←</span>
+              <span>Back to landing</span>
+            </Link>
+          </div>
           <div className="login-header">
             <h1 className="login-title">{t('auth.login.title')} <span className="serif-accent">Nality</span></h1>
             <p className="login-subtitle">

@@ -633,7 +633,7 @@ export function MeetingPreOnboardingFlow() {
           {state.lastSyncedAt ? <p className={styles.inlineMuted}>Zuletzt synchronisiert: {new Date(state.lastSyncedAt).toLocaleTimeString('de-DE')}</p> : null}
         </header>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.questionPanel}`}>
           {storageWarning ? <p className={styles.systemInfo}>{storageWarning}</p> : null}
 
           {choiceQuestion ? (
@@ -641,7 +641,10 @@ export function MeetingPreOnboardingFlow() {
               <legend className={styles.questionLegend}>{choiceQuestion.title}</legend>
               <div className={styles.options}>
                 {choiceQuestion.options.map((option) => (
-                  <label key={option.id} className={styles.optionLabel}>
+                  <label
+                    key={option.id}
+                    className={`${styles.optionLabel} ${selectedChoiceOption === option.id ? styles.optionLabelSelected : ''}`}
+                  >
                     <input
                       type="radio"
                       name={current}
@@ -666,7 +669,7 @@ export function MeetingPreOnboardingFlow() {
               </label>
               <select
                 id={`${current}-decade`}
-                className="form-select"
+                className={`form-select ${styles.meetingSelect}`}
                 value={birthDecade}
                 onChange={(event) => {
                   const value = event.target.value;
@@ -687,7 +690,7 @@ export function MeetingPreOnboardingFlow() {
               </label>
               <select
                 id={`${current}-gender`}
-                className="form-select"
+                className={`form-select ${styles.meetingSelect}`}
                 value={genderIdentity}
                 onChange={(event) => {
                   const value = event.target.value;
@@ -729,14 +732,7 @@ export function MeetingPreOnboardingFlow() {
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => {
-                    const resumedQuestion = deriveCurrentQuestion(state.answers);
-                    const resumed: PreOnboardingState = {
-                      ...state,
-                      status: 'in_progress',
-                      currentQuestion: resumedQuestion,
-                      questionHistory: deriveQuestionHistory(state.answers, resumedQuestion),
-                    };
-                    persistAndSet(resumed);
+                    void goToRegistration();
                   }}
                 >
                   Jetzt doch fortsetzen
@@ -744,6 +740,16 @@ export function MeetingPreOnboardingFlow() {
               </div>
             </div>
           )}
+
+          {errorMessage ? (
+            <p className={styles.error} role="status" aria-live="polite">
+              {errorMessage}
+            </p>
+          ) : null}
+
+          {choiceQuestion && !selectedChoiceOption ? (
+            <p className={styles.inlineMuted}>Wähle eine Antwort aus und klicke dann auf „Weiter“.</p>
+          ) : null}
 
           <div className={styles.navActions}>
             <button
@@ -770,16 +776,6 @@ export function MeetingPreOnboardingFlow() {
               Direkt zur Anmeldung
             </button>
           </div>
-
-          {errorMessage ? (
-            <p className={styles.error} role="status" aria-live="polite">
-              {errorMessage}
-            </p>
-          ) : null}
-
-          {choiceQuestion && !selectedChoiceOption ? (
-            <p className={styles.inlineMuted}>Wähle eine Antwort aus und klicke dann auf „Weiter“.</p>
-          ) : null}
         </section>
       </div>
     </main>
