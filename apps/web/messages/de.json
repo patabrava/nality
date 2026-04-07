@@ -474,6 +474,13 @@
       "methodMagicLink": "Anmeldelink per E-Mail",
       "emailLabel": "E-Mail Adresse",
       "emailPlaceholder": "E-Mail eingeben",
+      "firstNameLabel": "Vorname",
+      "firstNamePlaceholder": "Vorname eingeben",
+      "nicknameLabel": "Spitzname",
+      "nicknamePlaceholder": "Spitzname eingeben",
+      "lastNameLabel": "Nachname",
+      "lastNamePlaceholder": "Nachname eingeben",
+      "optional": "optional",
       "passwordLabel": "Passwort",
       "passwordPlaceholderSignIn": "Passwort eingeben",
       "passwordPlaceholderSignUp": "Passwort erstellen",
@@ -512,7 +519,8 @@
       "errors": {
         "emailRequired": "E-Mail ist erforderlich",
         "invalidEmail": "Bitte eine gültige E-Mail eingeben",
-        "passwordRequired": "Passwort ist erforderlich"
+        "passwordRequired": "Passwort ist erforderlich",
+        "firstNameRequired": "Vorname ist erforderlich"
       },
       "footerMagicLink": "Wir senden dir einen sicheren Link zum Anmelden. Kein Passwort erforderlich.",
       "footerPassword": "Dein Konto ist durch Sicherheit auf Enterprise-Niveau geschützt."

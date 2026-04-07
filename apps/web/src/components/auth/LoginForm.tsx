@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/components/i18n/I18nProvider'
@@ -112,6 +113,32 @@ const styles = `
     text-align: center;
     margin-bottom: 48px;
     position: relative;
+  }
+
+  .login-top-link {
+    margin-bottom: 24px;
+  }
+
+  .login-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+
+  .login-back-link:hover {
+    color: var(--accent-gold);
+  }
+
+  .login-back-link:focus-visible {
+    outline: 1px solid var(--accent-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .login-title {
@@ -593,6 +620,10 @@ const styles = `
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [firstNameError, setFirstNameError] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [authMethod, setAuthMethod] = useState<'magic-link' | 'password'>('password')
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -602,6 +633,7 @@ export function LoginForm() {
   const { t } = useI18n()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const preOnboardingSessionId = searchParams.get('preonboarding_session_id')?.trim() ?? ''
 
   useEffect(() => {
     const mode = searchParams.get('mode')?.toLowerCase()
@@ -632,8 +664,31 @@ export function LoginForm() {
     } else {
       if (!password.trim()) return
 
+      if (isSignUp && !firstName.trim()) {
+        setFirstNameError(t('auth.login.errors.firstNameRequired'))
+        return
+      }
+
       if (isSignUp) {
-        result = await signUpWithPassword(email, password)
+        const signUpData: Record<string, string> = {
+          first_name: firstName.trim()
+        }
+
+        if (nickname.trim()) {
+          signUpData.nickname = nickname.trim()
+        }
+
+        if (lastName.trim()) {
+          signUpData.last_name = lastName.trim()
+        }
+
+        if (preOnboardingSessionId) {
+          signUpData.preonboarding_session_id = preOnboardingSessionId
+        }
+
+        result = await signUpWithPassword(email, password, {
+          data: signUpData
+        })
       } else {
         result = await signInWithPassword(email, password)
       }
@@ -698,6 +753,7 @@ export function LoginForm() {
       if (!password.trim()) return true
       // Only validate password strength for sign up, not sign in
       if (isSignUp && !validatePassword(password).isValid) return true
+      if (isSignUp && !firstName.trim()) return true
     }
 
     return false
@@ -711,6 +767,12 @@ export function LoginForm() {
         <style dangerouslySetInnerHTML={{ __html: styles }} />
         <div className="login-container">
           <div className="login-card">
+            <div className="login-top-link">
+              <Link href="/" className="login-back-link" aria-label="Back to landing page">
+                <span aria-hidden="true">←</span>
+                <span>Back to landing</span>
+              </Link>
+            </div>
             <div className="login-header">
               <h1 className="login-title">
                 {isSignUpSuccess ? t('auth.login.success.accountCreated') : t('auth.login.success.checkEmail')}
@@ -739,6 +801,10 @@ export function LoginForm() {
                 setIsSubmitted(false)
                 setEmail('')
                 setPassword('')
+                setFirstName('')
+                setNickname('')
+                setLastName('')
+                setFirstNameError('')
               }}
               className="secondary-button"
             >
@@ -755,6 +821,12 @@ export function LoginForm() {
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="login-container">
         <div className="login-card">
+          <div className="login-top-link">
+            <Link href="/" className="login-back-link" aria-label="Back to landing page">
+              <span aria-hidden="true">←</span>
+              <span>Back to landing</span>
+            </Link>
+          </div>
           <div className="login-header">
             <h1 className="login-title">{t('auth.login.title')} <span className="serif-accent">Nality</span></h1>
             <p className="login-subtitle">
@@ -796,6 +868,74 @@ export function LoginForm() {
                 disabled={loading}
               />
             </div>
+
+            {authMethod === 'password' && isSignUp && (
+              <>
+                <div className="input-group">
+                  <label htmlFor="firstName" className="input-label">
+                    {t('auth.login.firstNameLabel')} <span aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => {
+                      setFirstName(e.target.value)
+                      if (firstNameError && e.target.value.trim()) {
+                        setFirstNameError('')
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!firstName.trim()) {
+                        setFirstNameError(t('auth.login.errors.firstNameRequired'))
+                      }
+                    }}
+                    placeholder={t('auth.login.firstNamePlaceholder')}
+                    className="input-field"
+                    required
+                    aria-required="true"
+                    aria-invalid={firstNameError ? 'true' : 'false'}
+                    aria-describedby={firstNameError ? 'firstName-error' : undefined}
+                    disabled={loading}
+                  />
+                  {firstNameError && (
+                    <p id="firstName-error" className="error-text" style={{ marginTop: '8px' }}>
+                      {firstNameError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="nickname" className="input-label">
+                    {t('auth.login.nicknameLabel')} ({t('auth.login.optional')})
+                  </label>
+                  <input
+                    id="nickname"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder={t('auth.login.nicknamePlaceholder')}
+                    className="input-field"
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="lastName" className="input-label">
+                    {t('auth.login.lastNameLabel')} ({t('auth.login.optional')})
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder={t('auth.login.lastNamePlaceholder')}
+                    className="input-field"
+                    disabled={loading}
+                  />
+                </div>
+              </>
+            )}
 
             {authMethod === 'password' && (
               <div className="input-group">
@@ -894,6 +1034,10 @@ export function LoginForm() {
                     onClick={() => {
                       if (isSignUp) {
                         setIsSignUp(false)
+                        setFirstName('')
+                        setNickname('')
+                        setLastName('')
+                        setFirstNameError('')
                         return
                       }
 

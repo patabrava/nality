@@ -92,8 +92,7 @@ const MONTH_NAMES: Record<string, string> = {
   jun: '06', jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
   // German
   januar: '01', februar: '02', märz: '03', maerz: '03',
-  mai: '05', juni: '06', juli: '07',
-  oktober: '10', dezember: '12',
+  mai: '05', juni: '06', juli: '07', oktober: '10', dezember: '12',
 };
 
 /**
@@ -128,8 +127,28 @@ export function parseDate(dateStr: string | undefined): string | null {
     return `${trimmed}-01-01`;
   }
   
+  // German format with month names: DD. Month YYYY
+  const germanWordMonthMatch = trimmed.match(/^(\d{1,2})\.\s*([\p{L}]+)\s+(\d{4})$/u);
+  if (germanWordMonthMatch && germanWordMonthMatch[1] && germanWordMonthMatch[2] && germanWordMonthMatch[3]) {
+    const day = germanWordMonthMatch[1].padStart(2, '0');
+    const month = MONTH_NAMES[germanWordMonthMatch[2]];
+    if (month) {
+      return `${germanWordMonthMatch[3]}-${month}-${day}`;
+    }
+  }
+
+  // English format with day and comma: Month DD, YYYY
+  const englishWordMonthMatch = trimmed.match(/^([\p{L}]+)\s+(\d{1,2}),\s*(\d{4})$/u);
+  if (englishWordMonthMatch && englishWordMonthMatch[1] && englishWordMonthMatch[2] && englishWordMonthMatch[3]) {
+    const month = MONTH_NAMES[englishWordMonthMatch[1]];
+    if (month) {
+      const day = englishWordMonthMatch[2].padStart(2, '0');
+      return `${englishWordMonthMatch[3]}-${month}-${day}`;
+    }
+  }
+
   // Month YYYY (e.g., "March 2015", "März 2015")
-  const monthYearMatch = trimmed.match(/^(\w+)\s+(\d{4})$/);
+  const monthYearMatch = trimmed.match(/^([\p{L}]+)\s+(\d{4})$/u);
   if (monthYearMatch && monthYearMatch[1] && monthYearMatch[2]) {
     const month = MONTH_NAMES[monthYearMatch[1]];
     if (month) {

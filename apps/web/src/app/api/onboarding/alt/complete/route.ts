@@ -83,14 +83,14 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await request.json();
     const parsed = FinalizeRequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Ungültige Daten', issues: parsed.error.flatten() },
+        { error: 'Invalid payload', issues: parsed.error.flatten() },
         { status: 400 },
       );
     }

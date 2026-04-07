@@ -35,8 +35,16 @@ export async function createClient() {
 export async function createServiceClient() {
   const { createClient } = await import('@supabase/supabase-js')
   
-  const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL')
-  const serviceKey = getRequiredEnv('SUPABASE_SERVICE_ROLE_KEY')
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseUrl.includes('supabase.co')) {
+    throw new Error('Missing or invalid NEXT_PUBLIC_SUPABASE_URL for service client')
+  }
+
+  if (!serviceKey || serviceKey.length < 100) {
+    throw new Error('Missing or invalid SUPABASE_SERVICE_ROLE_KEY for service client')
+  }
   
   return createClient(supabaseUrl, serviceKey, {
     auth: {

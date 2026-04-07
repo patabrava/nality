@@ -3,12 +3,17 @@
 import { useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
+import { normalizeSignUpError } from '@/hooks/useAuthErrors'
 
 interface AuthState {
   user: User | null
   session: Session | null
   loading: boolean
   error: AuthError | null
+}
+
+function buildAuthError(message: string, code: string, status = 400): AuthError {
+  return new AuthError(message, status, code)
 }
 
 export function useAuth() {
@@ -128,21 +133,48 @@ export function useAuth() {
         signUpOptions.data = options.data
       }
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: signUpOptions
       })
       
       if (error) {
-        setState(prev => ({ ...prev, loading: false, error }))
-        return { error }
+        const normalizedError = normalizeSignUpError(error)
+        console.error('Sign-up failed', {
+          code: (normalizedError as { code?: string }).code,
+          status: (normalizedError as { status?: number }).status,
+          message: normalizedError.message,
+          emailRedirectTo: signUpOptions.emailRedirectTo,
+        })
+        setState(prev => ({ ...prev, loading: false, error: normalizedError }))
+        return { error: normalizedError }
+      }
+
+      const hasIdentities = Array.isArray(data.user?.identities) && data.user.identities.length > 0
+      if (!data.session && !hasIdentities) {
+        const existingAccountError = buildAuthError(
+          'Für diese E-Mail existiert bereits ein Konto oder eine ausstehende Registrierung. Bitte einloggen oder Passwort zurücksetzen.',
+          'signup_existing_or_obfuscated',
+          409
+        )
+        console.warn('Sign-up returned obfuscated/no-identity user response', {
+          code: (existingAccountError as { code?: string }).code,
+          emailRedirectTo: signUpOptions.emailRedirectTo,
+        })
+        setState(prev => ({ ...prev, loading: false, error: existingAccountError }))
+        return { error: existingAccountError }
       }
       
       setState(prev => ({ ...prev, loading: false }))
       return { error: null }
     } catch (error) {
-      const authError = error as AuthError
+      const authError = normalizeSignUpError(error as AuthError)
+      console.error('Sign-up exception', {
+        code: (authError as { code?: string }).code,
+        status: (authError as { status?: number }).status,
+        message: authError.message,
+      })
       setState(prev => ({ ...prev, loading: false, error: authError }))
       return { error: authError }
     }

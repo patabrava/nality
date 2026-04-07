@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { buildFullName, normalizeOptionalName } from '@/lib/profile/registrationNames';
+import type { PreOnboardingAnswersMap } from '@/lib/profile/preOnboardingProfile';
 
 // Privacy boundary: public/profile-facing client reads must never include alt_onboarding_private.
 export const USER_PROFILE_PUBLIC_SELECT =
-  'id, email, full_name, onboarding_complete, form_of_address, language_style, birth_date, birth_place';
+  'id, email, full_name, first_name, nickname, last_name, onboarding_complete, form_of_address, language_style, birth_date, birth_place';
 
 // ──────────────────────
 // Types
@@ -18,6 +20,9 @@ export interface UserData {
   id: string;
   email: string | null;
   full_name: string | null;
+  first_name: string | null;
+  nickname: string | null;
+  last_name: string | null;
   onboarding_complete: boolean;
   form_of_address: 'du' | 'sie' | null;
   language_style: 'prosa' | 'fachlich' | 'locker' | null;
@@ -75,13 +80,28 @@ export interface UserProfile extends UserData {
   lifeEvents: LifeEventsData | null;
 }
 
+export interface PreOnboardingProfileSession {
+  session_id: string;
+  status: 'in_progress' | 'paused' | 'completed';
+  current_question: string;
+  answers: PreOnboardingAnswersMap;
+  updated_at: string | null;
+}
+
 interface UseUserProfileReturn {
   profile: UserProfile | null;
+  preOnboardingSession: PreOnboardingProfileSession | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
   isOnboardingComplete: boolean;
   updateAttributes: (updates: Partial<ProfileAttributes>) => Promise<boolean>;
+  updateRegistrationNames: (updates: {
+    firstName: string;
+    nickname?: string;
+    lastName?: string;
+  }) => Promise<boolean>;
+  updatePreOnboardingAnswers: (answers: PreOnboardingAnswersMap) => Promise<boolean>;
 }
 
 /**
@@ -90,6 +110,7 @@ interface UseUserProfileReturn {
  */
 export function useUserProfile(userId: string | null | undefined): UseUserProfileReturn {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [preOnboardingSession, setPreOnboardingSession] = useState<PreOnboardingProfileSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -127,6 +148,14 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
         .in('category', ['family', 'education', 'career'])
         .order('start_date', { ascending: true });
 
+      const preOnboardingResponse = await fetch('/api/preonboarding/profile', { method: 'GET' });
+      if (preOnboardingResponse.ok) {
+        const payload = (await preOnboardingResponse.json()) as { session?: PreOnboardingProfileSession | null };
+        setPreOnboardingSession(payload.session ?? null);
+      } else {
+        setPreOnboardingSession(null);
+      }
+
       if (userError) {
         // If user doesn't exist in users table, they need onboarding
         if (userError.code === 'PGRST116') {
@@ -135,6 +164,9 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
             id: userId,
             email: null,
             full_name: null,
+            first_name: null,
+            nickname: null,
+            last_name: null,
             onboarding_complete: false,
             form_of_address: null,
             language_style: null,
@@ -225,16 +257,79 @@ export function useUserProfile(userId: string | null | undefined): UseUserProfil
     }
   }, [userId, fetchProfile]);
 
+  const updateRegistrationNames = useCallback(
+    async (updates: { firstName: string; nickname?: string; lastName?: string }): Promise<boolean> => {
+      if (!userId) return false;
+
+      const firstName = updates.firstName.trim();
+      if (!firstName) return false;
+
+      try {
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({
+            first_name: firstName,
+            nickname: normalizeOptionalName(updates.nickname),
+            last_name: normalizeOptionalName(updates.lastName),
+            full_name: buildFullName(firstName, updates.lastName),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', userId);
+
+        if (updateError) {
+          console.error('❌ Failed to update registration names:', updateError);
+          return false;
+        }
+
+        await fetchProfile();
+        return true;
+      } catch (err) {
+        console.error('❌ Error updating registration names:', err);
+        return false;
+      }
+    },
+    [userId, fetchProfile],
+  );
+
+  const updatePreOnboardingAnswers = useCallback(
+    async (answers: PreOnboardingAnswersMap): Promise<boolean> => {
+      if (!userId) return false;
+
+      try {
+        const response = await fetch('/api/preonboarding/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers }),
+        });
+
+        if (!response.ok) {
+          console.error('❌ Failed to update pre-onboarding answers:', response.status);
+          return false;
+        }
+
+        await fetchProfile();
+        return true;
+      } catch (err) {
+        console.error('❌ Error updating pre-onboarding answers:', err);
+        return false;
+      }
+    },
+    [userId, fetchProfile],
+  );
+
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
   return {
     profile,
+    preOnboardingSession,
     isLoading,
     error,
     refetch: fetchProfile,
     isOnboardingComplete: profile?.onboarding_complete === true,
     updateAttributes,
+    updateRegistrationNames,
+    updatePreOnboardingAnswers,
   };
 }

@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
     if (!chapters || chapters.length === 0) {
       return NextResponse.json({
-        error: 'Es sind keine Kapitel für die Biografieerstellung verfügbar',
+        error: 'No chapters available to generate biography from',
       }, { status: 400 });
     }
 

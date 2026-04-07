@@ -38,7 +38,7 @@ export const CHAPTER_TO_CATEGORY: Record<ChapterId, LifeEventCategoryType> = {
   learning: 'education',
   work: 'career',
   love: 'relationship',
-  moments: 'travel',
+  moments: 'personal',
 };
 
 // ──────────────────────
@@ -121,7 +121,7 @@ export function isLifeEventTopic(topic: string): boolean {
  */
 export function getCategoryForChapter(chapterId: string): LifeEventCategoryType {
   const normalized = chapterId.toLowerCase() as ChapterId;
-  return CHAPTER_TO_CATEGORY[normalized] || 'other';
+  return CHAPTER_TO_CATEGORY[normalized] || 'personal';
 }
 
 /**
