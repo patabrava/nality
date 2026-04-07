@@ -30,7 +30,7 @@ export function MessageList({
         scrollBehavior: 'smooth'
       }}
       role="log"
-      aria-label="Chat conversation"
+      aria-label="Gesprächsverlauf"
       aria-live="polite"
       data-testid="message-list"
     >
@@ -47,7 +47,7 @@ export function MessageList({
             textAlign: 'center'
           }}
         >
-          Start a conversation...
+          Starte ein Gespräch...
         </div>
       )}
 
@@ -82,7 +82,7 @@ export function MessageList({
               transition: 'box-shadow 0.2s',
             }}
             tabIndex={0}
-            aria-label="AI is typing"
+            aria-label="KI schreibt"
           >
             {/* Speech bubble arrow */}
             <span

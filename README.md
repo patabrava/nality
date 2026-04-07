@@ -10,7 +10,7 @@
 
 ### Environment Setup
 
-Create a `.env.local` file in `apps/web/` with the following variables:
+Copy the root `.env.example` into `apps/web/.env.local` and fill in the real values:
 
 ```bash
 # Supabase Configuration
@@ -20,11 +20,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=anon_key
 # Server-only Supabase key (do not expose to the browser)
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Google AI / Gemini
-GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
+# Google AI / Gemini (one provider key is enough)
+GEMINI_API_KEY=your_google_ai_api_key
+
+# Optional speech provider
+DEEPGRAM_KEY=your_deepgram_key
+
+# Admin access
+ADMIN_EMAIL_WHITELIST=admin@example.com
 
 # Local Development
-NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### Installation
@@ -45,18 +51,17 @@ pnpm install
 # Start development server
 pnpm dev
 
-# Build all packages
-pnpm build
-
-# Build specific package (web app)
-turbo build --filter=web
-
-# Run linting
-pnpm lint
-
 # Type checking
 pnpm type-check
+
+# Route tests
+pnpm --filter web test
+
+# Production build
+pnpm --filter web build
 ```
+
+The protected staff workspace lives at `/admin` and is only available to authenticated users whose email is present in `ADMIN_EMAIL_WHITELIST`.
 
 ## Deployment
 
@@ -79,7 +84,9 @@ Before deploying, verify the build works locally:
 
 ```bash
 pnpm install
-pnpm build
+pnpm type-check
+pnpm --filter web test
+pnpm --filter web build
 ```
 
 ## Architecture

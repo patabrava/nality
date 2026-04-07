@@ -1,0 +1,258 @@
+Please turn the following text into a user query for a feature development. I basically want to create an agent that starts asking questions regarding specific topics of a person's life based on the answers that they gave on the pre-onboarding for the APPLICATION the questions need to be asked in a very natural and organic way and it should not feel like answering a survey. users open the app and their biography agent will ask them if they want to talk about topic xyz based on all the database entries for the user. The questions should be about the following topics: 
+
+Fortsetzung 1. Basisinformationen 
+Wann und wo wurden Sie geboren?
+  Wähle deinen Geburtstag und Geburtsort aus:
+Wo leben Sie derzeitig, und fühlen Sie sich dort „zuhause“?
+@Tech: Bitte ermöglicht die Eingabe des Geburts- tags und Ort auf bequeme Weise.
+(EE): Um das volle Potenzial von Nality ausschöpfen zu können, ist Ihr Geburtsjahr bzw. Ihr Geburtstag der wichtigste Referenzpunkt. Unsere Anwendung setzt Ihr Alter in Relation zu Ereignissen, um Ihnen höchst individualisierte Inhalte bieten zu können.
+
+Erweiterte Information 
+Was ist dein Beziehungsstatus?
+ – Single
+ – In einer Beziehung
+ – Verheiratet
+ - Geschieden
+ - Verwitwet
+ - Andere
+Wie definierst du deine sexuelle Orientierung?
+  Optionen:
+  - Heterosexuell
+  - Homosexuell
+  - Lesbisch
+  - Andere
+(EE): Deine Antwort hilft uns dabei, deine Lebensrealität zu verstehen, und sorgt dafür, dass deine Identität und Erfahrungen in unserer gemeinsamen Arbeit respektiert und berücksichtigt werden.
+
+Identifizierst du dich mit einer Religion?
+ -Ja
+ -Nein (weiter mit fragen nach Religion und Spiritualität)
+
+  -Wenn Ja, bitte auswählen
+    - Christentum
+    - Islam
+    - Judentum
+    - Hinduismus
+    - Buddhismus
+    - andere
+    - möchte ich nicht angeben
+
+Wenn du dich als Christ:in identifizierst, welche Konfession beschreibt dich am besten?
+
+      Evangelisch
+      Katholisch
+      Orthodox
+      Andere
+      Konfessionslos
+      Ich bin mir nicht sicher
+      Kein Christ
+
+Wie wichtig ist Religion in deinem Leben?
+  – Sehr wichtig
+  – Wichtig
+  – Etwas wichtig
+  - Überhaupt nicht wichtig
+
+    -Wenn wichtig (Option 1-3): Wie lange ist dein Glaube schon wichtig für dich?
+        – Weniger als ein Jahr
+        - 1–3 Jahre
+        - Mehr als drei Jahre
+        - Mein ganzes Leben
+(EE): Wir stellen dir Fragen zur Religion, damit Nality deinen Hintergrund besser nachvollziehen kann.
+
+Betrachtest du dich als spirituell?
+- Nein
+- Ja
+
+Hilf uns, dich kennenzulernen! Die folgenden Fragen helfen uns dabei, dir basierend auf deinen Bedürfnissen und persönlichen Vorlieben einen individuellen Katalog zu erstellen.
+
+Hast du bereits früher versucht, Aspekte deines Lebens oder Alltags für die Nachwelt zu erhalten?
+  - Ja
+  – Nein
+(EE): Deine bisherigen Erfahrungen (Tagebücher, Journale oder Autobiografien) helfen Nality dabei, dich besser zu verstehen und gezielter zu unterstützen. Wenn es dein erster Kontakt ist, erhältst du nach der Anmeldung weitere Informationen dazu, was dich erwartet.                                                                                                                                                                                                                                                                    
+2. Familienhintergrund
+Wie würdest du deine Familie beschreiben (z. B. eng verbunden, komplex, groß, klein)?
+„Hast Du Geschwister?"
+Wenn ja, wie heißen Sie und wann sind Sie Geboren?
+Wie war oder ist euer Verhältnis?
+Wenn ich möchte, kann ich für jedes meiner Geschwister Stichpunkte über unser Verhältnis eingeben. Bitte Ideen/Vorschläge für die Darstellung der zeitlichen Entwicklung (z. B. das Verhältnis zu meinem Bruder/Schwester ist konstant gut, hat sich verbessert oder leider über die Jahre verschlechtert) machen.
+Welche Rolle spielten deine Eltern oder Erziehungsberechtigten in deiner Kindheit?
+Wie heißen deine Eltern und wann sind Sie geboren worden?
+Gibt es bestimmte Familienwerte oder Traditionen, die dich geprägt haben?
+Gibt es ein Familienmitglied, das dich besonders inspiriert oder beeinflusst hat?
+Wie heißen deine Großeltern und wann sind Sie geboren worden?
+Welche Erinnerungen hast du an deine Großeltern? Wie war dein Verhältnis zu ihnen?
+
+(EE) Nality fragt nur nach Informationen, die helfen, deine Biografie lebendig, authentisch und sinnvoll zu strukturieren – wie Kapitelüberschriften, wichtige Menschen, Wendepunkte und prägende Erlebnisse. Du behältst jederzeit die Kontrolle: Du entscheidest, was du teilen möchtest, was sensibel ist und was später noch angepasst oder gelöscht werden kann.
+3. Kindheit und Jugend
+Was sind deine frühesten Kindheitserinnerungen?
+Wie war dein Alltag als Kind (Spiel, Schule, Freundschaften)?
+Gab es ein besonderes Ereignis in deiner Jugend, das dich nachhaltig geprägt hat?
+Welche Träume oder Ambitionen hattest du als Teenager?
+Wie sah dein Umfeld (Wohnort, Schule, Freunde) in dieser Lebensphase aus?
+4. Ausbildung und beruflicher Weg
+Welche Schule(n) oder Ausbildung(en) hast du besucht?
+Gab es Lehrer oder Mentoren, die einen bleibenden Eindruck hinterlassen haben?
+Wann wusstest du, welchen beruflichen Weg du einschlagen möchtest?
+Beschreibe deinen bisherigen beruflichen Verlauf (Höhepunkte, Rückschläge, Wendepunkte).
+Gibt es bestimmte Projekte, auf die du besonders stolz bist?
+Was treibt dich im Berufsleben an?
+5. Beziehungen und soziales Umfeld
+Wer waren oder sind die wichtigsten Menschen in deinem Leben?
+Gibt es besondere Freundschaften, Partnerschaften oder Begegnungen, die dich geprägt haben?
+Wie gehst du mit Konflikten, Verlust oder Nähe um?
+Welche gesellschaftlichen oder sozialen Werte sind dir wichtig?
+6. Persönliche Entwicklung und Werte
+Wie würdest du dich in drei Worten beschreiben?
+Welche persönlichen Stärken zeichnen dich aus?
+Was war bisher deine größte Herausforderung – und wie hast du sie gemeistert?
+Welche Werte oder Überzeugungen leiten deine Entscheidungen?
+Wie gehst du mit Veränderungen oder Neuanfängen um?
+7. Interessen und Leidenschaften
+Welche Hobbys oder Leidenschaften begleiten dich durchs Leben?
+Gibt es ein Thema, über das du stundenlang reden könntest?
+Welche Kultur (Musik, Kunst, Sport, Reisen etc.) spielt in deinem Leben eine Rolle?
+Welche Orte oder Aktivitäten geben dir Energie oder Inspiration?
+8. Lebensphilosophie und Zukunft
+Was motiviert dich, morgens aufzustehen?
+Wie definierst du Erfolg und Zufriedenheit für dich persönlich?
+Gibt es etwas, das du unbedingt noch erreichen oder erleben möchtest?
+Was möchtest du mit deiner Lebensgeschichte bei anderen bewirken?
+Wie stellst du dir deinen Lebensabend oder dein Vermächtnis vor?
+9. Emotionale und narrative Dimension
+Wenn du dein Leben als Buchgenre beschreiben müsstest – welches wäre es (z. B. Abenteuer, Romanze, Drama, Entwicklungsroman)?
+Welche drei Kapitel dürften in deiner Lebensgeschichte auf keinen Fall fehlen?
+Gibt es ein Zitat oder Motto, das dein Leben gut beschreibt?
+Wenn dein Leben verfilmt würde – wer sollte dich spielen?
+
+-----------------Fragebogen Motivation-----------------
+„Was ist dein Hauptziel mit deiner Autobiografie?“
+  Bitte kreuzen Sie alle Antworten an, die auf Sie zutreffen. 
+  -Mein Leben für Familie/Freunde festhalten
+  -Für mich selbst reflektieren
+  -Ein Buch veröffentlichen
+  -Ein Geschenk für eine besondere Person erstellen
+  -Sonstiges (Freitextfeld öffnet sich)
+„Möchtest du zwischendurch Tipps und Schreibhilfen erhalten?“
+  Antworttyp: Ja/Nein
+
+3. Basisprofil & Erzählstimme
+Settings Auswahlchips, Mehrfachauswahl möglich
+Wie soll sich deine Geschichte hauptsächlich anfühlen?“
+   Optionen:
+   Humorvoll
+   Nachdenklich
+   Emotional
+   Sachlich
+   Inspirierend
+   Dramatisch
+„Welche Erzählperspektive bevorzugst du?“
+   Ich-Form („Ich erlebte …“)
+   Er- oder Sie-Form („Sie erlebte …“)
+   Noch unsicher
+Familienhintergrund (mit Branching)
+Zweck: Grundlegendes Beziehungsnetz für spätere Kapitel.​
+Frage (Freitext oder Kurzbausteine):„Wie würdest du deine Herkunftsfamilie in wenigen Sätzen beschreiben?“
+
+Frage (Mehrfachauswahl): „Mit wem bist du aufgewachsen?“
+    Mutter
+    Vater
+    Großeltern
+    Pflege-/Adoptiveltern
+    Geschwister
+    Andere (Freitext)
+Frage (Matrix-Skala: 1–5 für jede Beziehung): „Wie war/ist dein Verhältnis zu folgenden Personen?“
+    Zeilen: Mutter, Vater, wichtigste Bezugsperson, Geschwister
+    Spalten: 1 = sehr schwierig, 5 = sehr nah
+Branching-Frage (Freitext, erscheint nur, wenn „sehr nah“ oder „sehr schwierig“ gewählt):
+„Möchtest du kurz beschreiben, warum diese Beziehung für deine Geschichte wichtig ist?“
+4. Kindheit & Jugend (kapitelbasiert)
+Zweck: Samen für spätere Kapitel „Kindheit“, „Jugend“, Wendepunkte.​
+Frage (Freitext, mit Hinweis „kurz stichwortartig reicht“):
+„Was ist eine deiner frühesten Erinnerungen?“
+Frage (Multiple Choice):„Welche drei Worte passen am besten zu deiner Kindheit?“
+   Optionen (Chips, Mehrfachauswahl max. 3):
+     Geborgen
+     Chaotisch
+     Abenteuerlich
+     Streng
+     Einsam
+     Fröhlich
+     Unbeständig
+Frage (Freitext):
+„Gab es ein Ereignis in deiner Kindheit oder Jugend, das dein Leben nachhaltig beeinflusst hat?“
+Frage (Freitext oder Tags):
+„Welche Träume oder Pläne hattest du als Teenager für dein späteres Leben?“
+5. Ausbildung & Beruf (modular, je nach Relevanz)
+Zweck: Karriere-Bogen, Wendepunkte, Stolz & Krisen erfassen.​
+Frage 16 (Freitext, kurz):
+„Welche Ausbildung(en) oder Studiengänge hast du absolviert?“
+Frage 17 (Freitext):
+„Was war dein erster wichtiger Job und wie hast du dich dabei gefühlt?“
+Frage 18 (Mehrfachauswahl + Freitext):
+„Welche beruflichen Rollen beschreiben dich am besten?“
+Optionen:
+Angestellt
+Führungskraft
+Selbstständig
+Unternehmer/in
+Künstlerisch tätig
+In Ausbildung/Studium
+Andere (Freitext)
+Frage 19 (Freitext, optional):
+„Gibt es ein Projekt oder einen Erfolg, auf den du besonders stolz bist?“
+Frage 20 (Skala 1–5):
+„Wie zufrieden bist du insgesamt mit deinem beruflichen Weg bisher?“
+6. Beziehungen & emotionale Anker
+Zweck: Wichtige Menschen, Beziehungen, Verluste, emotionale Höhe-/Tiefpunkte.​
+Frage 21 (Freitext):
+„Wer sind die wichtigsten Menschen in deiner bisherigen Lebensgeschichte?“
+Frage 22 (Multiple Choice + Branching):
+„Welche dieser Beziehungen sollen in deiner Autobiografie besonders prominent vorkommen?“
+Optionen:
+Eltern/Familie
+Partner/in
+Kinder
+Freundschaften
+Mentor/innen
+Andere
+Wenn Option gewählt → kleines Freitextfeld: „Was macht diese Beziehung besonders?“
+Frage 23 (Freitext, optional):
+„Gab es Verluste oder Trennungen, die deine Entwicklung stark beeinflusst haben?“
+7. Persönlichkeit, Werte & Lebensphilosophie
+Zweck: Tiefe für innere Monologe, Reflexionen, rote Fäden.​
+Frage 24 (Chip-Auswahl, max. 5):
+„Welche Eigenschaften beschreiben dich am ehesten?“
+Optionen:
+Kreativ
+Analytisch
+Empathisch
+Zielstrebig
+Ruhig
+Spontan
+Humorvoll
+Sensibel
+Strukturiert
+Frage 25 (Freitext):
+„Welche Werte sind dir besonders wichtig (z. B. Ehrlichkeit, Freiheit, Familie, Erfolg)?“
+Frage 26 (Freitext):
+„Was war eine deiner größten Herausforderungen – und was hast du daraus gelernt?“
+Frage 27 (Freitext kurz, Motto):
+„Gibt es ein Zitat oder Lebensmotto, das gut zu dir passt?“
+8. Interessen, Hobbys & Schauplätze
+Zweck: Szenenmaterial, Bilder, Atmosphären generieren.​
+Frage 28 (Freitext oder Chips):
+„Welche Hobbys oder Leidenschaften begleiten dich seit Jahren?“
+Frage 29 (Mehrfachauswahl):
+„Welche dieser Bereiche spielen in deinem Leben eine Rolle?“
+Optionen:
+Musik
+Kunst
+Sport
+Natur
+Reisen
+Technik
+Engagement (sozial/politisch)
+Frage 30 (Freitext):
+„Gibt es Orte, die sich wie ein besonderer ‚Hintergrund‘ deiner Lebensgeschichte anfühlen?“
+
+

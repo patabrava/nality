@@ -1,5 +1,3 @@
-'use client'
-
 import { MemoryFeedModule } from '@/modules/feed/MemoryFeedModule'
 
 /**

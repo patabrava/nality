@@ -17,6 +17,7 @@ interface UseBiographyState {
   loading: boolean
   error: string | null
   generating: boolean
+  exporting: boolean
 }
 
 interface UseBiographyActions {
@@ -24,6 +25,7 @@ interface UseBiographyActions {
   generate: (tone?: BiographyToneType, chapterIds?: string[]) => Promise<boolean>
   regenerate: (tone?: BiographyToneType) => Promise<boolean>
   updateTone: (tone: BiographyToneType) => Promise<boolean>
+  exportPdf: () => Promise<boolean>
   canGenerate: boolean
 }
 
@@ -42,6 +44,7 @@ export function useBiography(): UseBiographyReturn {
     loading: true,
     error: null,
     generating: false,
+    exporting: false,
   })
 
   const [chapterCount, setChapterCount] = useState(0)
@@ -69,7 +72,7 @@ export function useBiography(): UseBiographyReturn {
       const versionsResult = await versionsResponse.json()
 
       // Get chapter count to determine if we can generate
-      const chaptersResponse = await fetch('/api/chapters')
+      const chaptersResponse = await fetch('/api/chapters?status=published')
       const chaptersResult = await chaptersResponse.json()
       setChapterCount(chaptersResult.data?.length || 0)
 
@@ -85,7 +88,7 @@ export function useBiography(): UseBiographyReturn {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch biography',
+        error: error instanceof Error ? error.message : 'Die Biografie konnte nicht geladen werden',
       }))
     }
   }, [isAuthenticated, user])
@@ -166,6 +169,47 @@ export function useBiography(): UseBiographyReturn {
     return regenerate(tone)
   }, [regenerate])
 
+  const exportPdf = useCallback(async (): Promise<boolean> => {
+    if (!user || !state.biography) return false
+
+    setState(prev => ({ ...prev, exporting: true, error: null }))
+
+    try {
+      const response = await fetch('/api/biography/export', {
+        method: 'GET',
+      })
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}))
+        throw new Error(result.error || 'Die Biografie konnte nicht exportiert werden')
+      }
+
+      const blob = await response.blob()
+      const contentDisposition = response.headers.get('Content-Disposition') || ''
+      const filenameMatch = /filename="([^"]+)"/.exec(contentDisposition)
+      const filename = filenameMatch?.[1] || `nality-biography-v${state.biography.version}.pdf`
+      const downloadUrl = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = downloadUrl
+      anchor.download = filename
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
+
+      setState(prev => ({ ...prev, exporting: false }))
+      return true
+    } catch (error) {
+      console.error('Error exporting biography:', error)
+      setState(prev => ({
+        ...prev,
+        exporting: false,
+        error: error instanceof Error ? error.message : 'Die Biografie konnte nicht exportiert werden',
+      }))
+      return false
+    }
+  }, [user, state.biography])
+
   // Check if we can generate (need at least 1 chapter)
   const canGenerate = chapterCount >= 1
 
@@ -175,6 +219,7 @@ export function useBiography(): UseBiographyReturn {
     generate,
     regenerate,
     updateTone,
+    exportPdf,
     canGenerate,
   }
 }

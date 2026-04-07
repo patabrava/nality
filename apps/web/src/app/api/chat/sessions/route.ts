@@ -31,7 +31,7 @@ export async function GET() {
         hasUser: !!user
       });
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Nicht autorisiert' },
         { status: 401 }
       );
     }
@@ -46,7 +46,7 @@ export async function GET() {
     if (sessionsError) {
       console.error('❌ Chat Sessions API: Error fetching sessions', sessionsError);
       return NextResponse.json(
-        { error: 'Failed to fetch sessions' },
+        { error: 'Sitzungen konnten nicht geladen werden' },
         { status: 500 }
       );
     }
@@ -57,7 +57,7 @@ export async function GET() {
   } catch (error) {
     console.error('❌ Chat Sessions API: Unexpected error', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Interner Serverfehler' },
       { status: 500 }
     );
   }
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     if (!['onboarding', 'general'].includes(type)) {
       console.log('❌ Chat Sessions API: Invalid session type', { type });
       return NextResponse.json(
-        { error: 'Session type must be "onboarding" or "general"' },
+        { error: 'Der Sitzungstyp ist ungültig' },
         { status: 400 }
       );
     }
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
         hasUser: !!user
       });
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Nicht autorisiert' },
         { status: 401 }
       );
     }
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
     if (insertError) {
       console.error('❌ Chat Sessions API: Error creating session', insertError);
       return NextResponse.json(
-        { error: 'Failed to create session' },
+        { error: 'Sitzung konnte nicht erstellt werden' },
         { status: 500 }
       );
     }
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('❌ Chat Sessions API: Unexpected error', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Interner Serverfehler' },
       { status: 500 }
     );
   }
@@ -158,7 +158,7 @@ export async function PATCH(request: Request) {
     if (!sessionId) {
       console.log('❌ Chat Sessions API: Missing sessionId parameter');
       return NextResponse.json(
-        { error: 'Session ID is required' },
+        { error: 'Eine Sitzungs-ID ist erforderlich' },
         { status: 400 }
       );
     }
@@ -173,7 +173,7 @@ export async function PATCH(request: Request) {
     if (authError || !user) {
       console.log('⚠️ Chat Sessions API: Unauthorized access attempt');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Nicht autorisiert' },
         { status: 401 }
       );
     }
@@ -194,7 +194,7 @@ export async function PATCH(request: Request) {
     if (updateError) {
       console.error('❌ Chat Sessions API: Error updating session', updateError);
       return NextResponse.json(
-        { error: 'Failed to update session' },
+        { error: 'Sitzung konnte nicht aktualisiert werden' },
         { status: 500 }
       );
     }
@@ -202,7 +202,7 @@ export async function PATCH(request: Request) {
     if (!session) {
       console.log('❌ Chat Sessions API: Session not found or unauthorized', { sessionId, userId: user.id });
       return NextResponse.json(
-        { error: 'Session not found' },
+        { error: 'Sitzung nicht gefunden' },
         { status: 404 }
       );
     }
@@ -213,7 +213,7 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error('❌ Chat Sessions API: Unexpected error', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Interner Serverfehler' },
       { status: 500 }
     );
   }

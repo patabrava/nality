@@ -72,6 +72,19 @@ export default function ChatInterface({
     saveMessage,
     markComplete
   } = useOnboardingSession(userId);
+  
+  // Refs to avoid stale closures in useChat callbacks
+  const sessionRef = useRef(session);
+  const saveMessageRef = useRef(saveMessage);
+  
+  // Keep refs in sync with latest values
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+  
+  useEffect(() => {
+    saveMessageRef.current = saveMessage;
+  }, [saveMessage]);
 
   // Notify parent of progress changes (for progress bar)
   useEffect(() => {
@@ -111,7 +124,6 @@ export default function ChatInterface({
   const handleCompletionRedirect = useCallback(async (content: string) => {
     if (hasRedirected) return;
     if (isCompletionMessage(content)) {
-      console.log('🎯 Onboarding completion detected. Converting answers to life events...');
       setHasRedirected(true);
 
       // Mark session as complete (this also marks user as onboarding complete via API)
@@ -119,15 +131,18 @@ export default function ChatInterface({
 
       // Convert onboarding answers to life events before redirecting
       try {
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         const response = await fetch('/api/events/convert-onboarding', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, accessToken }),
+          headers,
         });
 
         if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Onboarding answers converted to life events:', result);
+          await response.json();
         } else {
           console.error('❌ Failed to convert onboarding answers:', await response.text());
         }
@@ -145,14 +160,30 @@ export default function ChatInterface({
   const { input, handleInputChange, handleSubmit, error } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    body: { userId, accessToken, sessionId: session?.id },
+    ...(accessToken
+      ? {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      : {}),
+    body: {
+      ...(session?.id ? { sessionId: session.id } : {}),
+    },
     onFinish: async (message) => {
-      console.log('Message exchange completed');
       const sanitizedContent = sanitizeAIContent(message.content);
 
-      // Save AI message to database
-      if (session) {
-        await saveMessage('assistant', sanitizedContent);
+      // Save AI message to database (only if content is non-empty)
+      // Use refs to avoid stale closures
+      const currentSession = sessionRef.current;
+      const currentSaveMessage = saveMessageRef.current;
+      
+      if (currentSession && sanitizedContent.trim()) {
+        await currentSaveMessage('assistant', sanitizedContent);
+      } else if (currentSession && !sanitizedContent.trim()) {
+        console.warn('⚠️ Skipping save: AI message content is empty after sanitization');
+      } else if (!currentSession) {
+        console.warn('⚠️ Skipping save: no session available in onFinish callback');
       }
 
       // Add AI response to display messages
@@ -185,7 +216,6 @@ export default function ChatInterface({
         }
         const id = data?.user?.id ?? null;
         setUserId(id);
-        console.log('👤 Client userId hydrated for chat body:', id ?? 'null');
       } catch (e) {
         console.error('❌ Unexpected error resolving client user:', e);
       }
@@ -197,7 +227,6 @@ export default function ChatInterface({
         const { data } = await supabase.auth.getSession();
         const token = data.session?.access_token ?? null;
         setAccessToken(token);
-        console.log('🔑 Client accessToken hydrated (length):', token ? String(token).length : 0);
       } catch (e) {
         console.error('❌ Unexpected error resolving access token:', e);
       }
@@ -207,7 +236,6 @@ export default function ChatInterface({
       const token = session?.access_token ?? null;
       setAccessToken(token);
       setUserId(session?.user?.id ?? null);
-      console.log('🔄 Auth state changed. userId:', session?.user?.id ?? 'null', 'tokenLen:', token ? String(token).length : 0);
     });
 
     return () => {
@@ -217,25 +245,13 @@ export default function ChatInterface({
 
   // Initialize chat - either resume or start fresh
   useEffect(() => {
-    console.log('🔄 ChatInterface init effect:', {
-      sessionLoading,
-      userId: userId ? 'set' : 'null',
-      isInitialized,
-      isResuming,
-      persistedMessagesCount: persistedMessages.length
-    });
-
     if (sessionLoading || !userId || isInitialized) {
-      console.log('⏸️ Skipping init:', { sessionLoading, hasUserId: !!userId, isInitialized });
       return;
     }
 
     const initializeChat = async () => {
-      console.log('🤖 Initializing chat...', { isResuming, persistedMessagesCount: persistedMessages.length });
-
       if (isResuming && persistedMessages.length > 0) {
         // Resume from persisted messages
-        console.log('📂 Resuming from', persistedMessages.length, 'persisted messages');
 
         const restoredMessages: DisplayMessage[] = persistedMessages.map((msg, index) => ({
           id: msg.id || `restored-${index}`,
@@ -254,7 +270,6 @@ export default function ChatInterface({
 
         setDisplayMessages([welcomeBackMessage, ...restoredMessages]);
         setIsInitialized(true);
-        console.log('✅ Chat resumed with', restoredMessages.length, 'messages');
       } else {
         // Start fresh with welcome message
         setShowTyping(true);
@@ -269,14 +284,13 @@ export default function ChatInterface({
             timestamp: new Date()
           };
 
-          // Save welcome message to database
-          if (session) {
-            await saveMessage('assistant', defaultInitialMessage);
+          // Save welcome message to database (use refs to avoid stale closures)
+          if (sessionRef.current) {
+            await saveMessageRef.current('assistant', defaultInitialMessage);
           }
 
           setDisplayMessages([botMessage]);
           setIsInitialized(true);
-          console.log('💬 Welcome message added');
         }, 1500);
       }
     };
@@ -295,11 +309,9 @@ export default function ChatInterface({
     if (!input.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
-    console.log('🛰️ Submitting response with userId:', userId ?? 'null');
 
     // Safety timeout to reset submitting state if something goes wrong
     const safetyTimeout = setTimeout(() => {
-      console.warn('Response submission timed out, resetting state');
       setIsSubmitting(false);
     }, 10000); // 10 second timeout
 
@@ -311,9 +323,9 @@ export default function ChatInterface({
       timestamp: new Date()
     };
 
-    // Save user message to database
-    if (session) {
-      saveMessage('user', input);
+    // Save user message to database (use refs for consistency)
+    if (sessionRef.current) {
+      saveMessageRef.current('user', input);
     }
 
     setDisplayMessages(prev => [...prev, userMessage]);
@@ -688,7 +700,9 @@ export default function ChatInterface({
         >
           <form onSubmit={handleSubmitResponse}>
             <div style={{ position: 'relative', marginBottom: '12px' }}>
+              <label htmlFor="onboarding-response" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Deine Antwort</label>
               <textarea
+                id="onboarding-response"
                 ref={textareaRef}
                 value={input}
                 onChange={handleInputChange}

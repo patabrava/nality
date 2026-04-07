@@ -181,7 +181,7 @@ export function LifeEventCard({
         <button 
           className="card-menu-button"
           onClick={handleMenuToggle}
-          aria-label="More options"
+          aria-label="Weitere Optionen"
           aria-expanded={showMenu}
           aria-haspopup="true"
         >
@@ -195,7 +195,7 @@ export function LifeEventCard({
                 className="card-menu-item"
                 onClick={handleEdit}
               >
-                Edit
+                Bearbeiten
               </button>
             )}
             {onDelete && (
@@ -203,7 +203,7 @@ export function LifeEventCard({
                 className="card-menu-item card-menu-item-destructive"
                 onClick={handleDelete}
               >
-                Delete
+                Löschen
               </button>
             )}
           </div>
@@ -252,7 +252,7 @@ export function LifeEventCard({
             {event.start_date && (
               <div className="card-date-section">
                 <time className="card-date" dateTime={event.start_date}>
-                  {new Date(event.start_date).toLocaleDateString('en-US', {
+                  {new Date(event.start_date).toLocaleDateString('de-DE', {
                     year: 'numeric',
                     month: 'short', 
                     day: 'numeric'
@@ -262,7 +262,7 @@ export function LifeEventCard({
                   <>
                     <span className="card-date-separator">—</span>
                     <time className="card-date" dateTime={event.end_date}>
-                      {new Date(event.end_date).toLocaleDateString('en-US', {
+                      {new Date(event.end_date).toLocaleDateString('de-DE', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
@@ -273,7 +273,7 @@ export function LifeEventCard({
                 {event.is_ongoing && (
                   <>
                     <span className="card-date-separator">—</span>
-                    <span className="card-ongoing-indicator">Present</span>
+                    <span className="card-ongoing-indicator">Heute</span>
                   </>
                 )}
               </div>

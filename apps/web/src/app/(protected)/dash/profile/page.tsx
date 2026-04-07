@@ -422,7 +422,7 @@ export default function ProfilePage() {
               className="back-button"
             >
               <ArrowLeft size={18} />
-              Zurück zum Dashboard
+              Zurück zum Arbeitsbereich
             </button>
           </div>
         </div>

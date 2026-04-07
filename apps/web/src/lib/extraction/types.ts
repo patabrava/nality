@@ -17,6 +17,7 @@ import type { LifeEventCategoryType } from '@nality/schema';
 export type ExtractionSource = 
   | 'onboarding'      // Q1-Q7 from onboarding flow
   | 'chapter_chat'    // Ongoing chapter conversations
+  | 'voice_monologue' // Free-talk memory capture
   | 'manual';         // User-created events directly
 
 /**
@@ -181,11 +182,6 @@ export interface ExtractionRequest {
   /** Chapter ID (for chapter_chat source) */
   chapterId?: ChapterId;
   
-  /** User ID for persistence */
-  userId?: string;
-  
-  /** Access token for authentication */
-  accessToken?: string;
 }
 
 /**

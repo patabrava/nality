@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     if (!sessionId) {
       console.log('❌ Chat Messages API: Missing sessionId parameter');
       return NextResponse.json(
-        { error: 'Session ID is required' },
+        { error: 'Session-ID ist erforderlich' },
         { status: 400 }
       );
     }
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     if (authError || !user) {
       console.log('⚠️ Chat Messages API: Unauthorized access attempt');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Nicht autorisiert' },
         { status: 401 }
       );
     }
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     if (sessionError || !session) {
       console.log('❌ Chat Messages API: Session not found or unauthorized', { sessionId, userId: user.id });
       return NextResponse.json(
-        { error: 'Session not found' },
+        { error: 'Sitzung nicht gefunden' },
         { status: 404 }
       );
     }
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     if (messagesError) {
       console.error('❌ Chat Messages API: Error fetching messages', messagesError);
       return NextResponse.json(
-        { error: 'Failed to fetch messages' },
+        { error: 'Nachrichten konnten nicht geladen werden' },
         { status: 500 }
       );
     }
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('❌ Chat Messages API: Unexpected error', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Interner Serverfehler' },
       { status: 500 }
     );
   }
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     if (!sessionId || !role || !content) {
       console.log('❌ Chat Messages API: Missing required fields', { sessionId, role, hasContent: !!content });
       return NextResponse.json(
-        { error: 'sessionId, role, and content are required' },
+        { error: 'Sitzungs-ID, Rolle und Inhalt sind erforderlich' },
         { status: 400 }
       );
     }
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
     if (authError || !user) {
       console.log('⚠️ Chat Messages API: Unauthorized access attempt');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Nicht autorisiert' },
         { status: 401 }
       );
     }
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
     if (sessionError || !session) {
       console.log('❌ Chat Messages API: Session not found or unauthorized', { sessionId, userId: user.id });
       return NextResponse.json(
-        { error: 'Session not found' },
+        { error: 'Sitzung nicht gefunden' },
         { status: 404 }
       );
     }
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
     if (insertError) {
       console.error('❌ Chat Messages API: Error creating message', insertError);
       return NextResponse.json(
-        { error: 'Failed to create message' },
+        { error: 'Nachricht konnte nicht erstellt werden' },
         { status: 500 }
       );
     }
@@ -155,7 +155,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('❌ Chat Messages API: Unexpected error', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Interner Serverfehler' },
       { status: 500 }
     );
   }

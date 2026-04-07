@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLifeEvents } from '@/hooks/useLifeEvents'
 import { LifeEventCard } from '@/components/timeline/LifeEventCard'
 import { LifeEventForm } from '@/components/timeline/LifeEventForm'
@@ -10,9 +11,10 @@ import { useTimelineFilters } from '@/hooks/useTimelineFilters'
 import { filterEvents, getFilterStats } from '@/utils/timelineFilters'
 import type { TimelineEvent, LifeEventFormData, LifeEventCategoryType, ChapterId } from '@nality/schema'
 import { ChapterChatInterface } from '@/components/chat/ChapterChatInterface'
+import { BiographyInterviewModal } from '@/components/interview/BiographyInterviewModal'
 import { getChapterById } from '@/lib/chapters'
 import { AddMemoryButton } from '@/components/buttons/AddMemoryButton'
-import { VoiceModeSelector, InterviewInterface, FreeTalkInterface, type VoiceMode } from '@/components/voice'
+import { VoiceModeSelector, FreeTalkInterface, type VoiceMode } from '@/components/voice'
 import { Search, Book, Wrench, AlertTriangle } from 'lucide-react'
 
 /**
@@ -29,6 +31,7 @@ interface TimelineModuleProps {
  * Observable Implementation with comprehensive state tracking
  */
 export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProps = {}) {
+  const router = useRouter()
   const {
     events,
     loading,
@@ -57,20 +60,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   // Header navigation detection - CODE_EXPANSION: Preserve working functionality
   const hasHeaderNavigation = process.env.NEXT_PUBLIC_USE_HEADER_NAV === 'true'
 
-  console.log('[TimelineModule] Component mounted', {
-    eventsCount: events.length,
-    loading,
-    showForm,
-    showChat,
-    showVoiceSelector,
-    showInterview,
-    showFreeTalk,
-    chapterId,
-    chapter: chapter?.name,
-    editingEvent: editingEvent?.id,
-    hasHeaderNavigation // Debug output for header detection
-  })
-
   // Handle voice mode selection
   const handleVoiceModeSelect = (mode: VoiceMode) => {
     setShowVoiceSelector(false)
@@ -92,13 +81,12 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   }
 
   // Handle memory completion (refresh timeline)
-  const handleMemoryComplete = () => {
+  const handleMemoryComplete = useCallback(() => {
     setShowInterview(false)
     setShowFreeTalk(false)
     setShowChat(false)
-    // Refresh the page to show new events
-    window.location.reload()
-  }
+    router.refresh()
+  }, [router])
 
   // ──────────────────────
   // Timeline Data Processing - Enhanced with Filtering
@@ -122,7 +110,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   }, [events, filteredEvents])
 
   const timelineData = useMemo(() => {
-    console.log('[TimelineModule] Processing timeline data, events:', filteredEvents.length)
 
     // Group events by decade for timeline structure
     const eventsByDecade = new Map<number, TimelineEvent[]>()
@@ -204,7 +191,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
   const handleCreateEvent = async (formData: LifeEventFormData) => {
     try {
-      console.log('[TimelineModule] Creating event:', formData.title)
       const result = await createEvent({
         title: formData.title,
         description: formData.description || undefined,
@@ -221,7 +207,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       if (result) {
         setShowForm(false)
-        console.log('✅ Successfully created event:', result.title)
       }
     } catch (error) {
       console.error('❌ Failed to create event:', error)
@@ -233,7 +218,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
     if (!editingEvent?.id) return
 
     try {
-      console.log('[TimelineModule] Updating event:', formData.title)
       const result = await updateEvent(editingEvent.id, {
         title: formData.title,
         description: formData.description || undefined,
@@ -248,7 +232,6 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       if (result) {
         setEditingEvent(null)
-        console.log('✅ Successfully updated event:', result.title)
       }
     } catch (error) {
       console.error('❌ Failed to update event:', error)
@@ -257,17 +240,12 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
   }
 
   const handleEditEvent = (event: TimelineEvent) => {
-    console.log('[TimelineModule] Editing event:', event.id)
     setEditingEvent(event)
   }
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
-      console.log('[TimelineModule] Deleting event:', eventId)
-      const success = await deleteEvent(eventId)
-      if (success) {
-        console.log('✅ Successfully deleted event:', eventId)
-      }
+      await deleteEvent(eventId)
     } catch (error) {
       console.error('❌ Failed to delete event:', error)
     }
@@ -374,7 +352,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             margin: '0 0 clamp(8px, 2vw, 16px) 0'
           }}
         >
-          {hasFilters ? 'No matching events' : 'Your story starts here'}
+          {hasFilters ? 'Keine passenden Ereignisse' : 'Hier beginnt deine Geschichte'}
         </h2>
         <p
           style={{
@@ -387,8 +365,8 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
           }}
         >
           {hasFilters
-            ? 'Try adjusting your filters or create a new event that matches your criteria.'
-            : 'Begin documenting your life\'s journey. Share your first memory, achievement, or milestone.'
+            ? 'Passe deine Filter an oder lege ein neues Ereignis an, das zu deinen Kriterien passt.'
+            : 'Beginne, deinen Lebensweg festzuhalten. Teile deine erste Erinnerung, deinen ersten Erfolg oder einen wichtigen Meilenstein.'
           }
         </p>
         {hasFilters ? (
@@ -408,18 +386,18 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 fontFamily: 'Roboto, system-ui, sans-serif'
               }}
             >
-              Clear Filters
+              Filter löschen
             </button>
             <AddMemoryButton
               onClick={() => setShowVoiceSelector(true)}
-              aria-label="Add new event"
+              aria-label="Neues Ereignis hinzufügen"
             />
           </div>
         ) : (
           <AddMemoryButton
             onClick={() => setShowVoiceSelector(true)}
-            label="Add Your First Memory"
-            aria-label="Add your first memory"
+            label="Erste Erinnerung hinzufügen"
+            aria-label="Erste Erinnerung hinzufügen"
           />
         )}
       </div>
@@ -522,7 +500,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             fontFamily: 'Roboto, system-ui, sans-serif'
           }}
         >
-          {isDatabaseSetupError ? 'Database Setup Required' : 'Something went wrong'}
+          {isDatabaseSetupError ? 'Datenbankeinrichtung erforderlich' : 'Etwas ist schiefgelaufen'}
         </h2>
         <p
           style={{
@@ -544,8 +522,8 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 maxWidth: '400px'
               }}
             >
-              Your database needs to be initialized with the required tables.
-              This is a one-time setup process.
+              Deine Datenbank muss mit den erforderlichen Tabellen initialisiert werden.
+              Das ist ein einmaliger Einrichtungsschritt.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <a
@@ -560,10 +538,10 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                   transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
                 }}
               >
-                Go to Database Setup →
+                Zur Datenbank-Einrichtung →
               </a>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => router.refresh()}
                 style={{
                   padding: '12px 24px',
                   background: 'var(--md-sys-color-secondary-container)',
@@ -575,13 +553,13 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                   transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
                 }}
               >
-                Check Again
+                Erneut prüfen
               </button>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => router.refresh()}
             style={{
               padding: '16px 32px',
               background: 'var(--md-sys-color-primary)',
@@ -594,7 +572,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               transition: 'all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard)'
             }}
           >
-            Try Again
+            Erneut versuchen
           </button>
         )}
       </div>
@@ -674,7 +652,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
             letterSpacing: '-0.02em'
           }}
         >
-
+          Deine Zeitleiste
         </h1>
 
         {/* Filter results summary - CODE_EXPANSION: Add filter feedback */}
@@ -687,7 +665,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
               fontFamily: 'Roboto, system-ui, sans-serif'
             }}
           >
-            Showing {filterStats.filtered} of {filterStats.total} events
+            {filterStats.filtered} von {filterStats.total} Ereignissen werden angezeigt
           </div>
         )}
       </div>
@@ -767,7 +745,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
       <AddMemoryButton
         onClick={() => setShowVoiceSelector(true)}
         disabled={creating || updating || deleting}
-        aria-label="Add new memory"
+        aria-label="Neue Erinnerung hinzufügen"
         styleOverrides={{
           position: 'fixed',
           bottom: 'clamp(16px, 4vw, 24px)',
@@ -822,9 +800,9 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
                 margin: 0
               }}
             >
-              {creating && 'Creating event...'}
-              {updating && 'Updating event...'}
-              {deleting && 'Deleting event...'}
+              {creating && 'Ereignis wird erstellt...'}
+              {updating && 'Ereignis wird aktualisiert...'}
+              {deleting && 'Ereignis wird gelöscht...'}
             </p>
           </div>
         </div>
@@ -849,11 +827,7 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
 
       {/* Voice Interview Interface */}
       {showInterview && (
-        <InterviewInterface
-          chapter={chapter as any}
-          onClose={() => setShowInterview(false)}
-          onMemorySaved={handleMemoryComplete}
-        />
+        <BiographyInterviewModal onClose={handleMemoryComplete} />
       )}
 
       {/* Free Talk Interface */}
@@ -867,4 +841,3 @@ export function TimelineModule({ chapterId, categoryFilter }: TimelineModuleProp
     </div>
   )
 }
-

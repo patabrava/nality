@@ -83,14 +83,14 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body = await request.json();
     const parsed = FinalizeRequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid payload', issues: parsed.error.flatten() },
+        { error: 'Ungültige Daten', issues: parsed.error.flatten() },
         { status: 400 },
       );
     }
@@ -111,21 +111,21 @@ export async function POST(request: Request) {
 
       if (pendingFetchError) {
         console.error('[alt-onboarding] failed to load pending payload', pendingFetchError);
-        return NextResponse.json({ error: 'Failed to resolve onboarding link' }, { status: 500 });
+        return NextResponse.json({ error: 'Onboarding-Link konnte nicht aufgelöst werden' }, { status: 500 });
       }
 
       if (!pendingRecord || pendingRecord.consumed_at) {
-        return NextResponse.json({ error: 'Onboarding link is invalid or already used' }, { status: 400 });
+        return NextResponse.json({ error: 'Der Onboarding-Link ist ungültig oder wurde bereits verwendet' }, { status: 400 });
       }
 
       const expiresAtMs = Date.parse(pendingRecord.expires_at);
       if (!Number.isFinite(expiresAtMs) || expiresAtMs <= Date.now()) {
-        return NextResponse.json({ error: 'Onboarding link has expired' }, { status: 400 });
+        return NextResponse.json({ error: 'Der Onboarding-Link ist abgelaufen' }, { status: 400 });
       }
 
       const pendingPayloadParsed = PendingStoredPayloadSchema.safeParse(pendingRecord.payload);
       if (!pendingPayloadParsed.success) {
-        return NextResponse.json({ error: 'Stored onboarding payload is invalid' }, { status: 400 });
+        return NextResponse.json({ error: 'Die gespeicherten Onboarding-Daten sind ungültig' }, { status: 400 });
       }
 
       const userEmail = user.email?.trim().toLowerCase() ?? null;
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
 
       if (userEmail && pendingEmail && userEmail !== pendingEmail) {
         return NextResponse.json(
-          { error: 'Onboarding link belongs to a different account' },
+          { error: 'Der Onboarding-Link gehört zu einem anderen Konto' },
           { status: 403 },
         );
       }
@@ -143,7 +143,7 @@ export async function POST(request: Request) {
 
       if (!resolvedAddressPreference) {
         return NextResponse.json(
-          { error: 'Address preference required to finalize onboarding' },
+          { error: 'Eine Anredepräferenz ist erforderlich, um das Onboarding abzuschließen' },
           { status: 400 },
         );
       }
@@ -179,7 +179,7 @@ export async function POST(request: Request) {
 
     if (updateError) {
       console.error('[alt-onboarding] failed to update user', updateError);
-      return NextResponse.json({ error: 'Failed to store onboarding data' }, { status: 500 });
+      return NextResponse.json({ error: 'Onboarding-Daten konnten nicht gespeichert werden' }, { status: 500 });
     }
 
     if (pendingTokenToConsume) {
@@ -205,6 +205,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('[alt-onboarding] finalize endpoint error', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

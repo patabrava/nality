@@ -32,13 +32,13 @@ export function useChatMessages({ sessionId, enabled = true }: UseChatMessagesPr
       const response = await fetch(`/api/chat/messages?sessionId=${sessionId}`);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch messages: ${response.statusText}`);
+        throw new Error(`Nachrichten konnten nicht geladen werden: ${response.statusText}`);
       }
       
       const data = await response.json();
       setMessages(data.messages || []);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to fetch messages');
+      const error = err instanceof Error ? err : new Error('Nachrichten konnten nicht geladen werden');
       setError(error);
       console.error('❌ Failed to fetch messages:', error);
     } finally {
@@ -85,7 +85,7 @@ export function useChatMessages({ sessionId, enabled = true }: UseChatMessagesPr
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to send message: ${response.statusText}`);
+        throw new Error(`Nachricht konnte nicht gesendet werden: ${response.statusText}`);
       }
 
       console.log('✅ Message sent successfully');
@@ -94,7 +94,7 @@ export function useChatMessages({ sessionId, enabled = true }: UseChatMessagesPr
       await fetchMessages();
       
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to send message');
+      const error = err instanceof Error ? err : new Error('Nachricht konnte nicht gesendet werden');
       setSendError(error);
       console.error('❌ Failed to send message:', error);
       

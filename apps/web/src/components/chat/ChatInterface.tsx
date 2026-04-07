@@ -29,7 +29,7 @@ export function ChatInterface({
   sessionId,
   autoCreateSession = false,
   className,
-  title = 'Chat',
+  title = 'Gespräch',
   subtitle = 'Erzähle mir von deinem Leben',
   icon = '💬',
   placeholder = 'Schreibe eine Nachricht...',

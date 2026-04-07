@@ -3,9 +3,13 @@
  * Handles session creation, retrieval, and message persistence
  */
 
-import { createClient, createServiceClient } from '@/lib/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import {
+  authenticationRequiredResponse,
+  authorizationDeniedResponse,
+  getAuthenticatedRequestContext,
+} from '@/lib/server/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,78 +20,31 @@ interface SessionMetadata {
 }
 
 /**
- * Helper to get effective user ID from various auth methods
- */
-async function getEffectiveUserId(request: Request): Promise<string | null> {
-  // Try server-side auth first
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user?.id) {
-    console.log('🔐 Authenticated via server session');
-    return user.id;
-  }
-
-  // Try Authorization header with access token
-  const authHeader = request.headers.get('Authorization');
-  if (authHeader?.startsWith('Bearer ')) {
-    const accessToken = authHeader.slice(7);
-    const authedClient = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      }
-    );
-    const { data: { user: tokenUser } } = await authedClient.auth.getUser();
-    if (tokenUser?.id) {
-      console.log('🔑 Authenticated via Bearer token');
-      return tokenUser.id;
-    }
-  }
-
-  // Try query params for userId (last resort, trust client)
-  const url = new URL(request.url);
-  const queryUserId = url.searchParams.get('userId');
-  if (queryUserId) {
-    console.log('🟡 Using client-provided userId from query');
-    return queryUserId;
-  }
-
-  return null;
-}
-
-/**
  * GET /api/onboarding/session
  * Get or create the user's onboarding session
  */
 export async function GET(request: Request) {
-  console.log('📂 Onboarding Session API: GET request');
-  
   try {
-    const effectiveUserId = await getEffectiveUserId(request);
+    const auth = await getAuthenticatedRequestContext(request);
     
-    if (!effectiveUserId) {
-      console.log('⚠️ Onboarding Session API: Unauthorized');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth) {
+      return authenticationRequiredResponse();
     }
     
-    console.log('📂 Loading session for user:', effectiveUserId);
     const serviceClient = await createServiceClient();
     
     // Check for existing incomplete onboarding session
     const { data: existingSessions, error: fetchError } = await serviceClient
       .from('chat_sessions')
       .select('*')
-      .eq('user_id', effectiveUserId)
+      .eq('user_id', auth.user.id)
       .eq('type', 'onboarding')
       .order('updated_at', { ascending: false })
       .limit(1);
     
     if (fetchError) {
       console.error('❌ Error fetching session:', fetchError);
-      return NextResponse.json({ error: 'Failed to fetch session' }, { status: 500 });
+      return NextResponse.json({ error: 'Sitzung konnte nicht geladen werden' }, { status: 500 });
     }
     
     let session = null;
@@ -98,7 +55,7 @@ export async function GET(request: Request) {
     const { data: userData } = await serviceClient
       .from('users')
       .select('onboarding_complete')
-      .eq('id', effectiveUserId)
+      .eq('id', auth.user.id)
       .single();
     
     const userOnboardingComplete = userData?.onboarding_complete === true;
@@ -132,21 +89,17 @@ export async function GET(request: Request) {
         isResuming = false;
       } else {
         // Previous session was complete but user not marked complete, create new one
-        console.log('📂 Previous session complete, creating new one');
-        session = await createNewSession(serviceClient, effectiveUserId);
+        session = await createNewSession(serviceClient, auth.user.id);
       }
     } else {
       // No existing session, create new one
-      console.log('📂 No existing session, creating new one');
-      session = await createNewSession(serviceClient, effectiveUserId);
+      session = await createNewSession(serviceClient, auth.user.id);
     }
-    
-    console.log('✅ Returning session response:', { 
-      sessionId: session?.id, 
-      messageCount: messages.length, 
-      isResuming 
-    });
-    
+
+    if (!session) {
+      return NextResponse.json({ error: 'Sitzung konnte nicht geladen werden' }, { status: 500 });
+    }
+
     return NextResponse.json({
       session,
       messages,
@@ -155,7 +108,7 @@ export async function GET(request: Request) {
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -164,57 +117,34 @@ export async function GET(request: Request) {
  * Save a message to the session
  */
 export async function POST(request: Request) {
-  console.log('📂 Onboarding Session API: POST request');
-  
   try {
+    const auth = await getAuthenticatedRequestContext(request);
+    if (!auth) {
+      return authenticationRequiredResponse();
+    }
+
     const body = await request.json();
-    const { sessionId, role, content, markComplete, userId: bodyUserId, accessToken } = body;
+    const { sessionId, role, content, markComplete } = body;
     
     if (!sessionId) {
-      return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
-    }
-    
-    // Get effective user ID using multiple auth methods
-    let effectiveUserId: string | null = null;
-    
-    // Try server-side auth first
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.id) {
-      effectiveUserId = user.id;
-      console.log('🔐 POST: Authenticated via server session');
-    }
-    
-    // Try accessToken from body
-    if (!effectiveUserId && accessToken) {
-      const authedClient = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          global: {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
-        }
-      );
-      const { data: { user: tokenUser } } = await authedClient.auth.getUser();
-      if (tokenUser?.id) {
-        effectiveUserId = tokenUser.id;
-        console.log('🔑 POST: Authenticated via accessToken');
-      }
-    }
-    
-    // Fallback to bodyUserId
-    if (!effectiveUserId && bodyUserId) {
-      effectiveUserId = bodyUserId;
-      console.log('🟡 POST: Using client-provided userId');
-    }
-    
-    if (!effectiveUserId) {
-      console.log('⚠️ Onboarding Session API: Unauthorized');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Eine Sitzungs-ID ist erforderlich' }, { status: 400 });
     }
     
     const serviceClient = await createServiceClient();
+
+    const { data: sessionCheck, error: sessionCheckError } = await serviceClient
+      .from('chat_sessions')
+      .select('id, user_id, metadata')
+      .eq('id', sessionId)
+      .single();
+
+    if (sessionCheckError || !sessionCheck) {
+      return NextResponse.json({ error: 'Sitzung nicht gefunden' }, { status: 404 });
+    }
+
+    if (sessionCheck.user_id !== auth.user.id) {
+      return authorizationDeniedResponse();
+    }
     
     // If marking complete
     if (markComplete) {
@@ -228,7 +158,7 @@ export async function POST(request: Request) {
       
       if (updateError) {
         console.error('❌ Error marking session complete:', updateError);
-        return NextResponse.json({ error: 'Failed to mark complete' }, { status: 500 });
+        return NextResponse.json({ error: 'Abschluss konnte nicht gespeichert werden' }, { status: 500 });
       }
       
       // Also mark user as onboarding complete (using service client to bypass RLS)
@@ -238,16 +168,12 @@ export async function POST(request: Request) {
           onboarding_complete: true,
           onboarding_completed_at: new Date().toISOString()
         })
-        .eq('id', effectiveUserId);
+        .eq('id', auth.user.id);
       
       if (userUpdateError) {
-        console.error('❌ Error marking user onboarding complete:', userUpdateError);
         // Don't fail the request, session is already marked complete
-      } else {
-        console.log('✅ User marked as onboarding complete:', effectiveUserId);
       }
       
-      console.log('✅ Session marked complete:', sessionId);
       return NextResponse.json({ success: true, userUpdated: !userUpdateError });
     }
     
@@ -265,8 +191,7 @@ export async function POST(request: Request) {
         .single();
       
       if (insertError) {
-        console.error('❌ Error saving message:', insertError);
-        return NextResponse.json({ error: 'Failed to save message' }, { status: 500 });
+        return NextResponse.json({ error: 'Nachricht konnte nicht gespeichert werden', details: insertError.message }, { status: 500 });
       }
       
       // Update session's updated_at
@@ -275,15 +200,14 @@ export async function POST(request: Request) {
         .update({ updated_at: new Date().toISOString() })
         .eq('id', sessionId);
       
-      console.log(`💾 Saved ${role} message to session ${sessionId}`);
       return NextResponse.json({ message });
     }
     
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    return NextResponse.json({ error: 'Ungültige Anfrage - Rolle und Inhalt sind erforderlich' }, { status: 400 });
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -292,22 +216,17 @@ export async function POST(request: Request) {
  * Update session metadata
  */
 export async function PATCH(request: Request) {
-  console.log('📂 Onboarding Session API: PATCH request');
-  
   try {
+    const auth = await getAuthenticatedRequestContext(request);
+    if (!auth) {
+      return authenticationRequiredResponse();
+    }
+
     const body = await request.json();
     const { sessionId, metadata } = body;
     
     if (!sessionId) {
-      return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
-    }
-    
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      console.log('⚠️ Onboarding Session API: Unauthorized');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Eine Sitzungs-ID ist erforderlich' }, { status: 400 });
     }
     
     const serviceClient = await createServiceClient();
@@ -315,9 +234,17 @@ export async function PATCH(request: Request) {
     // Get current metadata
     const { data: session } = await serviceClient
       .from('chat_sessions')
-      .select('metadata')
+      .select('metadata, user_id')
       .eq('id', sessionId)
       .single();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Sitzung nicht gefunden' }, { status: 404 });
+    }
+
+    if (session.user_id !== auth.user.id) {
+      return authorizationDeniedResponse();
+    }
     
     const newMetadata = { ...(session?.metadata || {}), ...metadata };
     
@@ -331,22 +258,21 @@ export async function PATCH(request: Request) {
     
     if (updateError) {
       console.error('❌ Error updating session:', updateError);
-      return NextResponse.json({ error: 'Failed to update session' }, { status: 500 });
+      return NextResponse.json({ error: 'Sitzung konnte nicht aktualisiert werden' }, { status: 500 });
     }
     
-    console.log('📝 Updated session metadata:', metadata);
     return NextResponse.json({ success: true, metadata: newMetadata });
     
   } catch (error) {
     console.error('❌ Onboarding Session API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
 async function createNewSession(supabase: ReturnType<typeof createServiceClient> extends Promise<infer T> ? T : never, userId: string) {
   const sessionData = {
     user_id: userId,
-    title: 'Onboarding',
+    title: 'Einstieg',
     type: 'onboarding',
     metadata: {
       progress: 0,

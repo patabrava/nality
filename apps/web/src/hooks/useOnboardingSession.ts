@@ -61,14 +61,12 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       const accessToken = authSession?.access_token;
       
       // Use API route to get/create session (bypasses RLS)
-      // Pass userId as query param and accessToken in header
-      const url = `/api/onboarding/session?userId=${encodeURIComponent(userId)}`;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
       
-      const response = await fetch(url, {
+      const response = await fetch('/api/onboarding/session', {
         method: 'GET',
         headers,
       });
@@ -76,7 +74,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       if (!response.ok) {
         const errorData = await response.json();
         console.error('❌ Error fetching onboarding session:', errorData);
-        setError('Failed to load session');
+        setError('Sitzung konnte nicht geladen werden');
         setIsLoading(false);
         return;
       }
@@ -95,7 +93,7 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       
     } catch (err) {
       console.error('❌ Unexpected error in loadOrCreateSession:', err);
-      setError('Unexpected error loading session');
+      setError('Unerwarteter Fehler beim Laden der Sitzung');
     } finally {
       setIsLoading(false);
     }
@@ -128,26 +126,48 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       console.warn('⚠️ Cannot save message: no active session');
       return;
     }
-
+    
+    if (!session.id) {
+      console.warn('⚠️ Cannot save message: session has no ID');
+      return;
+    }
+    
+    if (!content || !content.trim()) {
+      console.warn('⚠️ Cannot save message: empty content');
+      return;
+    }
+    
     try {
       // Get access token for API auth
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const accessToken = authSession?.access_token;
       
+      // Build headers with auth
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           role,
           content,
-          userId,
-          accessToken
         })
       });
 
       if (!response.ok) {
-        console.error('❌ Error saving message');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ Error saving message:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData,
+          sessionId: session.id,
+          role,
+          hasAccessToken: !!accessToken
+        });
         return;
       }
 
@@ -167,9 +187,16 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
     if (!session) return;
 
     try {
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      const accessToken = authSession?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
       const response = await fetch('/api/onboarding/session', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           metadata
@@ -196,15 +223,17 @@ export function useOnboardingSession(userId: string | null): UseOnboardingSessio
       // Get access token for API auth
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const accessToken = authSession?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
       
       const response = await fetch('/api/onboarding/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId: session.id,
           markComplete: true,
-          userId,
-          accessToken
         })
       });
 

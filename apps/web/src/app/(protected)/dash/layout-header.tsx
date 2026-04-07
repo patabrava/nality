@@ -23,7 +23,7 @@ export default function DashboardHeaderLayout({
       
       {/* Main content area with error boundary */}
       <main className="flex-1 overflow-hidden" style={{ paddingTop: '0' }}>
-        <ModuleErrorBoundary moduleName="Dashboard">
+        <ModuleErrorBoundary moduleName="Arbeitsbereich">
           {children}
         </ModuleErrorBoundary>
       </main>

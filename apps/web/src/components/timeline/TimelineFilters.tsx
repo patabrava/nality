@@ -92,10 +92,10 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
         <button
           onClick={filters.toggleVisibility}
           className="filter-toggle-button"
-          aria-label="Show filters"
+          aria-label="Filter anzeigen"
         >
           <FilterIcon />
-          <span>Filters & Sort</span>
+          <span>Filter & Sortierung</span>
           {hasActiveFilters(filters) && (
             <span className="active-filters-indicator">
               {filters.topics.length + (filters.keywords ? 1 : 0) + 
@@ -113,12 +113,12 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
       <div className="filters-header">
         <div className="filters-title">
           <FilterIcon />
-          <h3>Filters & Sort</h3>
+          <h3>Filter & Sortierung</h3>
         </div>
         <button
           onClick={filters.toggleVisibility}
           className="filter-close-button"
-          aria-label="Hide filters"
+          aria-label="Filter ausblenden"
         >
           <CloseIcon />
         </button>
@@ -129,9 +129,9 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
         
         {/* Topics Filter */}
         <div className="filter-section">
-          <label className="filter-label">Topics</label>
+          <label className="filter-label">Themen</label>
           {loading ? (
-            <div className="filter-loading">Loading topics...</div>
+            <div className="filter-loading">Themen werden geladen...</div>
           ) : (
             <div className="topic-filter-grid">
               {topics.map(topic => (
@@ -154,7 +154,7 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
         {/* Keywords Search */}
         <div className="filter-section">
           <label className="filter-label" htmlFor="keywords-search">
-            Search Keywords
+            Suchbegriffe
           </label>
           <div className="search-input-container">
             <SearchIcon />
@@ -163,14 +163,14 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
               type="text"
               value={filters.keywords}
               onChange={handleKeywordsChange}
-              placeholder="Search in titles, descriptions, locations..."
+              placeholder="In Titeln, Beschreibungen und Orten suchen..."
               className="filter-search-input"
             />
             {filters.keywords && (
               <button
                 onClick={() => filters.setKeywords('')}
                 className="clear-search-button"
-                aria-label="Clear search"
+                aria-label="Suche löschen"
               >
                 <CloseIcon />
               </button>
@@ -180,10 +180,10 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
 
         {/* Date Range Filter */}
         <div className="filter-section">
-          <label className="filter-label">Date Range</label>
+          <label className="filter-label">Zeitraum</label>
           <div className="date-range-inputs">
             <div className="date-input-group">
-              <label className="date-input-label">From</label>
+              <label className="date-input-label">Von</label>
               <input
                 type="date"
                 value={filters.dateRange.start || ''}
@@ -192,7 +192,7 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
               />
             </div>
             <div className="date-input-group">
-              <label className="date-input-label">To</label>
+              <label className="date-input-label">Bis</label>
               <input
                 type="date"
                 value={filters.dateRange.end || ''}
@@ -206,7 +206,7 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
         {/* Sort Options */}
         <div className="filter-section">
           <label className="filter-label" htmlFor="sort-select">
-            Sort By
+            Sortieren nach
           </label>
           <select
             id="sort-select"
@@ -214,10 +214,10 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
             onChange={handleSortChange}
             className="filter-sort-select"
           >
-            <option value="date-desc">Date (Newest First)</option>
-            <option value="date-asc">Date (Oldest First)</option>
-            <option value="title-asc">Title (A-Z)</option>
-            <option value="title-desc">Title (Z-A)</option>
+            <option value="date-desc">Datum (neueste zuerst)</option>
+            <option value="date-asc">Datum (älteste zuerst)</option>
+            <option value="title-asc">Titel (A-Z)</option>
+            <option value="title-desc">Titel (Z-A)</option>
           </select>
         </div>
 
@@ -229,7 +229,7 @@ export function TimelineFilters({ className = '' }: TimelineFiltersProps) {
               className="clear-filters-button"
             >
               <CloseIcon />
-              Clear All Filters
+              Alle Filter löschen
             </button>
           </div>
         )}

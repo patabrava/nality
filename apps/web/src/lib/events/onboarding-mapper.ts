@@ -105,16 +105,18 @@ export async function convertOnboardingToEvents(
 
       try {
         console.log(`[onboarding-mapper] Extracting ${answer.question_topic}...`);
-        
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (options?.accessToken) {
+          headers.Authorization = `Bearer ${options.accessToken}`;
+        }
+
         const response = await fetch(`${baseUrl}/api/events/extract`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             content: answer.answer_text,
             source: 'onboarding',
             topic: answer.question_topic,
-            userId,
-            accessToken: options?.accessToken,
           }),
         });
 

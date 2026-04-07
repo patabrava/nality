@@ -2,12 +2,13 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Mic, Home } from 'lucide-react'
+import { Plus, Mic } from 'lucide-react'
 import { useMemories } from '@/hooks/useMemories'
 import { MemoryCard } from '@/components/memory/MemoryCard'
 import { TextMemoryInput } from '@/components/memory/TextMemoryInput'
 import { VoiceModeSelector } from '@/components/voice/VoiceModeSelector'
-import { InterviewInterface } from '@/components/voice/InterviewInterface'
+import { FreeTalkInterface } from '@/components/voice/FreeTalkInterface'
+import { BiographyInterviewModal } from '@/components/interview/BiographyInterviewModal'
 import { formatDateHeader } from '@nality/schema'
 import type { Memory } from '@nality/schema'
 
@@ -69,19 +70,20 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
             color: '#fff',
           }}>
-            Your Memories
+            Deine Erinnerungen
           </h1>
           <p style={{ 
             margin: '4px 0 0', 
             color: 'rgba(255, 255, 255, 0.5)',
             fontSize: '0.9rem',
           }}>
-            {memories.length} memories captured
+            {memories.length} Erinnerungen festgehalten
           </p>
         </div>
         
         <button
           onClick={() => setShowVoiceSelector(true)}
+          aria-label="Erinnerung hinzufügen"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -96,20 +98,24 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             fontSize: '0.9rem',
           }}
         >
-          <Plus size={18} />
-          Add Memory
+          <Plus size={18} aria-hidden="true" />
+          Erinnerung hinzufügen
         </button>
       </header>
       
       {loading ? (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '200px',
-          color: 'rgba(255, 255, 255, 0.5)',
-        }}>
-          Loading memories...
+        <div
+          role="status"
+          aria-label="Erinnerungen werden geladen"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '200px',
+            color: 'rgba(255, 255, 255, 0.5)',
+          }}
+        >
+          Erinnerungen werden geladen...
         </div>
       ) : memories.length === 0 ? (
         <div style={{
@@ -131,14 +137,14 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             justifyContent: 'center',
             marginBottom: '24px',
           }}>
-            <Mic size={32} style={{ color: '#D4AF37' }} />
+            <Mic size={32} style={{ color: '#D4AF37' }} aria-hidden="true" />
           </div>
           <h2 style={{ 
             marginBottom: '12px', 
             color: '#fff',
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
           }}>
-            Start capturing your story
+            Beginne, deine Geschichte festzuhalten
           </h2>
           <p style={{ 
             color: 'rgba(255, 255, 255, 0.6)', 
@@ -146,8 +152,8 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             marginBottom: '24px',
             lineHeight: 1.6,
           }}>
-            Record your first memory to begin building your autobiography. 
-            Speak freely, answer questions, or write it down.
+            Halte deine erste Erinnerung fest, um mit deiner Autobiografie zu beginnen.
+            Sprich frei, beantworte Fragen oder schreibe sie auf.
           </p>
           <button
             onClick={() => setShowVoiceSelector(true)}
@@ -166,7 +172,7 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
             }}
           >
             <Plus size={20} />
-            Add Your First Memory
+            Erste Erinnerung hinzufügen
           </button>
         </div>
       ) : (
@@ -208,17 +214,12 @@ export function MemoryFeedModule({ showChapterPrompt }: MemoryFeedModuleProps) {
       )}
       
       {showInterview && (
-        <InterviewInterface
-          onClose={() => setShowInterview(false)}
-          onMemorySaved={handleMemoryComplete}
-          onComplete={handleMemoryComplete}
-        />
+        <BiographyInterviewModal onClose={handleMemoryComplete} />
       )}
       
       {showFreeTalk && (
-        <InterviewInterface
+        <FreeTalkInterface
           onClose={() => setShowFreeTalk(false)}
-          onMemorySaved={handleMemoryComplete}
           onComplete={handleMemoryComplete}
         />
       )}

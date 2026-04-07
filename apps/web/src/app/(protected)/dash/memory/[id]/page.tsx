@@ -11,6 +11,25 @@ interface PageProps {
   params: Promise<{ id: string }>
 }
 
+function localizeSuggestedCategory(value: string | null | undefined) {
+  switch (value) {
+    case 'family':
+      return 'Familie'
+    case 'education':
+      return 'Bildung'
+    case 'career':
+      return 'Beruf'
+    case 'milestone':
+      return 'Meilenstein'
+    case 'travel':
+      return 'Reise'
+    case 'relationship':
+      return 'Beziehung'
+    default:
+      return value || 'Unbekannt'
+  }
+}
+
 export default function MemoryDetailPage({ params }: PageProps) {
   const { id: memoryId } = use(params)
   const router = useRouter()
@@ -26,7 +45,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
         height: '50vh',
         color: 'rgba(255, 255, 255, 0.5)',
       }}>
-        Loading memory...
+        Erinnerung wird geladen...
       </div>
     )
   }
@@ -41,7 +60,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
         height: '50vh',
         textAlign: 'center',
       }}>
-        <h2 style={{ color: '#fff', marginBottom: '12px' }}>Memory not found</h2>
+        <h2 style={{ color: '#fff', marginBottom: '12px' }}>Erinnerung nicht gefunden</h2>
         <button 
           onClick={() => router.push('/dash')}
           style={{
@@ -53,14 +72,14 @@ export default function MemoryDetailPage({ params }: PageProps) {
             cursor: 'pointer',
           }}
         >
-          Back to Feed
+          Zur Übersicht
         </button>
       </div>
     )
   }
   
   const captureDate = new Date(memory.captured_at || memory.created_at || Date.now())
-  const sourceLabel = memory.source === 'voice' ? 'Voice Recording' : 'Written'
+  const sourceLabel = memory.source === 'voice' ? 'Sprachaufnahme' : 'Geschrieben'
   const modeLabel = getMemoryModeLabel(memory.capture_mode)
   
   const handleChangeChapter = async (chapterId: string | null) => {
@@ -68,7 +87,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
   }
   
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this memory?')) {
+    if (confirm('Möchtest du diese Erinnerung wirklich löschen?')) {
       const success = await deleteMemory()
       if (success) {
         router.push('/dash')
@@ -98,7 +117,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
         }}
       >
         <ArrowLeft size={18} />
-        Back to Feed
+        Zur Übersicht
       </button>
       
       {memory.capture_mode === 'interview' && memory.interview_question && (
@@ -115,7 +134,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
             textTransform: 'uppercase',
             letterSpacing: '1px',
           }}>
-            Question Asked
+            Gestellte Frage
           </span>
           <p style={{ 
             margin: '8px 0 0', 
@@ -158,11 +177,11 @@ export default function MemoryDetailPage({ params }: PageProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <Calendar size={14} style={{ color: '#D4AF37' }} />
             <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase' }}>
-              Captured
+              Erfasst
             </span>
           </div>
           <p style={{ color: '#fff', fontSize: '0.9rem', margin: 0 }}>
-            {captureDate.toLocaleDateString(undefined, { 
+            {captureDate.toLocaleDateString('de-DE', { 
               weekday: 'long',
               year: 'numeric', 
               month: 'long', 
@@ -170,7 +189,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
             })}
           </p>
           <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.8rem', margin: '4px 0 0' }}>
-            {captureDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+            {captureDate.toLocaleTimeString('de-DE', { hour: 'numeric', minute: '2-digit' })}
           </p>
         </div>
         
@@ -182,7 +201,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             {memory.source === 'voice' ? <Mic size={14} style={{ color: '#D4AF37' }} /> : <Type size={14} style={{ color: '#D4AF37' }} />}
             <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase' }}>
-              Source
+              Quelle
             </span>
           </div>
           <p style={{ color: '#fff', fontSize: '0.9rem', margin: 0 }}>
@@ -202,14 +221,14 @@ export default function MemoryDetailPage({ params }: PageProps) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <Clock size={14} style={{ color: '#D4AF37' }} />
               <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase' }}>
-                Suggested Category
+                Vorgeschlagene Kategorie
               </span>
             </div>
             <p style={{ color: '#fff', fontSize: '0.9rem', margin: 0, textTransform: 'capitalize' }}>
-              {memory.suggested_category}
+              {localizeSuggestedCategory(memory.suggested_category)}
             </p>
             <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.8rem', margin: '4px 0 0' }}>
-              {Math.round((memory.suggestion_confidence || 0) * 100)}% confident
+              {Math.round((memory.suggestion_confidence || 0) * 100)} % Sicherheit
             </p>
           </div>
         )}
@@ -223,13 +242,13 @@ export default function MemoryDetailPage({ params }: PageProps) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
           <FolderOpen size={18} style={{ color: '#D4AF37' }} />
-          <span style={{ fontWeight: 500, color: '#fff' }}>Chapter Assignment</span>
+          <span style={{ fontWeight: 500, color: '#fff' }}>Kapitelzuordnung</span>
         </div>
         
         {memory.chapter_id ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-              Part of a chapter
+              Diesem Kapitel zugeordnet
             </span>
             <button 
               onClick={() => handleChangeChapter(null)}
@@ -243,13 +262,13 @@ export default function MemoryDetailPage({ params }: PageProps) {
                 fontSize: '0.8rem',
               }}
             >
-              Remove
+              Entfernen
             </button>
           </div>
         ) : (
           <div>
             <p style={{ color: 'rgba(255, 255, 255, 0.5)', marginBottom: '12px', fontSize: '0.9rem' }}>
-              Not assigned to a chapter yet
+              Noch keinem Kapitel zugeordnet
             </p>
             {chapters.length > 0 && (
               <select 
@@ -265,7 +284,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
                   fontSize: '0.9rem',
                 }}
               >
-                <option value="">Select a chapter...</option>
+                <option value="">Kapitel auswählen...</option>
                 {chapters.map(ch => (
                   <option key={ch.id} value={ch.id}>{ch.title}</option>
                 ))}
@@ -293,7 +312,7 @@ export default function MemoryDetailPage({ params }: PageProps) {
           }}
         >
           <Trash2 size={16} />
-          {deleting ? 'Deleting...' : 'Delete'}
+          {deleting ? 'Wird gelöscht...' : 'Löschen'}
         </button>
       </div>
     </div>

@@ -24,7 +24,7 @@ export function NeutralStartBlock({ onContinueToRegistration, onBackToPath }: Ne
           color: 'var(--accent-gold)',
         }}
       >
-        Neutraler Storytelling-Start
+        Neutraler Erzählstart
       </p>
       <h3
         style={{

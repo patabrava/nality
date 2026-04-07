@@ -54,7 +54,7 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
       const response = await fetch('/api/chat/sessions');
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch sessions: ${response.statusText}`);
+        throw new Error(`Chatsitzungen konnten nicht geladen werden: ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -62,7 +62,7 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
       
       console.log(`✅ Fetched ${data.sessions?.length || 0} sessions`);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to fetch sessions');
+      const error = err instanceof Error ? err : new Error('Chatsitzungen konnten nicht geladen werden');
       setSessionError(error);
       console.error('❌ Failed to fetch sessions:', error);
     } finally {
@@ -90,7 +90,7 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create session: ${response.statusText}`);
+        throw new Error(`Chatsitzung konnte nicht erstellt werden: ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -106,7 +106,7 @@ export function useChat({ initialSessionId, autoCreateSession = false }: UseChat
       
       return newSession;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to create session');
+      const error = err instanceof Error ? err : new Error('Chatsitzung konnte nicht erstellt werden');
       setSessionError(error);
       console.error('❌ Failed to create session:', error);
       throw error;

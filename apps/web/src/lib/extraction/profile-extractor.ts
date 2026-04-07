@@ -106,7 +106,7 @@ export async function extractProfileData(
     console.log(`[profile-extractor] Extracting ${topic} from: "${answerText.slice(0, 50)}..."`);
     
     const { text } = await generateText({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-2.0-flash'),
       system: PROFILE_SYSTEM_PROMPT,
       prompt: buildProfilePrompt(answerText, topic),
       temperature: 0.3,

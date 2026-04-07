@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { useUserProfile } from '@/hooks/useUserProfile'
-import { getIncompleteOnboardingPath } from '@/lib/onboarding/flags'
 
 // Import landing page components
 import { LandingHeader } from '@/components/landing/LandingHeader'
@@ -23,8 +21,7 @@ export const dynamic = 'force-dynamic'
 
 export default function Home() {
   const router = useRouter()
-  const { user, loading: authLoading, isAuthenticated } = useAuth()
-  const { isLoading: profileLoading, isOnboardingComplete } = useUserProfile(user?.id)
+  const { loading: authLoading, isAuthenticated } = useAuth()
   const [mounted, setMounted] = useState(false)
   const shouldRedirect = useMemo(() => isAuthenticated && mounted, [isAuthenticated, mounted])
 
@@ -36,14 +33,10 @@ export default function Home() {
   useEffect(() => {
     if (!shouldRedirect) return
 
-    if (authLoading || profileLoading) return
+    if (authLoading) return
 
-    if (isOnboardingComplete) {
-      router.replace('/dash')
-    } else {
-      router.replace(getIncompleteOnboardingPath())
-    }
-  }, [shouldRedirect, authLoading, profileLoading, isOnboardingComplete, router])
+    router.replace('/dash')
+  }, [shouldRedirect, authLoading, router])
 
   const handleSampleBook = () => {
     // Track sample book clicks
@@ -55,7 +48,7 @@ export default function Home() {
   }
 
   // Avoid flicker while deciding redirect
-  if (!mounted || (shouldRedirect && (authLoading || profileLoading))) {
+  if (!mounted || (shouldRedirect && authLoading)) {
     return null // Prevent hydration mismatch
   }
 
@@ -89,7 +82,7 @@ export default function Home() {
           e.target.style.left = '-9999px'
         }}
       >
-        Skip to content
+        Zum Inhalt springen
       </a>
 
 

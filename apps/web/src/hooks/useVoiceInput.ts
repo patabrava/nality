@@ -65,8 +65,9 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
     onTranscript,
     onUtteranceEnd,
     onError,
-    language = 'en-US',
+    language = 'de-DE',
     interimResults = true,
+    utteranceEndMs = 1500,
   } = options;
 
   const [state, setState] = useState<VoiceInputState>('idle');
@@ -125,7 +126,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognitionAPI) {
-      const err = new Error('Speech recognition not supported in this browser. Please use Chrome, Edge, or Safari.');
+      const err = new Error('Die Spracherkennung wird in diesem Browser nicht unterstützt. Bitte nutze Chrome, Edge oder Safari.');
       setError(err);
       onError?.(err);
       setState('error');
@@ -150,30 +151,54 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       setTranscript('');
       setInterimTranscript('');
 
-      // Request microphone permission first (with retries and minimal constraints)
-      const requestMic = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } });
-          preflightStreamRef.current = stream;
-          stream.getTracks().forEach(t => t.stop()); // release device so SpeechRecognition can attach
-          preflightStreamRef.current = null;
-        } catch (err) {
-          console.warn('⚠️ getUserMedia with echoCancellation failed, retrying with plain audio:', err);
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          preflightStreamRef.current = stream;
-          stream.getTracks().forEach(t => t.stop()); // release device
-          preflightStreamRef.current = null;
+      // Request microphone permission with robust retries
+      const requestMic = async (attempt = 1): Promise<void> => {
+        const maxAttempts = 3;
+        const constraints = [
+          { audio: { echoCancellation: true } },
+          { audio: true },
+          { audio: { deviceId: 'default' } },
+        ];
+
+        for (const constraint of constraints) {
+          try {
+            console.log(`🎤 Attempting getUserMedia (attempt ${attempt}):`, JSON.stringify(constraint));
+            const stream = await navigator.mediaDevices.getUserMedia(constraint);
+            preflightStreamRef.current = stream;
+            stream.getTracks().forEach(t => t.stop()); // release device so SpeechRecognition can attach
+            preflightStreamRef.current = null;
+            console.log('✅ Microphone access granted');
+            return; // Success!
+          } catch (err) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            console.warn(`⚠️ getUserMedia failed with constraint ${JSON.stringify(constraint)}:`, errMsg);
+            // Continue to next constraint
+          }
         }
+
+        // All constraints failed for this attempt
+        if (attempt < maxAttempts) {
+          console.warn(`⚠️ All constraints failed, retrying after delay (attempt ${attempt}/${maxAttempts})...`);
+          await new Promise(res => setTimeout(res, 500 * attempt));
+          // Re-enumerate devices to refresh browser's device cache
+          try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioInputs = devices.filter(d => d.kind === 'audioinput');
+            console.log(`🔍 Found ${audioInputs.length} audio input device(s) after re-enumeration`);
+            if (audioInputs.length === 0) {
+              throw new Error('Es wurde kein Mikrofon erkannt. Bitte schließe ein Mikrofon an und versuche es erneut.');
+            }
+          } catch (enumErr) {
+            console.warn('⚠️ Device re-enumeration failed:', enumErr);
+          }
+          return requestMic(attempt + 1);
+        }
+
+        // Final failure - throw descriptive error
+        throw new Error('Auf das Mikrofon kann nicht zugegriffen werden. Bitte prüfe Verbindung und Browser-Berechtigungen und versuche es erneut.');
       };
 
-      try {
-        await requestMic();
-      } catch (err) {
-        // Retry once after a short delay in case the device list initializes late
-        console.warn('⚠️ getUserMedia failed, retrying once after delay:', err);
-        await new Promise(res => setTimeout(res, 400));
-        await requestMic();
-      }
+      await requestMic()
       
       console.log('🎤 Starting Web Speech API recognition...');
       
@@ -222,11 +247,19 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
           silenceTimeoutRef.current = setTimeout(() => {
             if (transcriptRef.current.trim() && isListeningRef.current) {
               console.log('🔇 Silence detected - triggering utterance end');
-              onUtteranceEnd?.(transcriptRef.current.trim());
+              const fullTranscript = transcriptRef.current.trim();
+              isListeningRef.current = false;
               transcriptRef.current = '';
               setTranscript('');
+              setInterimTranscript('');
+              try {
+                recognitionRef.current?.stop();
+              } catch (stopError) {
+                console.warn('⚠️ Failed to stop speech recognition after utterance end:', stopError);
+              }
+              onUtteranceEnd?.(fullTranscript);
             }
-          }, 1500); // 1.5 second silence = end of utterance
+          }, utteranceEndMs);
         }
 
         if (interim) {
@@ -239,21 +272,21 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
         // Handle specific errors
         if (event.error === 'not-allowed') {
           console.error('❌ Speech recognition error:', event.error);
-          const err = new Error('Microphone access denied. Please allow microphone access.');
+          const err = new Error('Der Mikrofonzugriff wurde verweigert. Bitte erlaube den Zugriff auf das Mikrofon.');
           setError(err);
           onError?.(err);
           setState('error');
           cleanup();
         } else if (event.error === 'audio-capture') {
           console.error('❌ Speech recognition error: audio-capture (mic busy or unavailable)');
-          const err = new Error('Microphone not available. Close other apps using the mic and retry.');
+          const err = new Error('Das Mikrofon ist nicht verfügbar. Schließe andere Apps, die das Mikrofon nutzen, und versuche es erneut.');
           setError(err);
           onError?.(err);
           setState('error');
           cleanup();
         } else if (event.error === 'service-not-allowed') {
           console.error('❌ Speech recognition error: service-not-allowed');
-          const err = new Error('Speech service blocked. Please allow microphone and retry.');
+          const err = new Error('Der Sprachdienst ist blockiert. Bitte erlaube den Mikrofonzugriff und versuche es erneut.');
           setError(err);
           onError?.(err);
           setState('error');
@@ -270,7 +303,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
           const attempts = networkErrorCountRef.current;
           console.warn(`⚠️ Speech recognition network hiccup (attempt ${attempts}) - continuing`);
           if (attempts >= 3) {
-            const err = new Error('Speech recognition network issue. Please retry or switch browser (Chrome/Safari recommended).');
+            const err = new Error('Netzwerkproblem bei der Spracherkennung. Bitte versuche es erneut oder wechsle den Browser (Chrome oder Safari empfohlen).');
             setError(err);
             onError?.(err);
             setState('error');
@@ -302,13 +335,13 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
 
     } catch (err) {
       console.error('❌ Failed to start voice input:', err);
-      const error = err instanceof Error ? err : new Error('Failed to start voice input');
+      const error = err instanceof Error ? err : new Error('Die Spracheingabe konnte nicht gestartet werden');
       setError(error);
       onError?.(error);
       setState('error');
       cleanup();
     }
-  }, [state, language, interimResults, onTranscript, onUtteranceEnd, onError, cleanup]);
+  }, [state, language, interimResults, onTranscript, onUtteranceEnd, onError, cleanup, utteranceEndMs]);
 
   const stopListening = useCallback(() => {
     console.log('🛑 Stopping voice input');

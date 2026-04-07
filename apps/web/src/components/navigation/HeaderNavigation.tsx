@@ -146,7 +146,7 @@ export function HeaderNavigation() {
               {/* Drawer Header */}
               <div className="p-6 pt-24 border-b border-white/5">
                 <span className="font-serif text-2xl text-white block mb-1">{t('header.menu')}</span>
-                <span className="text-xs text-[#D4AF37] tracking-widest uppercase">The Autobiography for the Elite</span>
+                <span className="text-xs text-[#D4AF37] tracking-widest uppercase">Die Autobiografie für Anspruchsvolle</span>
               </div>
 
               {/* Drawer Links */}
@@ -181,7 +181,7 @@ export function HeaderNavigation() {
                 </button>
 
                 <div className="flex items-center justify-between px-2">
-                  <div className="text-xs text-gray-600 uppercase tracking-wider">Preferences</div>
+                  <div className="text-xs text-gray-600 uppercase tracking-wider">Einstellungen</div>
                   <div className="flex items-center gap-4">
                     <LanguageSwitcher />
                     <ThemeToggleCompact />

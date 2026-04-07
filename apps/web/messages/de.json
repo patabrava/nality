@@ -17,7 +17,7 @@
     },
     "login": "Einloggen",
     "start": "Meine Geschichte starten",
-    "myTimeline": "Meine Timeline",
+    "myTimeline": "Meine Zeitleiste",
     "mobileMenuAria": "Navigationsmenü umschalten",
     "menu": "Menü",
     "myProfile": "Mein Profil",
@@ -29,17 +29,17 @@
     "title": "Dein Leben, schön erzählt.",
     "titleLine": "Dein Leben,",
     "titleHighlight": "schön erzählt.",
-    "subtitle": "Nality hilft dir, Erinnerungen in eine lebendige Timeline und ein wunderschönes Life Book zu verwandeln – geführt von einem intelligenten Begleiter und, wenn du möchtest, einem echten Interviewer.",
+    "subtitle": "Nality hilft dir, Erinnerungen in eine lebendige Zeitleiste und ein wunderschönes Lebensbuch zu verwandeln – geführt von einem intelligenten Begleiter und, wenn du möchtest, von einem echten Interviewer.",
     "primaryCta": "Meine Geschichte starten",
-    "secondaryCta": "Ein Beispiel-Life-Book ansehen",
-    "trust": "Privacy by Design. Du bestimmst, wer deine Geschichte sieht.",
+    "secondaryCta": "Ein Beispiel-Lebensbuch ansehen",
+    "trust": "Datenschutz von Anfang an. Du bestimmst, wer deine Geschichte sieht.",
     "recordingStatus": "Aufnahmesitzung...",
     "timelinePreview": {
       "graduation": "🎓 Hochschulabschluss – 2020",
       "firstJob": "💼 Erster Job – 2021",
       "marriage": "❤️ Hochzeit – 2023"
     },
-    "bookPreview": "Life-Book-Vorschau",
+    "bookPreview": "Lebensbuch-Vorschau",
     "timelineBegin": "1985 • Der Anfang",
     "timelineLegacy": "2023 • Vermächtnis",
     "momentQuote": "\"Es war ein Moment absoluter Klarheit...\""
@@ -54,7 +54,7 @@
         "location": "Barcelona, Spanien"
       },
       {
-        "text": "Als Dokumentarfilmer war ich skeptisch gegenüber KI-Storytelling. Aber die Interviewstruktur und die Timeline-Organisation von Nality haben mir 80 % meiner Vorbereitungszeit erspart. Jetzt empfehle ich es allen meinen Kunden.",
+        "text": "Als Dokumentarfilmer war ich skeptisch gegenüber KI-gestütztem Erzählen. Aber die Interviewstruktur und die Zeitleisten-Organisation von Nality haben mir 80 % meiner Vorbereitungszeit erspart. Jetzt empfehle ich es allen meinen Kunden.",
         "author": "Marcus Chen",
         "role": "Dokumentarfilmer",
         "location": "San Francisco, CA"
@@ -66,7 +66,7 @@
         "location": "New York, NY"
       },
       {
-        "text": "Ich habe drei Memoiren mit der Plattform von Nality geschrieben. Die KI schlägt Story-Verbindungen vor, die ich nie gesehen habe, und die Exportqualität kann mit traditionellen Verlagen mithalten. Es hat meinen Schreibprozess revolutioniert.",
+        "text": "Ich habe drei Memoiren mit der Plattform von Nality geschrieben. Die KI schlägt Erzählverbindungen vor, die ich nie gesehen habe, und die Exportqualität kann mit traditionellen Verlagen mithalten. Es hat meinen Schreibprozess revolutioniert.",
         "author": "Dr. James Patterson",
         "role": "Ehemaliger Universitätspräsident",
         "location": "Oxford, GB"
@@ -90,7 +90,7 @@
         "placeholder": "MEM"
       },
       {
-        "name": "Heritage Trust",
+        "name": "Erbe-Stiftung",
         "placeholder": "HTR"
       }
     ],
@@ -119,7 +119,7 @@
     "label": "Das Lebensbuch",
     "title": "Ein Andenken zum",
     "titleHighlight": "Anfassen",
-    "subtitle": "Nality verwandelt deine Timeline in ein poliertes, druckfertiges PDF. Wähle Cover-Stile und teile es digital oder bestelle Drucke.",
+    "subtitle": "Nality verwandelt deine Zeitleiste in ein poliertes, druckfertiges PDF. Wähle Cover-Stile und teile es digital oder bestelle Drucke.",
     "zoomHint": "Zum Vergrößern klicken",
     "ctaText": "Sieh, wie deine Geschichte im Druck lebendig wird",
     "ctaButton": "Beispielbuch ansehen",
@@ -128,7 +128,7 @@
     "gallery": [
       {
         "title": "Buchcover",
-        "description": "Hardcover-Life-Book auf einem Tisch",
+        "description": "Hardcover-Lebensbuch auf einem Tisch",
         "mockContent": "📖\nLebensbuch\nCover"
       },
       {
@@ -138,7 +138,7 @@
       },
       {
         "title": "Buch-Doppelseite 2",
-        "description": "Zweiseitige Life-Book-Ansicht mit großem Bild und Bildunterschrift",
+        "description": "Zweiseitige Lebensbuch-Ansicht mit großem Bild und Bildunterschrift",
         "mockContent": "🎓\nKapitel 3\nBildung"
       }
     ]
@@ -151,10 +151,10 @@
     "features": [
       {
         "title": "Intelligenter Einstieg",
-        "description": "Beginne mit einem geführten Chat, der deine Erinnerungen in strukturierte Ereignisse verwandelt. Bearbeite jederzeit mit Leichtigkeit."
+        "description": "Beginne mit einem geführten Gespräch, das deine Erinnerungen in strukturierte Ereignisse verwandelt. Bearbeite jederzeit mit Leichtigkeit."
       },
       {
-        "title": "Lebendige Timeline",
+        "title": "Lebendige Zeitleiste",
         "description": "Klares, alternierendes Layout. Ziehe, kategorisiere und markiere wichtige Momente. Sieh Fotos und Videos im Kontext."
       },
       {
@@ -162,7 +162,7 @@
         "description": "Professionelle Interviewer können dir helfen, tiefer zu gehen – besonders für Geschichten von Älteren. Wir kümmern uns um die Terminplanung."
       },
       {
-        "title": "Das Life Book",
+        "title": "Das Lebensbuch",
         "description": "Exportiere ein wunderschönes, poliertes PDF, das zum Drucken und Teilen bereit ist. Dein Vermächtnis, verewigt."
       }
     ]
@@ -179,7 +179,7 @@
         "context": "Familienhistorikerin, Barcelona"
       },
       {
-        "quote": "Die KI-gestützte Struktur hat mir 80% meiner Vorbereitungszeit erspart. Jetzt empfehle ich Nality allen meinen Kunden für Dokumentarfilme.",
+        "quote": "Die KI-gestützte Struktur hat mir 80 % meiner Vorbereitungszeit erspart. Jetzt empfehle ich Nality allen meinen Kunden für Dokumentarfilme.",
         "author": "Marcus Chen",
         "context": "Dokumentarfilmer, San Francisco"
       },
@@ -207,17 +207,17 @@
         "icon": "🗣️"
       },
       {
-        "title": "Sieh deiner Timeline beim Wachsen zu",
-        "description": "Momente werden zu einer lebendigen, bearbeitbaren Timeline – mit Platz für Fotos, Videos und Audionotizen.",
+        "title": "Sieh deiner Zeitleiste beim Wachsen zu",
+        "description": "Momente werden zu einer lebendigen, bearbeitbaren Zeitleiste – mit Platz für Fotos, Videos und Audionotizen.",
         "icon": "📅"
       },
       {
-        "title": "Mehr Tiefe (optional Interview)",
-        "description": "Lieber geführt werden? Buche eine Session mit einem echten Interviewer. Wir kümmern uns um Termin und Transkript.",
+        "title": "Mehr Tiefe (optional begleitet)",
+        "description": "Lieber geführt werden? Buche ein Gespräch mit einem echten Interviewer. Wir kümmern uns um Termin und Transkript.",
         "icon": "🎤"
       },
       {
-        "title": "Life Book sichern und teilen",
+        "title": "Lebensbuch sichern und teilen",
         "description": "Exportiere ein wunderschön gestaltetes PDF, bereit zum Drucken oder Teilen mit der Familie.",
         "icon": "📖"
       }
@@ -241,7 +241,7 @@
         "description": "Beginne noch heute die Reise deiner Lebensgeschichte",
         "features": [
           "KI-gestützte Erfassung von Erinnerungen",
-          "Interaktiver Timeline-Builder",
+          "Interaktiver Zeitleisten-Builder",
           "Bis zu 100 Fotos und Dokumente",
           "Grundlegende Privatsphäre-Einstellungen",
           "Export in digitale Formate"
@@ -261,7 +261,7 @@
           "Alles aus Explorer",
           "Unbegrenzte Fotos und Videos",
           "KI-Lückenerkennung und Vorschläge",
-          "Erweiterte Timeline-Organisation",
+          "Erweiterte Zeitleisten-Organisation",
           "Premium-Exportvorlagen",
           "Professioneller Buchdruck",
           "Teilen und Zusammenarbeit in der Familie",
@@ -277,7 +277,7 @@
         "price": "39 €",
         "period": "/ Monat",
         "yearlyPrice": "399 € / Jahr",
-        "description": "Professionelles Storytelling mit Experten-Interviews",
+        "description": "Professionelle Lebensgeschichten mit Experten-Interviews",
         "features": [
           "Alles aus Storyteller",
           "Sitzungen mit Experten-Interviewern",
@@ -326,15 +326,15 @@
       },
       {
         "question": "Unterstützt ihr Familien?",
-        "answer": "Ja. Ihr könnt gemeinsam an Timelines arbeiten, und wir werden bald geteilte Familienbereiche unterstützen."
+        "answer": "Ja. Ihr könnt gemeinsam an Zeitleisten arbeiten, und wir werden bald geteilte Familienbereiche unterstützen."
       },
       {
         "question": "Was passiert, wenn ich es mir anders überlege?",
-        "answer": "Du kannst jederzeit pausieren oder kündigen. Deine Timeline bleibt im kostenlosen Plan verfügbar."
+        "answer": "Du kannst jederzeit pausieren oder kündigen. Deine Zeitleiste bleibt im kostenlosen Plan verfügbar."
       },
       {
         "question": "Welche Sprachen werden unterstützt?",
-        "answer": "Wir unterstützen derzeit Englisch und Deutsch, weitere Sprachen sind in Planung."
+        "answer": "Die App ist derzeit vollständig auf Deutsch ausgelegt."
       },
       {
         "question": "Ist das für Ältere geeignet?",
@@ -349,7 +349,7 @@
     "title": "Starte deine Geschichte heute",
     "subtitle": "Es dauert nur wenige Minuten. Du kannst jederzeit zurückkommen und mehr hinzufügen.",
     "primaryCta": "Meine Geschichte starten",
-    "secondaryCta": "Die Timeline entdecken",
+    "secondaryCta": "Die Zeitleiste entdecken",
     "privacyTitle": "Privatsphäre garantiert",
     "privacyBody": "Deine Geschichten sind standardmäßig privat. Teile nur, was du möchtest, mit wem du möchtest.",
     "stats": {
@@ -421,7 +421,7 @@
       ]
     },
     "social": {
-      "title": "Social",
+      "title": "Soziale Medien",
       "links": [
         {
           "name": "LinkedIn",
@@ -444,7 +444,7 @@
       },
       "privacy": {
         "title": "Datenschutzerklärung",
-        "content": "NALITY nimmt Ihre Privatsphäre ernst. Diese Richtlinie beschreibt, wie wir Ihre Daten sammeln, verwenden und schützen.\n\n1. Datenerfassung\nWir sammeln Informationen, die Sie uns direkt zur Verfügung stellen: Name, E-Mail, Lebensgeschichten, Fotos und andere persönliche Inhalte.\n\n2. Datenverwendung\nIhre Daten werden verwendet, um:\n- Ihren Account zu verwalten\n- Ihre Lebensgeschichte zu speichern und zu organisieren\n- Den Service zu verbessern\n- Mit Ihnen zu kommunizieren\n\n3. Datenspeicherung\nAlle Daten werden sicher auf verschlüsselten Servern gespeichert. Wir verwenden Supabase für die Datenspeicherung mit End-zu-End-Verschlüsselung.\n\n4. Datenweitergabe\nWir verkaufen oder vermieten Ihre Daten niemals. Daten werden nur mit Ihrer ausdrücklichen Zustimmung oder bei gesetzlicher Verpflichtung weitergegeben.\n\n5. Ihre Rechte\nSie haben das Recht auf:\n- Zugriff auf Ihre Daten\n- Korrektur Ihrer Daten\n- Löschung Ihrer Daten\n- Export Ihrer Daten\n\nFür Datenschutzanfragen kontaktieren Sie privacy@nality.com"
+        "content": "NALITY nimmt Ihre Privatsphäre ernst. Diese Richtlinie beschreibt, wie wir Ihre Daten sammeln, verwenden und schützen.\n\n1. Datenerfassung\nWir sammeln Informationen, die Sie uns direkt zur Verfügung stellen: Name, E-Mail, Lebensgeschichten, Fotos und andere persönliche Inhalte.\n\n2. Datenverwendung\nIhre Daten werden verwendet, um:\n- Ihr Konto zu verwalten\n- Ihre Lebensgeschichte zu speichern und zu organisieren\n- Den Dienst zu verbessern\n- Mit Ihnen zu kommunizieren\n\n3. Datenspeicherung\nAlle Daten werden sicher auf verschlüsselten Servern gespeichert. Wir verwenden Supabase für die Datenspeicherung mit Ende-zu-Ende-Verschlüsselung.\n\n4. Datenweitergabe\nWir verkaufen oder vermieten Ihre Daten niemals. Daten werden nur mit Ihrer ausdrücklichen Zustimmung oder bei gesetzlicher Verpflichtung weitergegeben.\n\n5. Ihre Rechte\nSie haben das Recht auf:\n- Zugriff auf Ihre Daten\n- Korrektur Ihrer Daten\n- Löschung Ihrer Daten\n- Export Ihrer Daten\n\nFür Datenschutzanfragen kontaktieren Sie privacy@nality.com"
       },
       "cookies": {
         "title": "Cookie-Einstellungen",
@@ -454,15 +454,15 @@
     "companyContent": {
       "about": {
         "title": "Über uns",
-        "content": "NALITY wurde mit einer klaren Vision gegründet: Lebensgeschichten für zukünftige Generationen zu bewahren.\n\nUnsere Mission\nWir glauben, dass jeder Mensch eine einzigartige Geschichte hat, die es wert ist, erzählt und bewahrt zu werden. NALITY kombiniert modernste KI-Technologie mit der persönlichen Note professioneller Biografen, um Ihnen ein luxuriöses Werkzeug zur Erstellung Ihrer Lebensgeschichte zu bieten.\n\nUnser Ansatz\n- Technologie trifft Tradition: KI-gestützte Erfassung mit menschlicher Expertise\n- Datenschutz first: Ihre Geschichten gehören Ihnen, nicht uns\n- Qualität über Quantität: Jedes Detail zählt\n- Generationenübergreifend: Für heute und für morgen\n\nUnser Team\nWir sind ein internationales Team aus Technologen, Autoren, Historikern und Designern, vereint durch die Leidenschaft, Erinnerungen zu bewahren.\n\nKontaktieren Sie uns unter info@nality.com für weitere Informationen."
+        "content": "NALITY wurde mit einer klaren Vision gegründet: Lebensgeschichten für zukünftige Generationen zu bewahren.\n\nUnsere Mission\nWir glauben, dass jeder Mensch eine einzigartige Geschichte hat, die es wert ist, erzählt und bewahrt zu werden. NALITY kombiniert modernste KI-Technologie mit der persönlichen Note professioneller Biografen, um Ihnen ein luxuriöses Werkzeug zur Erstellung Ihrer Lebensgeschichte zu bieten.\n\nUnser Ansatz\n- Technologie trifft Tradition: KI-gestützte Erfassung mit menschlicher Expertise\n- Datenschutz zuerst: Ihre Geschichten gehören Ihnen, nicht uns\n- Qualität vor Quantität: Jedes Detail zählt\n- Generationenübergreifend: Für heute und für morgen\n\nUnser Team\nWir sind ein internationales Team aus Technologen, Autoren, Historikern und Designern, vereint durch die Leidenschaft, Erinnerungen zu bewahren.\n\nKontaktieren Sie uns unter info@nality.com für weitere Informationen."
       },
       "contact": {
         "title": "Kontakt",
-        "content": "Wir freuen uns, von Ihnen zu hören.\n\nKontaktmöglichkeiten\n\nAllgemeine Anfragen\nE-Mail: info@nality.com\nAntwortzeit: Innerhalb von 24 Stunden\n\nKundensupport\nE-Mail: support@nality.com\nVerfugbar: Mo-Fr, 9:00-18:00 CET\n\nPartnerschaftsanfragen\nE-Mail: partnerships@nality.com\n\nMedienanfragen\nE-Mail: press@nality.com\n\nTechnischer Support\nFür technische Probleme nutzen Sie bitte unseren Chat-Support im Dashboard oder senden Sie eine E-Mail an support@nality.com mit detaillierten Informationen zum Problem.\n\nInterviewer-Buchung\nUm eine professionelle Interview-Session zu buchen, loggen Sie sich in Ihr Konto ein und navigieren Sie zum Interview-Bereich, oder kontaktieren Sie uns unter interview@nality.com.\n\nGeschäftsadresse\nNALITY GmbH\nMaximilianstraße 123\n80539 München\nDeutschland\n\nWir freuen uns darauf, Ihnen bei Ihrer Lebensgeschichte zu helfen."
+        "content": "Wir freuen uns, von Ihnen zu hören.\n\nKontaktmöglichkeiten\n\nAllgemeine Anfragen\nE-Mail: info@nality.com\nAntwortzeit: Innerhalb von 24 Stunden\n\nKundensupport\nE-Mail: support@nality.com\nVerfügbar: Mo-Fr, 9:00-18:00 CET\n\nPartnerschaftsanfragen\nE-Mail: partnerships@nality.com\n\nMedienanfragen\nE-Mail: press@nality.com\n\nTechnischer Support\nFür technische Probleme nutzen Sie bitte unseren Nachrichten-Support im geschützten Bereich oder senden Sie eine E-Mail an support@nality.com mit detaillierten Informationen zum Problem.\n\nInterview-Buchung\nUm einen professionellen Interviewtermin zu buchen, loggen Sie sich in Ihr Konto ein und navigieren Sie zum Interview-Bereich oder kontaktieren Sie uns unter interview@nality.com.\n\nGeschäftsadresse\nNALITY GmbH\nMaximilianstraße 123\n80539 München\nDeutschland\n\nWir freuen uns darauf, Ihnen bei Ihrer Lebensgeschichte zu helfen."
       },
       "careers": {
         "title": "Karriere",
-        "content": "Werde Teil unserer Mission, Lebensgeschichten zu bewahren.\n\nWarum NALITY?\n\nBei NALITY arbeiten Sie an einem Produkt, das echten Wert schafft. Wir helfen Menschen, ihre wertvollsten Erinnerungen für die Ewigkeit festzuhalten.\n\nUnsere Kultur\n- Remote-first: Arbeiten Sie von überall\n- Innovation: Nutzen Sie modernste Technologien\n- Work-Life-Balance: Flexible Arbeitszeiten\n- Wachstum: Kontinuierliche Lern- und Entwicklungsmöglichkeiten\n- Purpose: Sinnvolle Arbeit mit sozialem Impact\n\nAktuelle Positionen\n\nWir suchen regelmäßig nach talentierten Menschen in folgenden Bereichen:\n\n- Full-Stack Engineers (TypeScript, React, Node.js)\n- KI/ML Engineers (NLP, Sprachverarbeitung)\n- UX/UI Designer (Luxury Digital Design)\n- Content Writers & Biografen\n- Customer Success Manager\n- Marketing & Growth Specialists\n\nBewerbungsprozess\n1. Senden Sie Ihren Lebenslauf an careers@nality.com\n2. Erstes Gespräch (30 Minuten)\n3. Technisches Interview / Portfolio Review\n4. Team-Fit Gespräch\n5. Angebot\n\nWas wir bieten\n- Wettbewerbsfähiges Gehalt\n- Equity-Optionen\n- Flexible Arbeitszeiten\n- Weiterbildungsbudget\n- Moderne Tech-Stack\n- Internationale Team-Events\n\nKontakt\ncareers@nality.com\n\nWir freuen uns auf Ihre Bewerbung!"
+        "content": "Werde Teil unserer Mission, Lebensgeschichten zu bewahren.\n\nWarum NALITY?\n\nBei NALITY arbeiten Sie an einem Produkt, das echten Wert schafft. Wir helfen Menschen, ihre wertvollsten Erinnerungen für die Ewigkeit festzuhalten.\n\nUnsere Kultur\n- Ortsunabhängiges Arbeiten: Arbeiten Sie von überall\n- Innovation: Nutzen Sie modernste Technologien\n- Ausgewogene Arbeitskultur: Flexible Arbeitszeiten\n- Wachstum: Kontinuierliche Lern- und Entwicklungsmöglichkeiten\n- Sinn: Arbeit mit gesellschaftlicher Wirkung\n\nAktuelle Positionen\n\nWir suchen regelmäßig nach talentierten Menschen in folgenden Bereichen:\n\n- Entwicklerinnen und Entwickler für Frontend und Backend (TypeScript, React, Node.js)\n- KI/ML-Entwicklerinnen und -Entwickler (NLP, Sprachverarbeitung)\n- UX/UI-Designerinnen und -Designer (luxuriöses digitales Design)\n- Autorinnen, Autoren und Biografinnen\n- Managerinnen und Manager für Kundenerfolg\n- Fachkräfte für Marketing und Wachstum\n\nBewerbungsprozess\n1. Senden Sie Ihren Lebenslauf an careers@nality.com\n2. Erstes Gespräch (30 Minuten)\n3. Technisches Gespräch / Portfolio-Besprechung\n4. Teamgespräch\n5. Angebot\n\nWas wir bieten\n- Wettbewerbsfähiges Gehalt\n- Beteiligungsoptionen\n- Flexible Arbeitszeiten\n- Weiterbildungsbudget\n- Moderne Technologiegrundlage\n- Internationale Teamtreffen\n\nKontakt\ncareers@nality.com\n\nWir freuen uns auf Ihre Bewerbung!"
       }
     }
   },
@@ -471,7 +471,7 @@
       "title": "Willkommen bei",
       "subtitle": "Deine Lebensgeschichte, wunderschön bewahrt",
       "methodPassword": "Passwort",
-      "methodMagicLink": "E-Mail Link",
+      "methodMagicLink": "Anmeldelink per E-Mail",
       "emailLabel": "E-Mail Adresse",
       "emailPlaceholder": "E-Mail eingeben",
       "firstNameLabel": "Vorname",
@@ -502,7 +502,7 @@
         "checkEmail": "E-Mails prüfen",
         "signUpPrefix": "Willkommen bei Nality! Wir haben eine Bestätigungs-E-Mail gesendet an ",
         "signUpSuffix": ". Bitte bestätige deine E-Mail-Adresse, um die Einrichtung deines Kontos abzuschließen.",
-        "magicLinkPrefix": "Wir haben einen E-Mail Link gesendet an ",
+        "magicLinkPrefix": "Wir haben einen Anmeldelink per E-Mail gesendet an ",
         "magicLinkSuffix": "",
         "signUpAction": "Klicke auf den Link in deiner E-Mail, um dein Konto zu verifizieren",
         "magicLinkAction": "Klicke auf den Link in deiner E-Mail, um dich bei Nality anzumelden",
@@ -528,21 +528,21 @@
   },
   "voice": {
     "selector": {
-      "title": "Erinnerung hinzufügen",
-      "subtitle": "Wähle, wie du deine Geschichte teilen möchtest",
+      "title": "Wie möchtest du diese Erinnerung festhalten?",
+      "subtitle": "Wähle den Modus, mit dem du jetzt eine Erinnerung hinzufügen möchtest. Das Interview nutzt deine Vorab-Angaben und bisherigen Einträge als Kontext.",
       "cancel": "Abbrechen",
       "recommended": "Empfohlen",
       "interview": {
         "title": "Geführtes Interview",
-        "description": "Führe ein Sprachgespräch mit unserem KI-Biografen. Sprich ganz natürlich und wir erfassen deine Erinnerungen."
+        "description": "Unsere KI-Biografin stellt dir die wichtigsten Fragen. Du sprichst frei, wir halten alles sicher fest und sortieren es für dich."
       },
       "freeTalk": {
-        "title": "Freies Sprechen",
-        "description": "Nimm deine Gedanken frei auf. Sprich so lange du möchtest und wir extrahieren die Erinnerungen."
+        "title": "Freies Erzählen",
+        "description": "Starte eine spontane Sprachnotiz. Ideal, wenn du einfach erzählen willst – wir bringen deine Geschichte später in Form."
       },
       "text": {
         "title": "Texteingabe",
-        "description": "Schreibe in deinem eigenen Tempo. Fülle ein Formular aus, um deine Erinnerung manuell hinzuzufügen."
+        "description": "Schreibe in deinem Tempo, pausiere jederzeit und prüfe alles vor dem Speichern. Perfekt, wenn du jedes Wort bewusst wählen möchtest."
       }
     },
     "interview": {
@@ -568,11 +568,11 @@
       "foundPrefix": "Gefunden:",
       "memory": "Erinnerung",
       "memories": "Erinnerungen",
-      "previewTitle": "Überprüfe und bestätige, um sie deiner Timeline hinzuzufügen",
+      "previewTitle": "Überprüfe und bestätige, um sie deiner Zeitleiste hinzuzufügen",
       "tryAgain": "Nochmal versuchen",
       "saveMemories": "Erinnerungen speichern",
       "success": "Erinnerungen gespeichert!",
-      "successBody": "Deine Erinnerungen wurden der Timeline hinzugefügt",
+      "successBody": "Deine Erinnerungen wurden deiner Zeitleiste hinzugefügt",
       "recordingShort": "Aufnahme zu kurz. Bitte sprich etwas länger.",
       "failedProcess": "Fehler beim Verarbeiten der Aufnahme. Bitte versuche es erneut.",
       "failedSave": "Fehler beim Speichern der Erinnerungen. Bitte versuche es erneut."
@@ -588,7 +588,7 @@
       "initialMessage": "Guten Tag! Wie möchten Sie angesprochen werden – du oder Sie? Ihr vollständiger Name? Und welcher Stil passt zu Ihnen: **prosa** (erzählend), **fachlich** (strukturiert) oder **locker** (entspannt)?",
       "welcomeBack": "Willkommen zurück! Lass uns dort weitermachen, wo wir aufgehört haben.",
       "loadingChat": "Lade Gespräch...",
-      "assistantTitle": "Biografie-Assistent",
+      "assistantTitle": "Biografie-Begleiter",
       "resumed": "Fortgesetzt",
       "tagline": "Fast wie ein Gespräch unter Freunden.",
       "progress": "Fortschritt",
@@ -612,8 +612,8 @@
   },
   "profile": {
     "emptyTitle": "Erzähl uns, wer du bist",
-    "emptySubtitle": "Dein Profil ist noch leer. Füge deine Werte, Einflüsse und dein Lebensmotto hinzu, um deiner Timeline Persönlichkeit zu geben.",
-    "completeInChat": "Im Chat vervollständigen",
+    "emptySubtitle": "Dein Profil ist noch leer. Füge deine Werte, Einflüsse und dein Lebensmotto hinzu, um deiner Zeitleiste Persönlichkeit zu geben.",
+    "completeInChat": "Im Gespräch vervollständigen",
     "completeProfile": "Profil vervollständigen",
     "defaultName": "Mein Profil",
     "bornIn": "Geboren {year} in {place}",
@@ -660,20 +660,23 @@
   },
   "dashboardNav": {
     "tabs": {
-      "dashboard": "Dashboard",
-      "timeline": "Timeline",
-      "chat": "Chat",
+      "feed": "Übersicht",
+      "chapters": "Kapitel",
+      "biography": "Biografie",
+      "dashboard": "Übersicht",
+      "timeline": "Zeitleiste",
+      "chat": "Gespräch",
       "contact": "Kontakt"
     },
     "chat": {
-      "comingSoon": "Chat in Kürze verfügbar",
-      "subtitle": "Du wirst in der Lage sein, Lebensereignisse in Echtzeit mit unserem KI-Assistenten zu besprechen. Erhalte Hilfe beim Organisieren von Erinnerungen, beim Füllen von Lücken in deiner Timeline und beim Entdecken neuer Perspektiven auf deine Geschichte.",
-      "startChat": "Chat starten (In Kürze)",
+      "comingSoon": "Gesprächsfunktion in Kürze verfügbar",
+      "subtitle": "Du wirst Lebensereignisse in Echtzeit mit unserem KI-Assistenten besprechen können. Erhalte Hilfe beim Organisieren von Erinnerungen, beim Füllen von Lücken in deiner Zeitleiste und beim Entdecken neuer Perspektiven auf deine Geschichte.",
+      "startChat": "Gespräch starten (in Kürze)",
       "plannedFeatures": "Geplante Funktionen:",
-      "featureTimeline": "Natürliche Konversation über deine Timeline",
+      "featureTimeline": "Natürliche Konversation über deine Zeitleiste",
       "featureMemories": "Hilfe beim Finden und Organisieren von Erinnerungen",
       "featureDescriptions": "Unterstützung bei Ereignisbeschreibungen",
-      "featureInsights": "Personalisierte Einblicke in deine Timeline"
+      "featureInsights": "Personalisierte Einblicke in deine Zeitleiste"
     },
     "dashboard": {
       "label": "Deine Reise",
@@ -713,5 +716,15 @@
       }
     },
     "profile": "Profil"
+  },
+  "chat": {
+    "error": {
+      "title": "Gespräch konnte nicht gestartet werden",
+      "retry": "Erneut versuchen"
+    },
+    "addMemory": {
+      "subtitle": "Teile deine Erinnerungen",
+      "welcomeMessage": "Was möchtest du heute festhalten? Erzähle mir von einem besonderen Moment."
+    }
   }
 }

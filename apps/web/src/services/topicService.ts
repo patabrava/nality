@@ -125,10 +125,10 @@ export class TopicService {
       if (error) {
         // Check if error is due to missing table
         if (error.message?.includes('does not exist') || error.code === 'PGRST116') {
-          throw new Error('Custom topics are not available yet. Please contact support to enable this feature.')
+          throw new Error('Eigene Themen sind noch nicht verfügbar. Bitte kontaktiere den Support, um diese Funktion freizuschalten.')
         }
         console.error('Error creating custom topic:', error)
-        throw new Error(`Failed to create topic: ${error.message}`)
+        throw new Error(`Das Thema konnte nicht erstellt werden: ${error.message}`)
       }
 
       return {
@@ -142,12 +142,12 @@ export class TopicService {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('does not exist')) {
-          throw new Error('Custom topics are not available yet. Please contact support to enable this feature.')
+          throw new Error('Eigene Themen sind noch nicht verfügbar. Bitte kontaktiere den Support, um diese Funktion freizuschalten.')
         }
         throw error // Re-throw known errors
       }
       console.error('Unexpected error creating custom topic:', error)
-      throw new Error('An unexpected error occurred while creating the topic')
+      throw new Error('Beim Erstellen des Themas ist ein unerwarteter Fehler aufgetreten')
     }
   }
 
@@ -158,21 +158,21 @@ export class TopicService {
     const trimmedName = name.trim()
     
     if (!trimmedName) {
-      return { isValid: false, error: 'Topic name cannot be empty' }
+      return { isValid: false, error: 'Der Themenname darf nicht leer sein' }
     }
     
     if (trimmedName.length < 2) {
-      return { isValid: false, error: 'Topic name must be at least 2 characters' }
+      return { isValid: false, error: 'Der Themenname muss mindestens 2 Zeichen lang sein' }
     }
     
     if (trimmedName.length > 50) {
-      return { isValid: false, error: 'Topic name must be less than 50 characters' }
+      return { isValid: false, error: 'Der Themenname darf höchstens 50 Zeichen lang sein' }
     }
 
     // Check if name conflicts with default topics
     const defaultNames = DEFAULT_TOPICS.map(t => t.name.toLowerCase())
     if (defaultNames.includes(trimmedName.toLowerCase())) {
-      return { isValid: false, error: 'This topic already exists' }
+      return { isValid: false, error: 'Dieses Thema existiert bereits' }
     }
 
     return { isValid: true }

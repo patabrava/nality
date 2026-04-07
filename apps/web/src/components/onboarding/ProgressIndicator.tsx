@@ -134,7 +134,7 @@ export default function ProgressIndicator({
                 transition: 'all 0.2s ease'
               }}>
                 {isComplete && (
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path
                       d="M2 6L5 9L10 3"
                       stroke="var(--md-sys-color-on-primary)"
@@ -155,8 +155,8 @@ export default function ProgressIndicator({
                     ? 'var(--md-sys-color-on-primary-container)'
                     : 'var(--md-sys-color-on-surface)',
                 fontWeight: isCurrent ? 500 : 400,
-                textDecoration: isComplete ? 'line-through' : 'none',
-                opacity: isComplete ? 0.7 : 1
+                textDecoration: 'none',
+                opacity: isComplete ? 0.5 : 1
               }}>
                 {section.label}
               </span>

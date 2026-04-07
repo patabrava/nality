@@ -24,7 +24,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const { data: memory, error } = await supabase
@@ -42,10 +42,10 @@ export async function GET(req: Request, { params }: RouteParams) {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Memory not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Erinnerung nicht gefunden' }, { status: 404 });
       }
       console.error('Error fetching memory:', error);
-      return NextResponse.json({ error: 'Failed to fetch memory' }, { status: 500 });
+      return NextResponse.json({ error: 'Erinnerung konnte nicht geladen werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -54,7 +54,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Memory GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -65,7 +65,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body: MemoryUpdate = await req.json();
@@ -86,10 +86,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Memory not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Erinnerung nicht gefunden' }, { status: 404 });
       }
       console.error('Error updating memory:', error);
-      return NextResponse.json({ error: 'Failed to update memory' }, { status: 500 });
+      return NextResponse.json({ error: 'Erinnerung konnte nicht aktualisiert werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -98,7 +98,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Memory PATCH error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -109,7 +109,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const { error } = await supabase
@@ -120,15 +120,15 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     if (error) {
       console.error('Error deleting memory:', error);
-      return NextResponse.json({ error: 'Failed to delete memory' }, { status: 500 });
+      return NextResponse.json({ error: 'Erinnerung konnte nicht gelöscht werden' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Memory deleted successfully',
+      message: 'Erinnerung erfolgreich gelöscht',
     });
   } catch (error) {
     console.error('Memory DELETE error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

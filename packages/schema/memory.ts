@@ -110,6 +110,8 @@ export const InterviewSessionSchema = z.object({
   
   topics_covered: z.array(z.string()).default([]).optional(),
   memory_count: z.number().int().min(0).default(0).optional(),
+  catalog_version: z.string().optional().nullable(),
+  active_question_id: z.string().optional().nullable(),
   
   processing_status: z.enum(['pending', 'processing', 'complete', 'failed']).default('pending'),
   summary: z.string().optional().nullable(),
@@ -255,13 +257,13 @@ export function formatDateHeader(dateKey: string): string {
   yesterday.setDate(yesterday.getDate() - 1)
   
   if (dateKey === today.toISOString().split('T')[0]) {
-    return 'Today'
+    return 'Heute'
   }
   if (dateKey === yesterday.toISOString().split('T')[0]) {
-    return 'Yesterday'
+    return 'Gestern'
   }
   
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('de-DE', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -288,10 +290,10 @@ export function getMemoryModeLabel(mode: MemoryCaptureModeType): string {
     case 'interview':
       return 'Interview'
     case 'free_talk':
-      return 'Free Talk'
+      return 'Freies Sprechen'
     case 'text':
-      return 'Written'
+      return 'Geschrieben'
     default:
-      return 'Memory'
+      return 'Erinnerung'
   }
 }

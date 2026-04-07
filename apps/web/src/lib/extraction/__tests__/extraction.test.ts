@@ -164,10 +164,10 @@ More text.
       const events = parseSaveMemoryBlocks(content, 'career');
       
       expect(events).toHaveLength(1);
-      expect(events[0].title).toBe('Started at Google');
-      expect(events[0].start_date).toBe('2020-03-15');
-      expect(events[0].description).toContain('Joined Google');
-      expect(events[0].category).toBe('career');
+      expect(events[0]!.title).toBe('Started at Google');
+      expect(events[0]!.start_date).toBe('2020-03-15');
+      expect(events[0]!.description).toContain('Joined Google');
+      expect(events[0]!.category).toBe('career');
     });
 
     it('parses multiple [SAVE_MEMORY] blocks', () => {
@@ -188,8 +188,8 @@ Description: Changed companies
       const events = parseSaveMemoryBlocks(content, 'career');
       
       expect(events).toHaveLength(2);
-      expect(events[0].title).toBe('First Job');
-      expect(events[1].title).toBe('Second Job');
+      expect(events[0]!.title).toBe('First Job');
+      expect(events[1]!.title).toBe('Second Job');
     });
 
     it('handles German date formats', () => {
@@ -204,7 +204,7 @@ Description: Abitur bestanden
       const events = parseSaveMemoryBlocks(content, 'education');
       
       expect(events).toHaveLength(1);
-      expect(events[0].start_date).toBe('2010-06-15');
+      expect(events[0]!.start_date).toBe('2010-06-15');
     });
   });
 

@@ -2,9 +2,12 @@ import { streamText, type CoreMessage } from 'ai';
 import { google } from '@ai-sdk/google';
 import { NextResponse } from 'next/server';
 import { buildChapterSystemPrompt } from '@/lib/prompts/chapters';
-import { createClient } from '@/lib/supabase/server';
 import { isValidChapterId } from '@/lib/chapters';
 import type { ChapterId } from '@nality/schema';
+import {
+  authenticationRequiredResponse,
+  getAuthenticatedRequestContext,
+} from '@/lib/server/auth';
 
 export const dynamic = "force-dynamic";
 
@@ -21,14 +24,16 @@ function sanitizeContent(raw: string): string {
 }
 
 export async function POST(req: Request) {
-  console.log("📖 Chapter Chat API endpoint hit");
-  
   try {
-    const { messages, chapterId, userId: bodyUserId, accessToken } = await req.json();
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse();
+    }
+
+    const { messages, chapterId } = await req.json();
     
     // Validate chapter ID
     if (!chapterId || !isValidChapterId(chapterId)) {
-      console.error("❌ Invalid or missing chapterId:", chapterId);
       return NextResponse.json(
         { error: "Invalid or missing chapterId" },
         { status: 400 }
@@ -43,26 +48,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get authenticated user
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const effectiveUserId = user?.id || bodyUserId;
-
-    if (!effectiveUserId) {
-      console.error("❌ No user authentication found");
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
     // Clean messages
     const cleanMessages = messages.map((m: { role: string; content: string }) => ({
       role: m.role,
       content: sanitizeContent(m.content || '')
     })) as CoreMessage[];
-
-    console.log(`📖 Chapter: ${chapterId}, User: ${effectiveUserId}, Messages: ${cleanMessages.length}`);
 
     // Check API key
     // Prefer the freshly provided Gemini key first, then fall back
@@ -81,47 +71,40 @@ export async function POST(req: Request) {
 
     // Stream response with chapter-specific prompt
     const result = await streamText({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-2.0-flash'),
       system: buildChapterSystemPrompt(chapterId as ChapterId),
       messages: cleanMessages,
       maxTokens: 1000,
       temperature: 0.7,
-      onFinish: async ({ text, usage }) => {
-        console.log(`✅ Chapter chat complete, text length: ${text.length}`);
-        console.log("📊 Token usage:", usage);
-        
+      onFinish: async ({ text }) => {
         // Check if AI included a [SAVE_MEMORY] block and extract it
         if (text.includes('[SAVE_MEMORY]')) {
           try {
-            console.log('📦 Detected [SAVE_MEMORY] block, calling extraction API...');
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+            const extractUrl = new URL('/api/events/extract', req.url);
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (auth.accessToken) {
+              headers.Authorization = `Bearer ${auth.accessToken}`;
+            }
             
-            const extractResponse = await fetch(`${baseUrl}/api/events/extract`, {
+            const extractResponse = await fetch(extractUrl, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers,
               body: JSON.stringify({
                 content: text,
                 source: 'chapter_chat',
                 chapterId,
-                userId: effectiveUserId,
-                accessToken,
               }),
             });
             
             if (extractResponse.ok) {
-              const extractResult = await extractResponse.json();
-              console.log(`📦 Extraction result: ${extractResult.events?.length || 0} events saved`);
-            } else {
-              console.error('❌ Extraction API error:', await extractResponse.text());
+              await extractResponse.json().catch(() => null);
             }
-          } catch (err) {
-            console.error('❌ Failed to extract memory:', err);
+          } catch {
+            // Best-effort extraction only.
           }
         }
       },
-      onError: (error) => {
-        console.error("❌ StreamText error:", error);
-      }
+      onError: () => undefined,
     });
 
     return result.toDataStreamResponse({
@@ -132,9 +115,6 @@ export async function POST(req: Request) {
     });
     
   } catch (error) {
-    console.error("❌ Chapter Chat API error:", error);
-    console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
-    
     return NextResponse.json(
       { 
         error: "Something went wrong. Please try again.",

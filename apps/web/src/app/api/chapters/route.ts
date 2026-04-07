@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
     if (error) {
       console.error('Error fetching chapters:', error);
-      return NextResponse.json({ error: 'Failed to fetch chapters' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnten nicht geladen werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -47,7 +47,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error('Chapters GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }
 
@@ -57,13 +57,13 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
     }
 
     const body: Partial<ChapterInput> = await req.json();
 
     if (!body.title) {
-      return NextResponse.json({ error: 'title is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Titel ist erforderlich' }, { status: 400 });
     }
 
     // Get next display order
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error('Error creating chapter:', error);
-      return NextResponse.json({ error: 'Failed to create chapter' }, { status: 500 });
+      return NextResponse.json({ error: 'Kapitel konnte nicht erstellt werden' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -107,6 +107,6 @@ export async function POST(req: Request) {
     }, { status: 201 });
   } catch (error) {
     console.error('Chapters POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Interner Serverfehler' }, { status: 500 });
   }
 }

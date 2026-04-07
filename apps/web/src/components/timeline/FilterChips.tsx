@@ -91,12 +91,12 @@ export function FilterChips({ className = '' }: FilterChipsProps) {
         {filters.topics.map(topicId => (
           <div key={topicId} className="filter-chip topic-chip">
             <span className="filter-chip-label">
-              Topic: {getTopicName(topicId)}
+              Thema: {getTopicName(topicId)}
             </span>
             <button
               onClick={() => removeTopicFilter(topicId)}
               className="filter-chip-remove"
-              aria-label={`Remove ${getTopicName(topicId)} filter`}
+              aria-label={`Filter ${getTopicName(topicId)} entfernen`}
             >
               ×
             </button>
@@ -107,12 +107,12 @@ export function FilterChips({ className = '' }: FilterChipsProps) {
         {filters.keywords && (
           <div className="filter-chip keywords-chip">
             <span className="filter-chip-label">
-              Search: "{filters.keywords}"
+              Suche: "{filters.keywords}"
             </span>
             <button
               onClick={clearKeywords}
               className="filter-chip-remove"
-              aria-label="Clear search"
+              aria-label="Suche löschen"
             >
               ×
             </button>
@@ -123,12 +123,12 @@ export function FilterChips({ className = '' }: FilterChipsProps) {
         {(filters.dateRange.start || filters.dateRange.end) && (
           <div className="filter-chip date-chip">
             <span className="filter-chip-label">
-              Date: {filters.dateRange.start || '...'} to {filters.dateRange.end || '...'}
+              Zeitraum: {filters.dateRange.start || '...'} bis {filters.dateRange.end || '...'}
             </span>
             <button
               onClick={clearDateRange}
               className="filter-chip-remove"
-              aria-label="Clear date filter"
+              aria-label="Datumsfilter löschen"
             >
               ×
             </button>
@@ -139,12 +139,12 @@ export function FilterChips({ className = '' }: FilterChipsProps) {
         {filters.sortBy !== 'date-desc' && (
           <div className="filter-chip sort-chip">
             <span className="filter-chip-label">
-              Sort: {getSortLabel(filters.sortBy)}
+              Sortierung: {getSortLabel(filters.sortBy)}
             </span>
             <button
               onClick={resetSort}
               className="filter-chip-remove"
-              aria-label="Reset to default sort"
+              aria-label="Standardsortierung wiederherstellen"
             >
               ×
             </button>
@@ -158,10 +158,10 @@ export function FilterChips({ className = '' }: FilterChipsProps) {
 // Helper function for sort labels
 function getSortLabel(sortBy: string): string {
   switch (sortBy) {
-    case 'date-desc': return 'Date (Newest First)'
-    case 'date-asc': return 'Date (Oldest First)'
-    case 'title-asc': return 'Title (A-Z)'
-    case 'title-desc': return 'Title (Z-A)'
+    case 'date-desc': return 'Datum (neueste zuerst)'
+    case 'date-asc': return 'Datum (älteste zuerst)'
+    case 'title-asc': return 'Titel (A-Z)'
+    case 'title-desc': return 'Titel (Z-A)'
     default: return sortBy
   }
 }

@@ -40,6 +40,7 @@ export const ChapterSchema = z.object({
   // Clustering metadata
   theme_keywords: z.array(z.string()).default([]).optional(),
   memory_count: z.number().int().min(0).default(0).optional(),
+  planning_basis: z.unknown().optional().nullable(),
   
   // Display order
   display_order: z.number().int().default(0).optional(),
@@ -104,6 +105,7 @@ export type ChapterGenerationRequest = {
  * Chapter generation result
  */
 export type ChapterGenerationResult = {
+  ready?: boolean
   chapters_created: number
   chapters: Chapter[]
   memories_assigned: number
@@ -129,11 +131,11 @@ export function validateChapter(data: unknown): { success: true; data: Chapter }
  */
 export function formatChapterTimeRange(chapter: Chapter): string {
   if (!chapter.time_range_start) {
-    return 'Time range pending'
+    return 'Zeitraum ausstehend'
   }
   
   const start = new Date(chapter.time_range_start)
-  const startFormatted = start.toLocaleDateString('en-US', {
+  const startFormatted = start.toLocaleDateString('de-DE', {
     month: 'short',
     year: 'numeric',
   })
@@ -143,7 +145,7 @@ export function formatChapterTimeRange(chapter: Chapter): string {
   }
   
   const end = new Date(chapter.time_range_end)
-  const endFormatted = end.toLocaleDateString('en-US', {
+  const endFormatted = end.toLocaleDateString('de-DE', {
     month: 'short',
     year: 'numeric',
   })
@@ -157,11 +159,11 @@ export function formatChapterTimeRange(chapter: Chapter): string {
 export function getChapterStatusInfo(status: ChapterStatusType): { label: string; color: string } {
   switch (status) {
     case 'draft':
-      return { label: 'Draft', color: 'gold' }
+      return { label: 'Entwurf', color: 'gold' }
     case 'published':
-      return { label: 'Published', color: 'green' }
+      return { label: 'Veröffentlicht', color: 'green' }
     default:
-      return { label: 'Unknown', color: 'gray' }
+      return { label: 'Unbekannt', color: 'gray' }
   }
 }
 

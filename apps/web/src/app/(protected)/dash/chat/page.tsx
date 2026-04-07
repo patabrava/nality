@@ -1,5 +1,3 @@
-'use client'
-
 import { ChatModule } from '@/modules/chat/ChatModule'
 
 /**
@@ -7,7 +5,5 @@ import { ChatModule } from '@/modules/chat/ChatModule'
  * Loads functional chat module
  */
 export default function ChatPage() {
-  console.log('[ChatPage] Module page mounted')
-  
   return <ChatModule />
 }

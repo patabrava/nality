@@ -10,11 +10,14 @@ export function BiographyModule() {
   const { 
     biography, 
     loading, 
+    error,
     canGenerate, 
     generate, 
     regenerate, 
     updateTone,
-    generating 
+    exportPdf,
+    generating,
+    exporting,
   } = useBiography()
   
   const [isEditing, setIsEditing] = useState(false)
@@ -23,14 +26,18 @@ export function BiographyModule() {
   
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '50vh',
-        color: 'rgba(255, 255, 255, 0.5)',
-      }}>
-        Loading biography...
+      <div
+        role="status"
+        aria-label="Biografie wird geladen"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '50vh',
+          color: 'rgba(255, 255, 255, 0.5)',
+        }}
+      >
+        Biografie wird geladen...
       </div>
     )
   }
@@ -63,7 +70,7 @@ export function BiographyModule() {
           color: '#fff',
           fontFamily: 'var(--font-playfair, Playfair Display, serif)',
         }}>
-          Your Biography
+          Deine Biografie
         </h2>
         <p style={{ 
           color: 'rgba(255, 255, 255, 0.6)', 
@@ -71,7 +78,7 @@ export function BiographyModule() {
           marginBottom: '24px',
           lineHeight: 1.6,
         }}>
-          Generate a beautifully written narrative from your life chapters
+          Erstelle aus deinen Lebenskapiteln eine schön formulierte Biografie.
         </p>
         
         <div style={{ marginBottom: '24px' }}>
@@ -81,7 +88,7 @@ export function BiographyModule() {
             color: 'rgba(255, 255, 255, 0.7)',
             fontSize: '0.85rem',
           }}>
-            Choose a writing style
+            Wähle einen Schreibstil
           </label>
           <div style={{ display: 'flex', gap: '8px' }}>
             {(['neutral', 'poetic', 'formal'] as BiographyToneType[]).map((tone) => {
@@ -126,11 +133,11 @@ export function BiographyModule() {
               fontSize: '1rem',
             }}
           >
-            {generating ? 'Generating...' : 'Generate Biography'}
+            {generating ? 'Wird erstellt...' : 'Biografie erstellen'}
           </button>
         ) : (
           <p style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.9rem' }}>
-            Create chapters first to generate your biography
+            Erstelle zuerst Kapitel, um deine Biografie zu erzeugen.
           </p>
         )}
       </div>
@@ -147,6 +154,22 @@ export function BiographyModule() {
       margin: '0 auto', 
       padding: '32px 24px' 
     }}>
+      {error ? (
+        <div
+          role="alert"
+          style={{
+            marginBottom: '20px',
+            padding: '14px 16px',
+            borderRadius: '14px',
+            border: '1px solid rgba(194, 69, 69, 0.28)',
+            background: 'rgba(194, 69, 69, 0.12)',
+            color: '#ffd5d5',
+          }}
+        >
+          {error}
+        </div>
+      ) : null}
+
       <header style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -160,13 +183,13 @@ export function BiographyModule() {
             fontFamily: 'var(--font-playfair, Playfair Display, serif)',
             fontSize: '1.75rem',
           }}>
-            Your Biography
+            Deine Biografie
           </h1>
           <p style={{ 
             color: 'rgba(255, 255, 255, 0.5)', 
             fontSize: '0.85rem' 
           }}>
-            Version {biography.version} · {wordCount} words · {readingTime} min read
+            Version {biography.version} · {wordCount} Wörter · {readingTime} Min. Lesezeit
           </p>
         </div>
         
@@ -179,8 +202,10 @@ export function BiographyModule() {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '8px',
           }}>
-            <Palette size={14} style={{ color: '#D4AF37' }} />
-            <select 
+            <Palette size={14} style={{ color: '#D4AF37' }} aria-hidden="true" />
+            <label htmlFor="biography-tone" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Schreibton</label>
+            <select
+              id="biography-tone"
               value={biography.tone}
               onChange={(e) => updateTone(e.target.value as BiographyToneType)}
               style={{
@@ -192,7 +217,7 @@ export function BiographyModule() {
               }}
             >
               <option value="neutral">Neutral</option>
-              <option value="poetic">Poetic</option>
+              <option value="poetic">Poetisch</option>
               <option value="formal">Formal</option>
             </select>
           </div>
@@ -261,7 +286,7 @@ export function BiographyModule() {
           }}
         >
           <Edit size={16} />
-          {isEditing ? 'Cancel' : 'Edit'}
+          {isEditing ? 'Abbrechen' : 'Bearbeiten'}
         </button>
         <button 
           onClick={() => regenerate()}
@@ -280,24 +305,28 @@ export function BiographyModule() {
           }}
         >
           <RefreshCw size={16} />
-          {generating ? 'Regenerating...' : 'Regenerate'}
+          {generating ? 'Wird neu erstellt...' : 'Neu erstellen'}
         </button>
-        <button 
+        <button
+          onClick={() => exportPdf()}
+          disabled={exporting}
+          aria-label="Biografie als PDF exportieren"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
             padding: '10px 16px',
             background: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(212, 175, 55, 0.22)',
             borderRadius: '8px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            cursor: 'pointer',
+            color: exporting ? 'rgba(255, 255, 255, 0.4)' : '#D4AF37',
+            cursor: exporting ? 'wait' : 'pointer',
             fontSize: '0.85rem',
+            opacity: exporting ? 0.6 : 1,
           }}
         >
           <Download size={16} />
-          Export
+          {exporting ? 'Export läuft...' : 'PDF exportieren'}
         </button>
       </div>
     </div>

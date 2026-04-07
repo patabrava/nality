@@ -1,36 +1,81 @@
-/**
- * Memories API
- * 
- * GET: List memories (paginated, date-grouped)
- * POST: Create a new memory
- */
-
-import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import type { Memory, MemoryInput } from '@nality/schema';
+import type { MemoryInput } from '@nality/schema';
+import {
+  authenticationRequiredResponse,
+  getAuthenticatedRequestContext,
+} from '@/lib/server/auth';
+import { jsonFailure, jsonSuccess, zodErrorDetails } from '@/lib/server/api';
+import { createRouteLogger } from '@/lib/server/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(req: Request) {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+const MemoriesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+  capture_mode: z.enum(['interview', 'free_talk', 'text']).optional(),
+  chapter_id: z.string().uuid().optional(),
+});
 
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+const EmotionsInputSchema = z
+  .object({
+    valence: z.number().min(-1).max(1).optional(),
+    arousal: z.number().min(0).max(1).optional(),
+    confidence: z.number().min(0).max(1).optional(),
+  })
+  .passthrough();
+
+const CreateMemoryBodySchema = z.object({
+  raw_transcript: z.string().trim().min(1, 'raw_transcript is required'),
+  cleaned_content: z.string().optional().nullable(),
+  captured_at: z.string().datetime().optional(),
+  capture_mode: z.enum(['interview', 'free_talk', 'text']).default('free_talk'),
+  interview_session_id: z.string().uuid().optional().nullable(),
+  interview_question: z.string().optional().nullable(),
+  interview_topic: z.string().optional().nullable(),
+  people: z.array(z.string()).default([]),
+  places: z.array(z.string()).default([]),
+  topics: z.array(z.string()).default([]),
+  emotions: EmotionsInputSchema.optional().nullable(),
+  suggested_category: z.string().optional().nullable(),
+  suggested_chapter_id: z.string().uuid().optional().nullable(),
+  suggestion_confidence: z.number().min(0).max(1).default(0),
+  source: z.enum(['voice', 'text']).default('voice'),
+  processing_status: z.enum(['pending', 'processing', 'complete', 'failed']).default('pending'),
+  processed_at: z.string().datetime().optional().nullable(),
+  chapter_id: z.string().uuid().optional().nullable(),
+});
+
+export async function GET(req: Request) {
+  const logger = createRouteLogger('api.memories.get', req);
+  try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse(req);
     }
 
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
-    const captureMode = searchParams.get('capture_mode');
-    const chapterId = searchParams.get('chapter_id');
+    const parsedQuery = MemoriesQuerySchema.safeParse(
+      Object.fromEntries(new URL(req.url).searchParams.entries()),
+    );
+
+    if (!parsedQuery.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_QUERY',
+        message: 'Ungültige Erinnerungsanfrage',
+        details: zodErrorDetails(parsedQuery.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
+    const supabase = await createClient();
+    const { limit, offset, capture_mode: captureMode, chapter_id: chapterId } = parsedQuery.data;
 
     let query = supabase
       .from('memories')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', auth.user.id)
       .order('captured_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -45,68 +90,91 @@ export async function GET(req: Request) {
     const { data: memories, error } = await query;
 
     if (error) {
-      console.error('Error fetching memories:', error);
-      return NextResponse.json({ error: 'Failed to fetch memories' }, { status: 500 });
+      logger.error('Failed to fetch memories', {
+        code: error.code,
+        message: error.message,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'MEMORIES_FETCH_FAILED',
+        message: 'Erinnerungen konnten nicht geladen werden',
+        correlationId: logger.correlationId,
+      });
     }
 
-    // Get total count for pagination
     const { count } = await supabase
       .from('memories')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
+      .eq('user_id', auth.user.id);
 
-    return NextResponse.json({
-      success: true,
-      data: memories,
-      pagination: {
-        total: count || 0,
-        limit,
-        offset,
-        hasMore: (offset + limit) < (count || 0),
+    return jsonSuccess(memories ?? [], req, {
+      correlationId: logger.correlationId,
+      meta: {
+        pagination: {
+          total: count || 0,
+          limit,
+          offset,
+          hasMore: offset + limit < (count || 0),
+        },
       },
     });
   } catch (error) {
-    console.error('Memories GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    logger.error('Unexpected memories GET error', {
+      error: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonFailure(req, {
+      status: 500,
+      code: 'MEMORIES_GET_FAILED',
+      message: 'Interner Serverfehler',
+      correlationId: logger.correlationId,
+    });
   }
 }
 
 export async function POST(req: Request) {
+  const logger = createRouteLogger('api.memories.post', req);
   try {
+    const auth = await getAuthenticatedRequestContext(req);
+    if (!auth) {
+      return authenticationRequiredResponse(req);
+    }
+
+    const body = await req.json().catch(() => null);
+    const parsedBody = CreateMemoryBodySchema.safeParse(body);
+
+    if (!parsedBody.success) {
+      return jsonFailure(req, {
+        status: 400,
+        code: 'INVALID_BODY',
+        message: 'Ungültige Erinnerungsdaten',
+        details: zodErrorDetails(parsedBody.error),
+        correlationId: logger.correlationId,
+      });
+    }
+
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const body: Partial<MemoryInput> = await req.json();
-
-    // Validate required fields
-    if (!body.raw_transcript) {
-      return NextResponse.json({ error: 'raw_transcript is required' }, { status: 400 });
-    }
+    const bodyData = parsedBody.data;
 
     const memoryData: MemoryInput = {
-      user_id: user.id,
-      raw_transcript: body.raw_transcript,
-      cleaned_content: body.cleaned_content || null,
-      captured_at: body.captured_at || new Date().toISOString(),
-      capture_mode: body.capture_mode || 'free_talk',
-      interview_session_id: body.interview_session_id || null,
-      interview_question: body.interview_question || null,
-      interview_topic: body.interview_topic || null,
-      people: body.people || [],
-      places: body.places || [],
-      topics: body.topics || [],
-      emotions: body.emotions || null,
-      suggested_category: body.suggested_category || null,
-      suggested_chapter_id: body.suggested_chapter_id || null,
-      suggestion_confidence: body.suggestion_confidence || 0,
-      source: body.source || 'voice',
-      processing_status: body.processing_status || 'pending',
-      processed_at: body.processed_at || null,
-      chapter_id: body.chapter_id || null,
+      user_id: auth.user.id,
+      raw_transcript: bodyData.raw_transcript,
+      cleaned_content: bodyData.cleaned_content || null,
+      captured_at: bodyData.captured_at || new Date().toISOString(),
+      capture_mode: bodyData.capture_mode,
+      interview_session_id: bodyData.interview_session_id || null,
+      interview_question: bodyData.interview_question || null,
+      interview_topic: bodyData.interview_topic || null,
+      people: bodyData.people,
+      places: bodyData.places,
+      topics: bodyData.topics,
+      emotions: bodyData.emotions || null,
+      suggested_category: bodyData.suggested_category || null,
+      suggested_chapter_id: bodyData.suggested_chapter_id || null,
+      suggestion_confidence: bodyData.suggestion_confidence,
+      source: bodyData.source,
+      processing_status: bodyData.processing_status,
+      processed_at: bodyData.processed_at || null,
+      chapter_id: bodyData.chapter_id || null,
     };
 
     const { data: memory, error } = await supabase
@@ -116,16 +184,31 @@ export async function POST(req: Request) {
       .single();
 
     if (error) {
-      console.error('Error creating memory:', error);
-      return NextResponse.json({ error: 'Failed to create memory' }, { status: 500 });
+      logger.error('Failed to create memory', {
+        code: error.code,
+        message: error.message,
+      });
+      return jsonFailure(req, {
+        status: 500,
+        code: 'MEMORY_CREATE_FAILED',
+        message: 'Erinnerung konnte nicht erstellt werden',
+        correlationId: logger.correlationId,
+      });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: memory,
-    }, { status: 201 });
+    return jsonSuccess(memory, req, {
+      status: 201,
+      correlationId: logger.correlationId,
+    });
   } catch (error) {
-    console.error('Memories POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    logger.error('Unexpected memories POST error', {
+      error: error instanceof Error ? error.message : 'unknown',
+    });
+    return jsonFailure(req, {
+      status: 500,
+      code: 'MEMORIES_POST_FAILED',
+      message: 'Interner Serverfehler',
+      correlationId: logger.correlationId,
+    });
   }
 }
