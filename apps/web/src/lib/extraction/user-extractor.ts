@@ -60,6 +60,7 @@ function extractFormOfAddress(text: string): 'du' | 'sie' | undefined {
     /\bdu\s*,/,           // "du, ..." at start
     /^du\b/,              // starts with "du"
     /\bduz/,              // "duzen"
+    /\bgeduzt\b/,
   ];
   
   if (duPatterns.some(p => p.test(text))) {
@@ -74,6 +75,7 @@ function extractFormOfAddress(text: string): 'du' | 'sie' | undefined {
     /\bsie\s*,/,          // "Sie, ..." at start
     /^sie\b/,             // starts with "Sie"
     /\bsiez/,             // "siezen"
+    /\bgesiezt\b/,
   ];
   
   if (siePatterns.some(p => p.test(text))) {
@@ -152,6 +154,7 @@ function isStyleWord(word: string): boolean {
  */
 function cleanName(name: string): string {
   return name
+    .replace(/\s+(und|and)\b[\s\S]*$/i, '')
     .trim()
     .replace(/\s+/g, ' ')  // Normalize spaces
     .replace(/[,.]$/, ''); // Remove trailing punctuation
@@ -281,6 +284,7 @@ function isCommonWord(word: string): boolean {
  */
 function cleanPlace(place: string): string {
   return place
+    .replace(/\s+(geboren|born)$/i, '')
     .trim()
     .replace(/[,.]$/, '')  // Remove trailing punctuation
     .replace(/\s+/g, ' '); // Normalize spaces

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Ungültige Daten', issues: parsed.error.flatten() },
+        { error: 'Invalid payload', issues: parsed.error.flatten() },
         { status: 400 },
       );
     }

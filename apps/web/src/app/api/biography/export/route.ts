@@ -14,7 +14,7 @@ export async function GET(_req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Authentifizierung erforderlich' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const { data: biography, error: biographyError } = await supabase
@@ -26,7 +26,7 @@ export async function GET(_req: Request) {
 
     if (biographyError) {
       if (biographyError.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Keine Biografie zum Export verfügbar' }, { status: 404 });
+        return NextResponse.json({ error: 'No biography available to export' }, { status: 404 });
       }
 
       console.error('Error fetching biography export source:', biographyError);
@@ -34,7 +34,7 @@ export async function GET(_req: Request) {
     }
 
     if (!biography) {
-      return NextResponse.json({ error: 'Keine Biografie zum Export verfügbar' }, { status: 404 });
+      return NextResponse.json({ error: 'No biography available to export' }, { status: 404 });
     }
 
     const typedBiography = biography as Biography;
