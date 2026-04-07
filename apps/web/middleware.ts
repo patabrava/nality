@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { getIncompleteOnboardingPath } from '@/lib/onboarding/flags'
 
 function getAdminWhitelist() {
   const raw = process.env.ADMIN_EMAIL_WHITELIST || ''
@@ -68,6 +69,7 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname
   const hasCompletedOnboarding = onboardingComplete === true
+  const incompletePath = getIncompleteOnboardingPath()
   const adminWhitelist = getAdminWhitelist()
   const isAdminUser = Boolean(user?.email && adminWhitelist.includes(user.email.trim().toLowerCase()))
 

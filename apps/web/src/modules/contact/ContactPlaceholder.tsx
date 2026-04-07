@@ -77,8 +77,12 @@ export function ContactPlaceholder() {
     }, 1000)
   }
 
-  const handleCalendarClick = () => {
-    setShowCalendar(true)
+  const openBookingModal = () => {
+    setIsBookingModalOpen(true)
+  }
+
+  const closeBookingModal = () => {
+    setIsBookingModalOpen(false)
   }
 
   return (
